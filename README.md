@@ -7,3 +7,4 @@ This ACME implementation is broken up into layers that build:
 * PowerShell Cmdlet that can interact with an ACME server and configure a local IIS 7+ configuration
 
 
+This ACME client is being developed against the [Boulder CA](https://github.com/letsencrypt/boulder) ACME server reference implementation.  See how to [quickly spin up your own instance](https://github.com/ebekker/letsencrypt-win/wiki/Setup-Boulder-CA-on-Amazon-Linux) in AWS on an Amazon Linux AMI.

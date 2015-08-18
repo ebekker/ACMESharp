@@ -9,6 +9,8 @@ namespace LetsEncrypt.ACME.JOSE
 {
     public interface ISigner : IDisposable
     {
+        string JwsAlg { get; }
+
         void Init();
 
         void Save(Stream stream);

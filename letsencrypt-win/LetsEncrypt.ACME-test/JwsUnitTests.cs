@@ -7,6 +7,13 @@ using Newtonsoft.Json;
 
 namespace LetsEncrypt.ACME
 {
+
+    /// <summary>
+    /// Set of unit tests that test RFC 7515 JSON Web Signature (JWS)
+    /// standard and interoperability with the Boulder CA.  We can use
+    /// these tests to experiment with Boulder and channel these
+    /// lessons into the actual ACME client and supporting components.
+    /// </summary>
     [TestClass]
     public class JwsUnitTests
     {

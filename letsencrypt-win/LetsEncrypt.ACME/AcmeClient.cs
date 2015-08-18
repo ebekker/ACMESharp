@@ -1,4 +1,5 @@
 ﻿using Jose;
+using LetsEncrypt.ACME.JOSE;
 using LetsEncrypt.ACME.JSON;
 using LetsEncrypt.ACME.Messages;
 using Newtonsoft.Json;
@@ -23,12 +24,24 @@ namespace LetsEncrypt.ACME
         #region -- Fields --
 
         WebClient _Web;
+        JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented,
+            ContractResolver = new AcmeJsonContractResolver(),
+        };
+
 
         #endregion -- Fields --
 
         #region -- Properties --
 
         public Uri RootUrl
+        { get; set; }
+
+        public ISigner Signer
+        { get; set; }
+
+        public AcmeRegistration Registration
         { get; set; }
 
         public bool Initialized
@@ -58,11 +71,6 @@ namespace LetsEncrypt.ACME
         
         public void Init()
         {
-            var foo = new System.Collections.Hashtable
-            {
-                ["foo1"] = "bar",
-            };
-
             var requ = WebRequest.Create(new Uri(RootUrl, "/"));
 
             // TODO:  according to ACME 5.5 we *should* be able to issue a HEAD
@@ -72,19 +80,7 @@ namespace LetsEncrypt.ACME
             requ.Method = "GET";
 
             var resp = requ.GetResponse();
-
-            var nonceHeader = resp.Headers.AllKeys.FirstOrDefault(x =>
-                    x.Equals("Replay-nonce", StringComparison.OrdinalIgnoreCase));
-            if (string.IsNullOrEmpty(nonceHeader))
-            {
-                throw new AcmeException("Missing initial replay-nonce header");
-            }
-
-            NextNonce = resp.Headers[nonceHeader];
-            if (string.IsNullOrEmpty(NextNonce))
-            {
-                throw new AcmeException("Missing initial replay-nonce header value");
-            }
+            ExtractNonce(resp);
 
             Initialized = true;
         }
@@ -117,7 +113,7 @@ namespace LetsEncrypt.ACME
             return null;
         }
 
-        public void Register(string[] contacts)
+        public void RegisterXXX(string[] contacts)
         {
             AssertInit();
 
@@ -152,6 +148,94 @@ namespace LetsEncrypt.ACME
             var requWrap = Jose.JWT.Encode(requBody, privateKey2, JwsAlgorithm.RS256);
 
             var respBody = Web.UploadString("/acme/new-reg", "GET", requBody);
+        }
+
+        public AcmeRegistration Register(string[] contacts)
+        {
+            AssertInit();
+
+            var message = new NewRegRequest
+            {
+                Contact = contacts,
+            };
+
+            var acmeSigned = ComputeAcmeSigned(message, Signer);
+
+
+            var acmeBytes = Encoding.ASCII.GetBytes(acmeSigned);
+
+            var requ = WebRequest.Create(new Uri(RootUrl, "/acme/new-reg"));
+            requ.Method = "POST";
+            requ.ContentType = "application/json";
+            requ.ContentLength = acmeBytes.Length;
+            using (var s = requ.GetRequestStream())
+            {
+                s.Write(acmeBytes, 0, acmeBytes.Length);
+            }
+            var resp = requ.GetResponse();
+            ExtractNonce(resp);
+
+            var acmeResp = string.Empty;
+            using (var r = new StreamReader(resp.GetResponseStream()))
+            {
+                acmeResp = r.ReadToEnd();
+            }
+
+            var regUri = resp.Headers["Location"];
+            if (string.IsNullOrEmpty(regUri))
+                throw new AcmeException("server did not provide a registration URI in the response");
+
+            // TODO: 409 (Conflict) response for a previously registered pub key
+            //    Location:  still had the regUri
+
+            // TODO:  Link headers can be returned:
+            //   HTTP/1.1 201 Created
+            //   Content-Type: application/json
+            //   Location: https://example.com/acme/reg/asdf
+            //   Link: <https://example.com/acme/new-authz>;rel="next"
+            //   Link: <https://example.com/acme/recover-reg>;rel="recover"
+            //   Link: <https://example.com/acme/terms>;rel="terms-of-service"
+            //
+            // The "terms-of-service" URI should be included in the "agreement" field
+            // in a subsequent registration update
+
+            var reg = new AcmeRegistration
+            {
+                Contacts = contacts,
+                RegistrationUri = regUri,
+            };
+
+            return reg;
+        }
+
+        private string ComputeAcmeSigned(object message, ISigner signer)
+        {
+            var protectedHeader = new
+            {
+                nonce = NextNonce
+            };
+            var unprotectedHeader = new
+            {
+                alg = Signer.JwsAlg,
+                jwk = Signer.ExportJwk()
+            };
+            var payload = JsonConvert.SerializeObject(message);
+            var acmeSigned = JwsHelper.SignFlatJson(Signer.Sign, payload,
+                    protectedHeader, unprotectedHeader);
+
+            return acmeSigned;
+        }
+
+        private void ExtractNonce(WebResponse resp)
+        {
+            var nonceHeader = resp.Headers.AllKeys.FirstOrDefault(x =>
+                    x.Equals("Replay-nonce", StringComparison.OrdinalIgnoreCase));
+            if (string.IsNullOrEmpty(nonceHeader))
+                throw new AcmeException("Missing initial replay-nonce header");
+
+            NextNonce = resp.Headers[nonceHeader];
+            if (string.IsNullOrEmpty(NextNonce))
+                throw new AcmeException("Missing initial replay-nonce header value");
         }
 
         #endregion -- Methods --

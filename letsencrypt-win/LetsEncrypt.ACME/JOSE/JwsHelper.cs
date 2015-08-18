@@ -52,6 +52,16 @@ namespace LetsEncrypt.ACME.JOSE
         /// <summary>
         /// URL-safe Base64 encoding as prescribed in RFC 7515 Appendix C.
         /// </summary>
+        public static string Base64UrlEncode(string raw, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = Encoding.UTF8;
+            return Base64UrlEncode(encoding.GetBytes(raw));
+        }
+
+        /// <summary>
+        /// URL-safe Base64 encoding as prescribed in RFC 7515 Appendix C.
+        /// </summary>
         public static string Base64UrlEncode(byte[] raw)
         {
             string enc = Convert.ToBase64String(raw);  // Regular base64 encoder
@@ -78,6 +88,13 @@ namespace LetsEncrypt.ACME.JOSE
                     throw new System.Exception("Illegal base64url string!");
             }
             return Convert.FromBase64String(raw); // Standard base64 decoder
+        }
+
+        public static string Base64UrlDecodeToString(string enc, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = Encoding.UTF8;
+            return encoding.GetString(Base64UrlDecode(enc));
         }
 
         /// <summary>

@@ -8,13 +8,19 @@ using System.Text;
 
 namespace LetsEncrypt.ACME
 {
+    /// <summary>
+    /// Set of unit tests that test the ACME protocol and interoperability
+    /// with the Boulder CA.  We can use these tests to experiment wth Boulder
+    /// and channel these lessons into the actual ACME client and supporting
+    /// components.
+    /// </summary>
     [TestClass]
-    public class AcmeUnitTest1
+    public class AcmeUnitTest
     {
         Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
 
         [TestMethod]
-        public void TestNewReg()
+        public void TestNewRegRequest()
         {
             var requ = WebRequest.Create(_rootUrl);
             var resp = requ.GetResponse();

@@ -14,6 +14,8 @@ namespace LetsEncrypt.ACME.JOSE
         SHA256CryptoServiceProvider _sha;
         object _jwk;
 
+        public string JwsAlg { get { return "RS256"; } }
+
         public int KeySize
         { get; set; } = 2048;
 

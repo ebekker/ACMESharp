@@ -12,6 +12,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace LetsEncrypt.ACME
 {
@@ -21,6 +22,19 @@ namespace LetsEncrypt.ACME
     /// </summary>
     public class AcmeClient : IDisposable
     {
+        #region -- Constants --
+
+        /// <summary>
+        /// Regex pattern to match and extract the components of an HTTP related link header.
+        /// </summary>
+        public static readonly Regex LINK_HEADER_REGEX = new Regex("<(.+)>;rel=\"(.+)\"");
+        /// <summary>
+        /// The relation name for the "Terms of Service" related link header.
+        /// </summary>
+        public const string TOS_LINK_REL = "terms-of-service";
+
+        #endregion -- Constants --
+
         #region -- Fields --
 
         WebClient _Web;
@@ -29,7 +43,6 @@ namespace LetsEncrypt.ACME
             Formatting = Formatting.Indented,
             ContractResolver = new AcmeJsonContractResolver(),
         };
-
 
         #endregion -- Fields --
 
@@ -119,61 +132,30 @@ namespace LetsEncrypt.ACME
             return null;
         }
 
-        public void RegisterXXX(string[] contacts)
-        {
-            AssertInit();
-
-            var requMesg = new NewRegRequest
-            {
-                Contact = contacts,
-            };
-
-            //var certBytes = Certificate.CreateSelfSignCertificatePfx(null, DateTime.Now.AddMinutes(-10), DateTime.Now.AddYears(1));
-            //var cert = new X509Certificate2(certBytes);
-            //var privateKey = cert.PrivateKey as RSACryptoServiceProvider;
-            //var privateKeyBlob = privateKey.ExportCspBlob(true);
-            //var privateKey2 = new RSACryptoServiceProvider(new CspParameters(24));
-            //privateKey2.ImportCspBlob(privateKeyBlob);
-
-            // With help from:
-            //    https://github.com/dvsekhvalnov/jose-jwt/blob/master/UnitTests/jwt-2048.p12
-            //    https://github.com/dvsekhvalnov/jose-jwt/blob/master/UnitTests/TestSuite.cs
-            var cert = new X509Certificate2(@"C:\prj\letsencrypt\solutions\letsencrypt-win\letsencrypt-win\jwt-2048.p12",
-                    "1", X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
-            var privateKey = cert.PrivateKey as RSACryptoServiceProvider;
-            var privateKey2 = new RSACryptoServiceProvider();
-            privateKey2.ImportParameters(privateKey.ExportParameters(true));
-
-            var jsonSettings = new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented,
-                ContractResolver = new AcmeJsonContractResolver(),
-            };
-
-            var requBody = JsonConvert.SerializeObject(requMesg, jsonSettings);
-            var requWrap = Jose.JWT.Encode(requBody, privateKey2, JwsAlgorithm.RS256);
-
-            var respBody = Web.UploadString("/acme/new-reg", "GET", requBody);
-        }
-
         public AcmeRegistration Register(string[] contacts)
         {
             AssertInit();
 
-            var message = new NewRegRequest
+            var requMsg = new NewRegRequest
             {
                 Contact = contacts,
             };
 
-            var resp = PostRequest(new Uri(RootUrl, "/acme/new-reg"), message);
-            var regUri = resp.Headers["Location"];
-            if (string.IsNullOrEmpty(regUri))
-                throw new AcmeException("server did not provide a registration URI in the response");
+            var resp = PostRequest(new Uri(RootUrl, "/acme/new-reg"), requMsg);
 
             // HTTP 409 (Conflict) response for a previously registered pub key
             //    Location:  still had the regUri
-            if (resp.IsError && resp.StatusCode == HttpStatusCode.Conflict)
-                throw new AcmeException("Conflict due to previously registered public key");
+            if (resp.IsError)
+            {
+                if (resp.StatusCode == HttpStatusCode.Conflict)
+                    throw new AcmeException("Conflict due to previously registered public key");
+                else if (resp.IsError)
+                    throw new AcmeException("Unexpected error", resp.Error);
+            }
+
+            var regUri = resp.Headers["Location"];
+            if (string.IsNullOrEmpty(regUri))
+                throw new AcmeException("server did not provide a registration URI in the response");
 
             // TODO:  Link headers can be returned:
             //   HTTP/1.1 201 Created
@@ -185,14 +167,70 @@ namespace LetsEncrypt.ACME
             //
             // The "terms-of-service" URI should be included in the "agreement" field
             // in a subsequent registration update
-
+            var links = resp.Headers["Link"];
+            var tosUri = ExtractTosLinkUri(resp);
 
             Registration = new AcmeRegistration
             {
                 PublicKey = Signer.ExportJwk(),
                 Contacts = contacts,
                 RegistrationUri = regUri,
+                Links = string.IsNullOrEmpty(links)
+                        ? null
+                        : links.Split(','),
+                TosLinkUri = tosUri,
             };
+
+            return Registration;
+        }
+
+        public AcmeRegistration UpdateRegistration(string[] contacts, bool agreeToTos = false, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var requMsg = new UpdateRegRequest();
+
+            if (contacts != null)
+                requMsg.Contact = contacts;
+
+            if (agreeToTos && !string.IsNullOrWhiteSpace(Registration.TosLinkUri))
+                requMsg.Agreement = Registration.TosLinkUri;
+
+            // Compute the URL to submit the request to, either exactly as
+            // provided in the Registration object or relative to the Root URL
+            var requUri = new Uri(Registration.RegistrationUri);
+            if (useRootUrl)
+                requUri = new Uri(RootUrl, requUri.PathAndQuery);
+
+            var resp = PostRequest(requUri, requMsg);
+
+            if (resp.IsError)
+            {
+                if (resp.StatusCode == HttpStatusCode.Conflict)
+                    throw new AcmeException("Conflict due to previously registered public key");
+                else if (resp.IsError)
+                    throw new AcmeException("Unexpected error", resp.Error);
+            }
+
+            var links = resp.Headers["Link"];
+            var tosUri = ExtractTosLinkUri(resp);
+
+            var regUpd = new AcmeRegistration
+            {
+                PublicKey = Signer.ExportJwk(),
+                Contacts = contacts,
+                RegistrationUri = Registration.RegistrationUri,
+                Links = string.IsNullOrEmpty(links)
+                        ? null
+                        : links.Split(','),
+                TosLinkUri = tosUri,
+                TosAgreementUri = agreeToTos
+                        ? Registration.TosLinkUri
+                        : null,
+            };
+
+            Registration = regUpd;
 
             return Registration;
         }
@@ -215,6 +253,15 @@ namespace LetsEncrypt.ACME
             var respMsg = JsonConvert.DeserializeObject<NewAuthzResponse>(resp.Content);
         }
 
+        /// <summary>
+        /// Submits an ACME protocol request via an HTTP post with the necessary semantics
+        /// and protocol details.  The result is a simplified and canonicalized response
+        /// object capturing the error state, HTTP response headers and content of the
+        /// response body.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         private PostResponse PostRequest(Uri uri, object message)
         {
             var acmeSigned = ComputeAcmeSigned(message, Signer);
@@ -244,11 +291,19 @@ namespace LetsEncrypt.ACME
                     return new PostResponse(resp)
                     {
                         IsError = true,
+                        Error = ex,
                     };
                 }
             }
         }
 
+        /// <summary>
+        /// Computes the JWS-signed ACME request body for the given message object
+        /// and signer instance.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="signer"></param>
+        /// <returns></returns>
         private string ComputeAcmeSigned(object message, ISigner signer)
         {
             var protectedHeader = new
@@ -267,6 +322,11 @@ namespace LetsEncrypt.ACME
             return acmeSigned;
         }
 
+        /// <summary>
+        /// Extracts the next ACME protocol nonce from the argument Web response
+        /// and remembers it for the next protocol request.
+        /// </summary>
+        /// <param name="resp"></param>
         private void ExtractNonce(WebResponse resp)
         {
             var nonceHeader = resp.Headers.AllKeys.FirstOrDefault(x =>
@@ -277,6 +337,34 @@ namespace LetsEncrypt.ACME
             NextNonce = resp.Headers[nonceHeader];
             if (string.IsNullOrEmpty(NextNonce))
                 throw new AcmeException("Missing initial replay-nonce header value");
+        }
+
+        /// <summary>
+        /// Extracts the "Terms of Service" related link header if there is one and
+        /// returns the URI associated with it.  Otherwise returns <c>null</c>.
+        /// </summary>
+        /// <param name="resp"></param>
+        /// <returns></returns>
+        private string ExtractTosLinkUri(PostResponse resp)
+        {
+            var links = resp.Headers.GetValues("Link");
+
+            if (links != null && links.Length > 0)
+            {
+                // We're looking for something like this:
+                //     <http://localhost:4000/terms/v1>;rel=\"terms-of-service\"
+                foreach (var l in links)
+                {
+                    var m = LINK_HEADER_REGEX.Match(l);
+                    if (m.Success)
+                    {
+                        if (TOS_LINK_REL.Equals(m.Groups[2].Value))
+                            return m.Groups[1].Value;
+                    }
+                }
+            }
+
+            return null;
         }
 
         #endregion -- Methods --
@@ -296,6 +384,9 @@ namespace LetsEncrypt.ACME
             }
 
             public bool IsError
+            { get; set; }
+
+            public Exception Error
             { get; set; }
 
             public HttpStatusCode StatusCode

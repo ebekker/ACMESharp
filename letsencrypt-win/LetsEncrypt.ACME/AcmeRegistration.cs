@@ -22,6 +22,15 @@ namespace LetsEncrypt.ACME
         public string RegistrationUri
         { get; set; }
 
+        public IEnumerable<string> Links
+        { get; set; }
+
+        public string TosLinkUri
+        { get; set; }
+
+        public string TosAgreementUri
+        { get; set; }
+
         public void Save(Stream s)
         {
             using (var w = new StreamWriter(s))

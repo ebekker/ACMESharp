@@ -43,10 +43,10 @@ namespace LetsEncrypt.ACME
                     client.Init();
 
                     client.Register(new string[]
-                    {
-                        "mailto:letsencrypt@mailinator.com",
-                        "tel:+14109361212",
-                    });
+                            {
+                                "mailto:letsencrypt@mailinator.com",
+                                "tel:+14109361212",
+                            });
 
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
@@ -59,6 +59,46 @@ namespace LetsEncrypt.ACME
                 using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Create))
                 {
                     signer.Save(fs);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestRegisterUpdate()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.UpdateRegistration(new string[]
+                            {
+                                "mailto:letsencrypt+update@mailinator.com",
+                            }, true, true);
+
+                    Assert.IsNotNull(client.Registration);
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
+
+                    using (var fs = new FileStream("..\\TestRegisterUpdate.acmeReg", FileMode.Create))
+                    {
+                        client.Registration.Save(fs);
+                    }
                 }
             }
         }
@@ -83,10 +123,10 @@ namespace LetsEncrypt.ACME
                     try
                     {
                         client.Register(new string[]
-                        {
-                        "mailto:letsencrypt+dup@mailinator.com",
-                        "tel:+14105551212",
-                        });
+                                {
+                                    "mailto:letsencrypt+dup@mailinator.com",
+                                    "tel:+14105551212",
+                                });
                         Assert.Fail("WebException expected");
                     }
                     catch (WebException ex)

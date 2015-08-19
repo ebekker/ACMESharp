@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -148,9 +149,11 @@ namespace LetsEncrypt.ACME
             if (resp.IsError)
             {
                 if (resp.StatusCode == HttpStatusCode.Conflict)
-                    throw new AcmeException("Conflict due to previously registered public key");
+                    throw new AcmeWebException(resp.Error as WebException,
+                            "Conflict due to previously registered public key", resp);
                 else if (resp.IsError)
-                    throw new AcmeException("Unexpected error", resp.Error);
+                    throw new AcmeWebException(resp.Error as WebException,
+                            "Unexpected error", resp);
             }
 
             var regUri = resp.Headers["Location"];
@@ -215,9 +218,11 @@ namespace LetsEncrypt.ACME
             if (resp.IsError)
             {
                 if (resp.StatusCode == HttpStatusCode.Conflict)
-                    throw new AcmeException("Conflict due to previously registered public key");
+                    throw new AcmeWebException(resp.Error as WebException,
+                            "Conflict due to previously registered public key", resp);
                 else if (resp.IsError)
-                    throw new AcmeException("Unexpected error", resp.Error);
+                    throw new AcmeWebException(resp.Error as WebException,
+                            "Unexpected error", resp);
             }
 
             var links = resp.Headers["Link"];
@@ -380,7 +385,7 @@ namespace LetsEncrypt.ACME
 
         #region -- Nested Types --
 
-        protected class PostResponse
+        public class PostResponse
         {
             public PostResponse(HttpWebResponse resp)
             {
@@ -409,6 +414,27 @@ namespace LetsEncrypt.ACME
 
 
         }
+
+        public class AcmeWebException : AcmeException
+        {
+            public AcmeWebException(WebException innerException, string message = null,
+                    PostResponse response = null) : base(message, innerException)
+            {
+                Response = response;
+            }
+
+            protected AcmeWebException(SerializationInfo info, StreamingContext context) : base(info, context)
+            { }
+
+            public WebException WebException
+            {
+                get { return InnerException as WebException; }
+            }
+
+            public PostResponse Response
+            { get; private set; }
+        }
+
 
         #endregion -- Nested Types --
     }

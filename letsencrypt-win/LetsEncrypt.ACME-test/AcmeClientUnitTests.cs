@@ -210,11 +210,11 @@ namespace LetsEncrypt.ACME
                                 });
                         Assert.Fail("WebException expected");
                     }
-                    catch (WebException ex)
+                    catch (AcmeClient.AcmeWebException ex)
                     {
-                        var resp = ex.Response as HttpWebResponse;
-                        Assert.IsNotNull(resp);
-                        Assert.AreEqual(HttpStatusCode.Conflict, resp.StatusCode);
+                        Assert.IsNotNull(ex.WebException);
+                        Assert.IsNotNull(ex.Response);
+                        Assert.AreEqual(HttpStatusCode.Conflict, ex.Response.StatusCode);
                     }
                 }
             }

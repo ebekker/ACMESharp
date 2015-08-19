@@ -3,6 +3,7 @@ using LetsEncrypt.ACME.JOSE;
 using LetsEncrypt.ACME.JSON;
 using LetsEncrypt.ACME.Messages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -47,9 +48,25 @@ namespace LetsEncrypt.ACME
 
         #endregion -- Fields --
 
+        #region -- Constructors --
+
+        public AcmeClient(Uri rootUrl = null, AcmeServerDirectory dir = null,
+                ISigner signer = null, AcmeRegistration reg = null)
+        {
+            RootUrl = rootUrl;
+            Directory = dir;
+            Signer = signer;
+            Registration = reg;
+        }
+
+        #endregion -- Constructors --
+
         #region -- Properties --
 
         public Uri RootUrl
+        { get; set; }
+
+        public AcmeServerDirectory Directory
         { get; set; }
 
         public ISigner Signer
@@ -85,6 +102,15 @@ namespace LetsEncrypt.ACME
         
         public void Init()
         {
+            if (RootUrl == null)
+                throw new InvalidOperationException("Missing ACME server root URL (RootUrl)");
+
+            if (Signer == null)
+                throw new InvalidOperationException("Missing request message signer (Signer)");
+
+            if (Directory == null)
+                Directory = new AcmeServerDirectory();
+
             var requ = WebRequest.Create(new Uri(RootUrl, "/"));
 
             // TODO:  according to ACME 5.5 we *should* be able to issue a HEAD
@@ -119,18 +145,36 @@ namespace LetsEncrypt.ACME
                 throw new InvalidOperationException("Client is missing registration info");
         }
 
-        public IDictionary<string, string> GetDirectory()
+        public AcmeServerDirectory GetDirectory(bool saveRelative = false)
         {
             AssertInit();
 
-            var resp = Web.DownloadString("/acme/directory");
+            var requ = WebRequest.Create(new Uri(RootUrl,
+                    Directory[AcmeServerDirectory.RES_DIRECTORY]));
+            requ.Method = "GET";
 
-            //var requ = WebRequest.Create(RootUrl);
-            //requ.ContentType = "application/json";
+            using (var resp = (HttpWebResponse)requ.GetResponse())
+            {
+                using (var s = new StreamReader(resp.GetResponseStream()))
+                {
+                    var resMap = JObject.Parse(s.ReadToEnd());
 
-            //var resp = requ.GetResponse();
+                    foreach (var kv in resMap)
+                    {
+                        if (kv.Value.Type == JTokenType.String)
+                        {
+                            var urlValue = (kv.Value as JValue).Value as string;
 
-            return null;
+                            if (saveRelative)
+                                urlValue = new Uri(urlValue).PathAndQuery;
+
+                            Directory[kv.Key] = urlValue;
+                        }
+                    }
+                }
+            }
+
+            return Directory;
         }
 
         public AcmeRegistration Register(string[] contacts)
@@ -142,7 +186,8 @@ namespace LetsEncrypt.ACME
                 Contact = contacts,
             };
 
-            var resp = PostRequest(new Uri(RootUrl, "/acme/new-reg"), requMsg);
+            var resp = PostRequest(new Uri(RootUrl,
+                    Directory[AcmeServerDirectory.RES_NEW_REG]), requMsg);
 
             // HTTP 409 (Conflict) response for a previously registered pub key
             //    Location:  still had the regUri
@@ -268,7 +313,7 @@ namespace LetsEncrypt.ACME
         }
 
         /// <summary>
-        /// Submits an ACME protocol request via an HTTP post with the necessary semantics
+        /// Submits an ACME protocol request via an HTTP POST with the necessary semantics
         /// and protocol details.  The result is a simplified and canonicalized response
         /// object capturing the error state, HTTP response headers and content of the
         /// response body.
@@ -276,7 +321,7 @@ namespace LetsEncrypt.ACME
         /// <param name="uri"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        private PostResponse PostRequest(Uri uri, object message)
+        private AcmeHttpResponse PostRequest(Uri uri, object message)
         {
             var acmeSigned = ComputeAcmeSigned(message, Signer);
             var acmeBytes = Encoding.ASCII.GetBytes(acmeSigned);
@@ -295,14 +340,14 @@ namespace LetsEncrypt.ACME
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);
-                    return new PostResponse(resp);
+                    return new AcmeHttpResponse(resp);
                 }
             }
             catch (WebException ex)
             {
                 using (var resp = (HttpWebResponse)ex.Response)
                 {
-                    return new PostResponse(resp)
+                    return new AcmeHttpResponse(resp)
                     {
                         IsError = true,
                         Error = ex,
@@ -359,7 +404,7 @@ namespace LetsEncrypt.ACME
         /// </summary>
         /// <param name="resp"></param>
         /// <returns></returns>
-        private string ExtractTosLinkUri(PostResponse resp)
+        private string ExtractTosLinkUri(AcmeHttpResponse resp)
         {
             var links = resp.Headers.GetValues("Link");
 
@@ -385,9 +430,9 @@ namespace LetsEncrypt.ACME
 
         #region -- Nested Types --
 
-        public class PostResponse
+        public class AcmeHttpResponse
         {
-            public PostResponse(HttpWebResponse resp)
+            public AcmeHttpResponse(HttpWebResponse resp)
             {
                 StatusCode = resp.StatusCode;
                 Headers = resp.Headers;
@@ -411,14 +456,12 @@ namespace LetsEncrypt.ACME
             
             public string Content
             { get; set; }
-
-
         }
 
         public class AcmeWebException : AcmeException
         {
             public AcmeWebException(WebException innerException, string message = null,
-                    PostResponse response = null) : base(message, innerException)
+                    AcmeHttpResponse response = null) : base(message, innerException)
             {
                 Response = response;
             }
@@ -431,7 +474,7 @@ namespace LetsEncrypt.ACME
                 get { return InnerException as WebException; }
             }
 
-            public PostResponse Response
+            public AcmeHttpResponse Response
             { get; private set; }
         }
 

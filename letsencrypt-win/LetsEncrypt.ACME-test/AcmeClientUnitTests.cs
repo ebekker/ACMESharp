@@ -16,17 +16,20 @@ namespace LetsEncrypt.ACME
         {
             var client = new AcmeClient();
             client.RootUrl = _rootUrl;
-
             client.Init();
         }
 
         [TestMethod]
         public void TestGetDirectory()
         {
-            var client = new AcmeClient();
-            client.RootUrl = _rootUrl;
-
-            var acmeDir = client.GetDirectory();
+            using (var signer = new RS256Signer())
+            {
+                using (var client = new AcmeClient(_rootUrl, signer: signer))
+                {
+                    client.Init();
+                    var acmeDir = client.GetDirectory();
+                }
+            }
         }
 
 
@@ -41,6 +44,8 @@ namespace LetsEncrypt.ACME
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
                     client.Init();
+
+                    client.GetDirectory(true);
 
                     client.Register(new string[]
                             {
@@ -93,6 +98,8 @@ namespace LetsEncrypt.ACME
                     client.Registration = reg;
                     client.Init();
 
+                    client.GetDirectory(true);
+
                     // Do a simple update with no data changes requested
                     client.UpdateRegistration(true);
 
@@ -131,6 +138,8 @@ namespace LetsEncrypt.ACME
                     client.Registration = reg;
                     client.Init();
 
+                    client.GetDirectory(true);
+
                     client.UpdateRegistration(true, true);
 
                     Assert.IsNotNull(client.Registration);
@@ -168,6 +177,8 @@ namespace LetsEncrypt.ACME
                     client.Registration = reg;
                     client.Init();
 
+                    client.GetDirectory(true);
+
                     client.UpdateRegistration(true, contacts: new string[]
                             {
                                 "mailto:letsencrypt+update@mailinator.com",
@@ -200,6 +211,8 @@ namespace LetsEncrypt.ACME
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
                     client.Init();
+
+                    client.GetDirectory(true);
 
                     try
                     {

@@ -57,6 +57,7 @@
     <Compile Include="AcmeClient.cs" />
     <Compile Include="AcmeException.cs" />
     <Compile Include="AcmeRegistration.cs" />
+    <Compile Include="AcmeServerDirectory.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="JOSE\ISigner.cs" />
     <Compile Include="JOSE\JwsHeaders.cs" />

@@ -170,21 +170,28 @@ namespace LetsEncrypt.ACME
             var links = resp.Headers["Link"];
             var tosUri = ExtractTosLinkUri(resp);
 
-            Registration = new AcmeRegistration
+            var respMsg = JsonConvert.DeserializeObject<RegResponse>(resp.Content);
+
+            var newReg = new AcmeRegistration
             {
                 PublicKey = Signer.ExportJwk(),
-                Contacts = contacts,
                 RegistrationUri = regUri,
+                Contacts = respMsg.Contact,
                 Links = string.IsNullOrEmpty(links)
                         ? null
                         : links.Split(','),
                 TosLinkUri = tosUri,
+                AuthorizationsUri = respMsg.Authorizations,
+                CertificatesUri = respMsg.Certificates,
+                TosAgreementUri = respMsg.Agreement,
             };
+
+            Registration = newReg;
 
             return Registration;
         }
 
-        public AcmeRegistration UpdateRegistration(string[] contacts, bool agreeToTos = false, bool useRootUrl = false)
+        public AcmeRegistration UpdateRegistration(bool useRootUrl = false, bool agreeToTos = false, string[] contacts = null)
         {
             AssertInit();
             AssertRegistration();
@@ -216,21 +223,23 @@ namespace LetsEncrypt.ACME
             var links = resp.Headers["Link"];
             var tosUri = ExtractTosLinkUri(resp);
 
-            var regUpd = new AcmeRegistration
+            var respMsg = JsonConvert.DeserializeObject<RegResponse>(resp.Content);
+
+            var updReg = new AcmeRegistration
             {
                 PublicKey = Signer.ExportJwk(),
-                Contacts = contacts,
                 RegistrationUri = Registration.RegistrationUri,
+                Contacts = respMsg.Contact,
                 Links = string.IsNullOrEmpty(links)
                         ? null
                         : links.Split(','),
                 TosLinkUri = tosUri,
-                TosAgreementUri = agreeToTos
-                        ? Registration.TosLinkUri
-                        : null,
+                AuthorizationsUri = respMsg.Authorizations,
+                CertificatesUri = respMsg.Certificates,
+                TosAgreementUri = respMsg.Agreement,
             };
 
-            Registration = regUpd;
+            Registration = updReg;
 
             return Registration;
         }

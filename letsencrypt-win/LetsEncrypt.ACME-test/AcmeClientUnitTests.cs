@@ -63,8 +63,14 @@ namespace LetsEncrypt.ACME
             }
         }
 
+        /// <summary>
+        /// An <i>empty update</i> does not request any registration data elements be
+        /// updated and should simply return the current state of the target registration
+        /// (<see cref="https://letsencrypt.github.io/acme-spec/#rfc.section.6.3">ACME
+        /// spec 6.3</see>).
+        /// </summary>
         [TestMethod]
-        public void TestRegisterUpdate()
+        public void TestRegisterEmptyUpdate()
         {
             using (var signer = new RS256Signer())
             {
@@ -87,10 +93,85 @@ namespace LetsEncrypt.ACME
                     client.Registration = reg;
                     client.Init();
 
-                    client.UpdateRegistration(new string[]
+                    // Do a simple update with no data changes requested
+                    client.UpdateRegistration(true);
+
+                    Assert.IsNotNull(client.Registration);
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
+
+                    using (var fs = new FileStream("..\\TestRegisterUpdate.acmeReg", FileMode.Create))
+                    {
+                        client.Registration.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestRegisterUpdateTosAgreement()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.UpdateRegistration(true, true);
+
+                    Assert.IsNotNull(client.Registration);
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
+
+                    using (var fs = new FileStream("..\\TestRegisterUpdate.acmeReg", FileMode.Create))
+                    {
+                        client.Registration.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestRegisterUpdateContacts()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.UpdateRegistration(true, contacts: new string[]
                             {
                                 "mailto:letsencrypt+update@mailinator.com",
-                            }, true, true);
+                            });
 
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));

@@ -31,6 +31,12 @@ namespace LetsEncrypt.ACME
         public string TosAgreementUri
         { get; set; }
 
+        public string AuthorizationsUri
+        { get; set; }
+
+        public string CertificatesUri
+        { get; set; }
+
         public void Save(Stream s)
         {
             using (var w = new StreamWriter(s))

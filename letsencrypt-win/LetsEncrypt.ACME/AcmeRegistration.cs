@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +13,29 @@ namespace LetsEncrypt.ACME
         public IEnumerable<string> Contacts
         { get; set; }
 
-        public string PublicKey
+        public object PublicKey
         { get; set; }
 
-        public string RecoveryKey
+        public object RecoveryKey
         { get; set; }
 
         public string RegistrationUri
         { get; set; }
+
+        public void Save(Stream s)
+        {
+            using (var w = new StreamWriter(s))
+            {
+                w.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
+            }
+        }
+
+        public static AcmeRegistration Load(Stream s)
+        {
+            using (var r = new StreamReader(s))
+            {
+                return JsonConvert.DeserializeObject<AcmeRegistration>(r.ReadToEnd());
+            }
+        }
     }
 }

@@ -99,6 +99,12 @@ namespace LetsEncrypt.ACME
                 throw new InvalidOperationException("Client is not initialized");
         }
 
+        protected void AssertRegistration()
+        {
+            if (Registration == null)
+                throw new InvalidOperationException("Client is missing registration info");
+        }
+
         public IDictionary<string, string> GetDirectory()
         {
             AssertInit();
@@ -159,34 +165,15 @@ namespace LetsEncrypt.ACME
                 Contact = contacts,
             };
 
-            var acmeSigned = ComputeAcmeSigned(message, Signer);
-
-
-            var acmeBytes = Encoding.ASCII.GetBytes(acmeSigned);
-
-            var requ = WebRequest.Create(new Uri(RootUrl, "/acme/new-reg"));
-            requ.Method = "POST";
-            requ.ContentType = "application/json";
-            requ.ContentLength = acmeBytes.Length;
-            using (var s = requ.GetRequestStream())
-            {
-                s.Write(acmeBytes, 0, acmeBytes.Length);
-            }
-            var resp = requ.GetResponse();
-            ExtractNonce(resp);
-
-            var acmeResp = string.Empty;
-            using (var r = new StreamReader(resp.GetResponseStream()))
-            {
-                acmeResp = r.ReadToEnd();
-            }
-
+            var resp = PostRequest(new Uri(RootUrl, "/acme/new-reg"), message);
             var regUri = resp.Headers["Location"];
             if (string.IsNullOrEmpty(regUri))
                 throw new AcmeException("server did not provide a registration URI in the response");
 
-            // TODO: 409 (Conflict) response for a previously registered pub key
+            // HTTP 409 (Conflict) response for a previously registered pub key
             //    Location:  still had the regUri
+            if (resp.IsError && resp.StatusCode == HttpStatusCode.Conflict)
+                throw new AcmeException("Conflict due to previously registered public key");
 
             // TODO:  Link headers can be returned:
             //   HTTP/1.1 201 Created
@@ -199,13 +186,67 @@ namespace LetsEncrypt.ACME
             // The "terms-of-service" URI should be included in the "agreement" field
             // in a subsequent registration update
 
-            var reg = new AcmeRegistration
+
+            Registration = new AcmeRegistration
             {
+                PublicKey = Signer.ExportJwk(),
                 Contacts = contacts,
                 RegistrationUri = regUri,
             };
 
-            return reg;
+            return Registration;
+        }
+
+        public void AuthorizeDns(string dnsIdentifier)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var requMsg = new NewAuthzRequest
+            {
+                Identifier = new IdentifierPart
+                {
+                    Type = "dns",
+                    Value = dnsIdentifier
+                }
+            };
+
+            var resp = PostRequest(new Uri(RootUrl, "/acme/new-authz"), requMsg);
+            var respMsg = JsonConvert.DeserializeObject<NewAuthzResponse>(resp.Content);
+        }
+
+        private PostResponse PostRequest(Uri uri, object message)
+        {
+            var acmeSigned = ComputeAcmeSigned(message, Signer);
+            var acmeBytes = Encoding.ASCII.GetBytes(acmeSigned);
+
+            var requ = WebRequest.Create(uri);
+            requ.Method = "POST";
+            requ.ContentType = "application/json";
+            requ.ContentLength = acmeBytes.Length;
+            using (var s = requ.GetRequestStream())
+            {
+                s.Write(acmeBytes, 0, acmeBytes.Length);
+            }
+            
+            try
+            {
+                using (var resp = (HttpWebResponse)requ.GetResponse())
+                {
+                    ExtractNonce(resp);
+                    return new PostResponse(resp);
+                }
+            }
+            catch (WebException ex)
+            {
+                using (var resp = (HttpWebResponse)ex.Response)
+                {
+                    return new PostResponse(resp)
+                    {
+                        IsError = true,
+                    };
+                }
+            }
         }
 
         private string ComputeAcmeSigned(object message, ISigner signer)
@@ -239,5 +280,36 @@ namespace LetsEncrypt.ACME
         }
 
         #endregion -- Methods --
+
+        #region -- Nested Types --
+
+        protected class PostResponse
+        {
+            public PostResponse(HttpWebResponse resp)
+            {
+                StatusCode = resp.StatusCode;
+                Headers = resp.Headers;
+                using (var s = new StreamReader(resp.GetResponseStream()))
+                {
+                    Content = s.ReadToEnd();
+                }
+            }
+
+            public bool IsError
+            { get; set; }
+
+            public HttpStatusCode StatusCode
+            { get; set; }
+
+            public WebHeaderCollection Headers
+            { get; set; }
+            
+            public string Content
+            { get; set; }
+
+
+        }
+
+        #endregion -- Nested Types --
     }
 }

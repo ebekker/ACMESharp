@@ -63,6 +63,10 @@
     <Compile Include="JOSE\JwsHelper.cs" />
     <Compile Include="JOSE\RS256Signer.cs" />
     <Compile Include="JSON\AcmeJsonContractResolver.cs" />
+    <Compile Include="Messages\ChallengePart.cs" />
+    <Compile Include="Messages\IdentifierPart.cs" />
+    <Compile Include="Messages\NewAuthzRequest.cs" />
+    <Compile Include="Messages\NewAuthzResponse.cs" />
     <Compile Include="RequestMessage.cs" />
     <Compile Include="Messages\NewRegRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

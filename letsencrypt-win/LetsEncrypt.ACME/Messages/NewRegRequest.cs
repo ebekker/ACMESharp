@@ -7,8 +7,7 @@ namespace LetsEncrypt.ACME.Messages
 {
     public class NewRegRequest : RequestMessage
     {
-        public NewRegRequest()
-            : base("new-reg")
+        public NewRegRequest() : base("new-reg")
         { }
 
         public IEnumerable<string> Contact

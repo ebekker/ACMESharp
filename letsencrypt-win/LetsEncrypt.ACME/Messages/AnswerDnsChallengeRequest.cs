@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.ACME.Messages
 {
-    public class ValidateChallengeWithDnsRequest : RequestMessage
+    public class AnswerDnsChallengeRequest : RequestMessage
     {
-        public ValidateChallengeWithDnsRequest() : base("challenge")
+        public AnswerDnsChallengeRequest() : base("challenge")
         { }
 
         public string Type

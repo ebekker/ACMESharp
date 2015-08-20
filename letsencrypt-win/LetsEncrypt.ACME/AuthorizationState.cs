@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.ACME
 {
-    public class DnsIdentifierValidation
+    public class AuthorizationState
     {
-        public string Dns
+        public string Identifier
         { get; set; }
 
         public string Status
         { get; set; }
 
-        public IEnumerable<ValidationChallenge> Challenges
+        public IEnumerable<AuthorizeChallenge> Challenges
         { get; set; }
 
         public IEnumerable<IEnumerable<int>> Combinations
@@ -30,11 +30,11 @@ namespace LetsEncrypt.ACME
             }
         }
 
-        public static DnsIdentifierValidation Load(Stream s)
+        public static AuthorizationState Load(Stream s)
         {
             using (var r = new StreamReader(s))
             {
-                return JsonConvert.DeserializeObject<DnsIdentifierValidation>(r.ReadToEnd());
+                return JsonConvert.DeserializeObject<AuthorizationState>(r.ReadToEnd());
             }
         }
     }

@@ -290,7 +290,7 @@ namespace LetsEncrypt.ACME
             return Registration;
         }
 
-        public DnsIdentifierValidation AuthorizeDns(string dnsIdentifier)
+        public AuthorizationState AuthorizeIdentifier(string dnsIdentifier)
         {
             AssertInit();
             AssertRegistration();
@@ -315,14 +315,14 @@ namespace LetsEncrypt.ACME
 
             var respMsg = JsonConvert.DeserializeObject<NewAuthzResponse>(resp.Content);
 
-            var dnsValidation = new DnsIdentifierValidation
+            var authzState = new AuthorizationState
             {
-                Dns = respMsg.Identifier.Value,
+                Identifier = respMsg.Identifier.Value,
                 Status = respMsg.Status,
                 Combinations = respMsg.Combinations,
 
                 // Simple copy/conversion from one form to another
-                Challenges = respMsg.Challenges.Select(x => new ValidationChallenge
+                Challenges = respMsg.Challenges.Select(x => new AuthorizeChallenge
                 {
                     Type = x.Type,
                     Status = x.Status,
@@ -332,15 +332,15 @@ namespace LetsEncrypt.ACME
                 }),
             };
 
-            return dnsValidation;
+            return authzState;
         }
 
-        public void RefreshDnsChallenge(DnsIdentifierValidation dnsValidation, string type, bool useRootUrl = false)
+        public void RefreshAuthorizeChallenge(AuthorizationState authzState, string type, bool useRootUrl = false)
         {
             AssertInit();
             AssertRegistration();
 
-            var c = dnsValidation.Challenges.FirstOrDefault(x => x.Type == type);
+            var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
             if (c == null)
                 throw new ArgumentOutOfRangeException("no challenge found matching requested type");
 
@@ -364,20 +364,20 @@ namespace LetsEncrypt.ACME
             }
         }
 
-        public void ValidateDnsChallenge(DnsIdentifierValidation dnsValidation, string type, bool useRootUrl = false)
+        public void GenerateAuthorizeChallengeAnswer(AuthorizationState authzState, string type)
         {
             AssertInit();
             AssertRegistration();
 
-            var c = dnsValidation.Challenges.FirstOrDefault(x => x.Type == type);
+            var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
             if (c == null)
                 throw new ArgumentOutOfRangeException("no challenge found matching requested type");
 
-            object requMsg;
             switch (type)
             {
                 case "dns":
-                    requMsg = new ValidateChallengeWithDnsRequest
+                    c.ChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
+                    c.ChallengeAnswerMessage = new AnswerDnsChallengeRequest
                     {
                         ClientPublicKey = Signer.ExportJwk(),
                         Validation = new
@@ -388,27 +388,48 @@ namespace LetsEncrypt.ACME
                                 type = "dns",
                                 token = c.Token
                             })),
-                            signature = c.GenerateDnsChallengeResponse(dnsValidation.Dns, Signer).Value
+                            signature = c.ChallengeAnswer.Value
                         }
+                    };
+                    break;
+
+                case "simpleHttp":
+                    var tls = c.Tls.GetValueOrDefault(true);
+                    c.ChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer, tls);
+                    c.ChallengeAnswerMessage = new AnswerHttpChallengeRequest
+                    {
+                        Tls = tls
                     };
                     break;
 
                 default:
                     throw new ArgumentException("unsupported challenge type", nameof(type));
             }
+        }
+
+        public void SubmitAuthorizeChallengeAnswer(AuthorizationState authzState, string type, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
+            if (c == null)
+                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+
+            if (c.ChallengeAnswer.Key == null || c.ChallengeAnswer.Value == null || c.ChallengeAnswerMessage == null)
+                throw new InvalidOperationException("challenge answer has not been generated");
 
             var requUri = new Uri(c.Uri);
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var resp = PostRequest(requUri, requMsg);
+            var resp = PostRequest(requUri, c.ChallengeAnswerMessage);
 
             if (resp.IsError)
             {
                 throw new AcmeWebException(resp.Error as WebException,
                         "Unexpected error", resp);
             }
-
         }
 
         /// <summary>
@@ -482,7 +503,13 @@ namespace LetsEncrypt.ACME
                 alg = Signer.JwsAlg,
                 jwk = Signer.ExportJwk()
             };
-            var payload = JsonConvert.SerializeObject(message);
+
+            var payload = string.Empty;
+            if (message is JObject)
+                payload = ((JObject)message).ToString(Formatting.None);
+            else
+                payload = JsonConvert.SerializeObject(message, Formatting.None);
+
             var acmeSigned = JwsHelper.SignFlatJson(Signer.Sign, payload,
                     protectedHeader, unprotectedHeader);
 

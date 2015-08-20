@@ -262,12 +262,8 @@ namespace LetsEncrypt.ACME
 
             if (resp.IsError)
             {
-                if (resp.StatusCode == HttpStatusCode.Conflict)
-                    throw new AcmeWebException(resp.Error as WebException,
-                            "Conflict due to previously registered public key", resp);
-                else if (resp.IsError)
-                    throw new AcmeWebException(resp.Error as WebException,
-                            "Unexpected error", resp);
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
             }
 
             var links = resp.Headers["Link"];
@@ -294,7 +290,7 @@ namespace LetsEncrypt.ACME
             return Registration;
         }
 
-        public void AuthorizeDns(string dnsIdentifier)
+        public DnsIdentifierValidation AuthorizeDns(string dnsIdentifier)
         {
             AssertInit();
             AssertRegistration();
@@ -308,8 +304,111 @@ namespace LetsEncrypt.ACME
                 }
             };
 
-            var resp = PostRequest(new Uri(RootUrl, "/acme/new-authz"), requMsg);
+            var resp = PostRequest(new Uri(RootUrl,
+                    Directory[AcmeServerDirectory.RES_NEW_AUTHZ]), requMsg);
+
+            if (resp.IsError)
+            {
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+            }
+
             var respMsg = JsonConvert.DeserializeObject<NewAuthzResponse>(resp.Content);
+
+            var dnsValidation = new DnsIdentifierValidation
+            {
+                Dns = respMsg.Identifier.Value,
+                Status = respMsg.Status,
+                Combinations = respMsg.Combinations,
+
+                // Simple copy/conversion from one form to another
+                Challenges = respMsg.Challenges.Select(x => new ValidationChallenge
+                {
+                    Type = x.Type,
+                    Status = x.Status,
+                    Uri = x.Uri,
+                    Token = x.Token,
+                    Tls = x.Tls,
+                }),
+            };
+
+            return dnsValidation;
+        }
+
+        public void RefreshDnsChallenge(DnsIdentifierValidation dnsValidation, string type, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var c = dnsValidation.Challenges.FirstOrDefault(x => x.Type == type);
+            if (c == null)
+                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+
+            var requUri = new Uri(c.Uri);
+            if (useRootUrl)
+                requUri = new Uri(RootUrl, requUri.PathAndQuery);
+
+            var requ = WebRequest.Create(requUri);
+            using (var resp = requ.GetResponse())
+            {
+                using (var s = new StreamReader(resp.GetResponseStream()))
+                {
+                    var cp = JsonConvert.DeserializeObject<ChallengePart>(s.ReadToEnd());
+
+                    c.Type = cp.Type;
+                    c.Uri = cp.Uri;
+                    c.Token = cp.Token;
+                    c.Status = cp.Status;
+                    c.Tls = cp.Tls;
+                }
+            }
+        }
+
+        public void ValidateDnsChallenge(DnsIdentifierValidation dnsValidation, string type, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var c = dnsValidation.Challenges.FirstOrDefault(x => x.Type == type);
+            if (c == null)
+                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+
+            object requMsg;
+            switch (type)
+            {
+                case "dns":
+                    requMsg = new ValidateChallengeWithDnsRequest
+                    {
+                        ClientPublicKey = Signer.ExportJwk(),
+                        Validation = new
+                        {
+                            header = new { alg = Signer.JwsAlg },
+                            payload = JwsHelper.Base64UrlEncode(JsonConvert.SerializeObject(new
+                            {
+                                type = "dns",
+                                token = c.Token
+                            })),
+                            signature = c.GenerateDnsChallengeResponse(dnsValidation.Dns, Signer).Value
+                        }
+                    };
+                    break;
+
+                default:
+                    throw new ArgumentException("unsupported challenge type", nameof(type));
+            }
+
+            var requUri = new Uri(c.Uri);
+            if (useRootUrl)
+                requUri = new Uri(RootUrl, requUri.PathAndQuery);
+
+            var resp = PostRequest(requUri, requMsg);
+
+            if (resp.IsError)
+            {
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+            }
+
         }
 
         /// <summary>
@@ -347,11 +446,20 @@ namespace LetsEncrypt.ACME
             {
                 using (var resp = (HttpWebResponse)ex.Response)
                 {
-                    return new AcmeHttpResponse(resp)
+                    var acmeResp = new AcmeHttpResponse(resp)
                     {
                         IsError = true,
                         Error = ex,
                     };
+
+                    if (ProblemDetailResponse.CONTENT_TYPE == resp.ContentType
+                            && !string.IsNullOrEmpty(acmeResp.Content))
+                    {
+                        acmeResp.ProblemDetail = JsonConvert.DeserializeObject<ProblemDetailResponse>(
+                                acmeResp.Content);
+                    }
+
+                    return acmeResp;
                 }
             }
         }
@@ -442,12 +550,6 @@ namespace LetsEncrypt.ACME
                 }
             }
 
-            public bool IsError
-            { get; set; }
-
-            public Exception Error
-            { get; set; }
-
             public HttpStatusCode StatusCode
             { get; set; }
 
@@ -455,6 +557,15 @@ namespace LetsEncrypt.ACME
             { get; set; }
             
             public string Content
+            { get; set; }
+
+            public bool IsError
+            { get; set; }
+
+            public Exception Error
+            { get; set; }
+
+            public ProblemDetailResponse ProblemDetail
             { get; set; }
         }
 

@@ -16,5 +16,11 @@ namespace LetsEncrypt.ACME.Messages
 
         public string Token
         { get; set; }
+
+        public string Status
+        { get; set; }
+
+        public bool? Tls
+        { get; set; }
     }
 }

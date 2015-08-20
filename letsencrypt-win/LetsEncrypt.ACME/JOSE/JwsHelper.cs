@@ -105,7 +105,7 @@ namespace LetsEncrypt.ACME.JOSE
         /// <param name="protectedHeaders"></param>
         /// <param name="unprotectedHeaders"></param>
         /// <returns></returns>
-        public static string SignFlatJson(Func<byte[], byte[]> sigFunc, string payload,
+        public static JwsSigned SignFlatJsonAsObject(Func<byte[], byte[]> sigFunc, string payload,
                 object protectedHeaders = null, object unprotectedHeaders = null)
         {
             if (protectedHeaders == null && unprotectedHeaders == null)
@@ -127,7 +127,7 @@ namespace LetsEncrypt.ACME.JOSE
             byte[] sigBytes = sigFunc(signingBytes);
             string sigB64u = Base64UrlEncode(sigBytes);
 
-            var jwsFlatJS = new
+            var jwsFlatJS = new JwsSigned
             {
                 header = unprotectedHeaders,
                 @protected = protectedB64u,
@@ -135,7 +135,28 @@ namespace LetsEncrypt.ACME.JOSE
                 signature = sigB64u
             };
 
+            return jwsFlatJS;
+        }
+        public static string SignFlatJson(Func<byte[], byte[]> sigFunc, string payload,
+                object protectedHeaders = null, object unprotectedHeaders = null)
+        {
+            var jwsFlatJS = SignFlatJsonAsObject(sigFunc, payload, protectedHeaders, unprotectedHeaders);
             return JsonConvert.SerializeObject(jwsFlatJS, Formatting.Indented);
+        }
+
+        public class JwsSigned
+        {
+            public object header
+            { get; set; }
+
+            public string @protected
+            { get; set; }
+
+            public string payload
+            { get; set; }
+
+            public string signature
+            { get; set; }
         }
     }
 }

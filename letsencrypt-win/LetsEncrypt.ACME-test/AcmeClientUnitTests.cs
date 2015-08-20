@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LetsEncrypt.ACME.JOSE;
 using System.IO;
 using System.Net;
+using System.Collections.Generic;
 
 namespace LetsEncrypt.ACME
 {
@@ -14,20 +15,52 @@ namespace LetsEncrypt.ACME
         [TestMethod]
         public void TestInit()
         {
-            var client = new AcmeClient();
-            client.RootUrl = _rootUrl;
-            client.Init();
-        }
-
-        [TestMethod]
-        public void TestGetDirectory()
-        {
             using (var signer = new RS256Signer())
             {
                 using (var client = new AcmeClient(_rootUrl, signer: signer))
                 {
                     client.Init();
-                    var acmeDir = client.GetDirectory();
+
+                    Assert.IsNotNull(client.Directory);
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(client.NextNonce));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestGetDirectory()
+        {
+            var boulderUrlBase = "http://localhost:4000";
+            var boulderResMap = new Dictionary<string, string>
+            {
+                ["new-authz"] = "http://localhost:4000/acme/new-authz",
+                ["new-cert"] = "http://localhost:4000/acme/new-cert",
+                ["new-reg"] = "http://localhost:4000/acme/new-reg",
+                ["revoke-cert"] = "http://localhost:4000/acme/revoke-cert",
+            };
+
+            using (var signer = new RS256Signer())
+            {
+                using (var client = new AcmeClient(_rootUrl, signer: signer))
+                {
+                    client.Init();
+
+                    // Test absolute URI paths
+                    var acmeDir = client.GetDirectory(false);
+                    foreach (var ent in boulderResMap)
+                    {
+                        Assert.IsTrue(acmeDir.Contains(ent.Key));
+                        Assert.AreEqual(ent.Value, acmeDir[ent.Key]);
+                    }
+
+                    // Test relative URI paths
+                    acmeDir = client.GetDirectory(true);
+                    foreach (var ent in boulderResMap)
+                    {
+                        var relUrl = ent.Value.Replace(boulderUrlBase, "");
+                        Assert.IsTrue(acmeDir.Contains(ent.Key));
+                        Assert.AreEqual(relUrl, acmeDir[ent.Key]);
+                    }
                 }
             }
         }
@@ -233,6 +266,50 @@ namespace LetsEncrypt.ACME
             }
         }
 
+        [TestMethod]
+        public void TestAuthorizeDnsBlacklisted()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    try
+                    {
+                        client.AuthorizeDns("foo.example.com");
+                    }
+                    catch (AcmeClient.AcmeWebException ex)
+                    {
+                        Assert.IsNotNull(ex.WebException);
+                        Assert.IsNotNull(ex.Response);
+                        Assert.IsNotNull(ex.Response.ProblemDetail);
+                        Assert.AreEqual(HttpStatusCode.Forbidden, ex.Response.StatusCode);
+                        Assert.AreEqual("urn:acme:error:unauthorized", ex.Response.ProblemDetail.Type);
+                        StringAssert.Contains(ex.Response.ProblemDetail.Detail, "blacklist");
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
         public void TestAuthorizeDns()
         {
             using (var signer = new RS256Signer())
@@ -255,6 +332,103 @@ namespace LetsEncrypt.ACME
                     client.Signer = signer;
                     client.Registration = reg;
                     client.Init();
+
+                    client.GetDirectory(true);
+
+                    var dnsValidation = client.AuthorizeDns("foo.letsencrypt.cc");
+
+                    foreach (var c in dnsValidation.Challenges)
+                    {
+                        if (c.Type == "dns")
+                        {
+                            var dnsResponse = c.GenerateDnsChallengeResponse(
+                                    dnsValidation.Dns, signer);
+                        }
+                    }
+
+                    using (var fs = new FileStream("..\\TestAuthzDns.acmeChallenges", FileMode.Create))
+                    {
+                        dnsValidation.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestRefreshDnsChallengeWithDns()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    DnsIdentifierValidation dnsValidation;
+                    using (var fs = new FileStream("..\\TestAuthzDns.acmeChallenges", FileMode.Open))
+                    {
+                        dnsValidation = DnsIdentifierValidation.Load(fs);
+                    }
+
+                    client.RefreshDnsChallenge(dnsValidation, "dns", true);
+
+                    using (var fs = new FileStream("..\\TestAuthzDnsRefreshed.acmeChallenges", FileMode.Create))
+                    {
+                        dnsValidation.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestValidateDnsChallengeWithDns()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    DnsIdentifierValidation dnsValidation;
+                    using (var fs = new FileStream("..\\TestAuthzDns.acmeChallenges", FileMode.Open))
+                    {
+                        dnsValidation = DnsIdentifierValidation.Load(fs);
+                    }
+
+                    client.ValidateDnsChallenge(dnsValidation, "dns", true);
                 }
             }
         }

@@ -10,6 +10,9 @@ namespace LetsEncrypt.ACME.Messages
         public NewRegRequest() : base("new-reg")
         { }
 
+        protected NewRegRequest(string resource) : base(resource)
+        { }
+
         public IEnumerable<string> Contact
         { get; set; }
 

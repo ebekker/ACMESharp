@@ -12,6 +12,6 @@ namespace LetsEncrypt.ACME
             Resource = resource;
         }
         public string Resource
-        { get; set; }
+        { get; }
     }
 }

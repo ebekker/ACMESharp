@@ -8,9 +8,7 @@ namespace LetsEncrypt.ACME.Messages
 {
     public class UpdateRegRequest : NewRegRequest
     {
-        public UpdateRegRequest()
-        {
-            base.Resource = "reg";
-        }
+        public UpdateRegRequest() : base("reg")
+        { }
     }
 }

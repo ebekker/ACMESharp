@@ -16,12 +16,19 @@ namespace LetsEncrypt.ACME
         public const string RES_NEW_CERT = "new-cert";
         public const string RES_REVOKE_CERT = "revoke-cert";
 
+        /// <summary>
+        /// Non-standard, as per the ACME spec, but defined in Boulder.
+        /// </summary>
+        public const string RES_ISSUER_CERT = "issuer-cert";
+
         protected const string DEFAULT_PATH_DIRECTORY = "/directory";
         protected const string DEFAULT_PATH_NEW_REG = "/new-reg";
         protected const string DEFAULT_PATH_RECOVER_REG = "/recover-reg";
         protected const string DEFAULT_PATH_NEW_AUTHZ = "/new-authz";
         protected const string DEFAULT_PATH_NEW_CERT = "/new-cert";
         protected const string DEFAULT_PATH_REVOKE_CERT = "/revoke-cert";
+
+        protected const string DEFAULT_PATH_ISSUER_CERT = "/acme/issuer-cert";
 
         private Dictionary<string, string> _dirMap = new Dictionary<string, string>();
 
@@ -34,6 +41,8 @@ namespace LetsEncrypt.ACME
             _dirMap[RES_NEW_AUTHZ] = DEFAULT_PATH_NEW_AUTHZ;
             _dirMap[RES_NEW_CERT] = DEFAULT_PATH_NEW_CERT;
             _dirMap[RES_REVOKE_CERT] = DEFAULT_PATH_REVOKE_CERT;
+
+            _dirMap[RES_ISSUER_CERT] = DEFAULT_PATH_ISSUER_CERT;
         }
 
         public int Count

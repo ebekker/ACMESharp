@@ -566,5 +566,138 @@ namespace LetsEncrypt.ACME
                 }
             }
         }
+
+        [TestMethod]
+        public void TestRequestCertificateInvalidCsr()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    try
+                    {
+                        client.RequestCertificate("FOOBARNON");
+                        Assert.Fail("WebException expected");
+                    }
+                    catch (AcmeClient.AcmeWebException ex)
+                    {
+                        Assert.IsNotNull(ex.WebException);
+                        Assert.IsNotNull(ex.Response);
+                        Assert.AreEqual(HttpStatusCode.BadRequest, ex.Response.StatusCode);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestRequestCertificate()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                var csrRaw = File.ReadAllBytes("..\\test-csr.der");
+                var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    var certRequ = client.RequestCertificate(csrB64u);
+
+                    using (var fs = new FileStream("..\\TestCertRequ.acmeCertRequ", FileMode.Create))
+                    {
+                        certRequ.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestRefreshCertificateRequest()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                var csrRaw = File.ReadAllBytes("..\\test-csr.der");
+                var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    CertificateRequest certRequ;
+                    using (var fs = new FileStream("..\\TestCertRequ.acmeCertRequ", FileMode.Open))
+                    {
+                        certRequ = CertificateRequest.Load(fs);
+                    }
+
+                    client.RefreshCertificateRequest(certRequ, true);
+
+                    using (var fs = new FileStream("..\\TestCertRequ-Refreshed.acmeCertRequ", FileMode.Create))
+                    {
+                        certRequ.Save(fs);
+                    }
+
+                    if (!string.IsNullOrEmpty(certRequ.CertificateContent))
+                    {
+                        using (var fs = new FileStream("..\\TestCertRequ-Refreshed.cer", FileMode.Create))
+                        {
+                            certRequ.SaveCertificate(fs);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

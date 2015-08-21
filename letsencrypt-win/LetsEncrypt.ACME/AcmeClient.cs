@@ -425,6 +425,83 @@ namespace LetsEncrypt.ACME
             }
         }
 
+        public CertificateRequest RequestCertificate(string csrContent)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var requMsg = new NewCertRequest
+            {
+                Csr = csrContent
+            };
+
+            var resp = PostRequest(new Uri(RootUrl,
+                    Directory[AcmeServerDirectory.RES_NEW_CERT]), requMsg);
+
+            if (resp.IsError)
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+
+            if (resp.StatusCode != HttpStatusCode.Created)
+                throw new AcmeProtocolException("Unexpected response status code", resp);
+
+            var uri = resp.Headers["Location"];
+            if (string.IsNullOrEmpty(uri))
+                throw new AcmeProtocolException("Response is missing a certificate resource URI", resp);
+
+            // This may be available immediately or it may need to be requeried for
+            var certRequ = new CertificateRequest
+            {
+                StatusCode = resp.StatusCode,
+                CsrContent = csrContent,
+                Uri = uri,
+                Links = resp.Links,
+            };
+            certRequ.SetCertificateContent(resp.RawContent);
+
+            return certRequ;
+        }
+
+        public void RefreshCertificateRequest(CertificateRequest certRequ, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var requUri = new Uri(certRequ.Uri);
+            if (useRootUrl)
+                requUri = new Uri(RootUrl, requUri.PathAndQuery);
+
+            var requ = WebRequest.Create(requUri);
+            using (var resp = (HttpWebResponse)requ.GetResponse())
+            {
+                var acmeResp = new AcmeHttpResponse(resp);
+
+                if (acmeResp.StatusCode != HttpStatusCode.OK && acmeResp.StatusCode != HttpStatusCode.Accepted)
+                    throw new AcmeProtocolException("Unexpected response status code", acmeResp);
+
+                certRequ.StatusCode = acmeResp.StatusCode;
+                certRequ.Links = acmeResp.Links;
+                certRequ.SetCertificateContent(acmeResp.RawContent);
+                certRequ.RetryAfter = null;
+
+                var certContent = acmeResp.RawContent;
+                var retryAfter = acmeResp.Headers["Retry-After"];
+                if (!string.IsNullOrEmpty(retryAfter))
+                {
+                    // According to spec (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.37)
+                    // this could be a number of seconds or a date, so we have to parse appropriately
+                    if (Regex.IsMatch(retryAfter, "[0-9]+"))
+                    {
+                        certRequ.RetryAfter = DateTime.Now.AddSeconds(int.Parse(retryAfter));
+                    }
+                    else
+                    {
+                        certRequ.RetryAfter = DateTime.Parse(retryAfter);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Submits an ACME protocol request via an HTTP POST with the necessary semantics
         /// and protocol details.  The result is a simplified and canonicalized response
@@ -605,6 +682,21 @@ namespace LetsEncrypt.ACME
             {
                 get { return InnerException as WebException; }
             }
+
+            public AcmeHttpResponse Response
+            { get; private set; }
+        }
+
+        public class AcmeProtocolException : AcmeException
+        {
+            public AcmeProtocolException(string message, AcmeHttpResponse response = null,
+                    Exception innerException = null) : base(message, innerException)
+            {
+                Response = response;
+            }
+
+            protected AcmeProtocolException(SerializationInfo info, StreamingContext context) : base(info, context)
+            { }
 
             public AcmeHttpResponse Response
             { get; private set; }

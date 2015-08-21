@@ -37,6 +37,10 @@
       <HintPath>..\packages\jose-jwt.1.9.0\lib\4.0\jose-jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -60,6 +64,7 @@
     <Compile Include="AcmeServerDirectory.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
+    <Compile Include="CertificateRequest.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />
     <Compile Include="JOSE\ISigner.cs" />
@@ -71,6 +76,7 @@
     <Compile Include="Messages\IdentifierPart.cs" />
     <Compile Include="Messages\NewAuthzRequest.cs" />
     <Compile Include="Messages\NewAuthzResponse.cs" />
+    <Compile Include="Messages\NewCertRequest.cs" />
     <Compile Include="Messages\ProblemDetailResponse.cs" />
     <Compile Include="Messages\RegResponse.cs" />
     <Compile Include="Messages\UpdateRegRequest.cs" />

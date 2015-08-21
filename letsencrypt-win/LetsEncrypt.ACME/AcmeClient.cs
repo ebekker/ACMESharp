@@ -1,4 +1,5 @@
 ﻿using Jose;
+using LetsEncrypt.ACME.HTTP;
 using LetsEncrypt.ACME.JOSE;
 using LetsEncrypt.ACME.JSON;
 using LetsEncrypt.ACME.Messages;
@@ -27,12 +28,20 @@ namespace LetsEncrypt.ACME
         #region -- Constants --
 
         /// <summary>
-        /// Regex pattern to match and extract the components of an HTTP related link header.
-        /// </summary>
-        public static readonly Regex LINK_HEADER_REGEX = new Regex("<(.+)>;rel=\"(.+)\"");
-        /// <summary>
         /// The relation name for the "Terms of Service" related link header.
         /// </summary>
+        /// <remarks>
+        /// Link headers can be returned as part of a registration:
+        ///   HTTP/1.1 201 Created
+        ///   Content-Type: application/json
+        ///   Location: https://example.com/acme/reg/asdf
+        ///   Link: <https://example.com/acme/new-authz>;rel="next"
+        ///   Link: <https://example.com/acme/recover-reg>;rel="recover"
+        ///   Link: <https://example.com/acme/terms>;rel="terms-of-service"
+        ///
+        /// The "terms-of-service" URI should be included in the "agreement" field
+        /// in a subsequent registration update
+        /// </remarks>
         public const string TOS_LINK_REL = "terms-of-service";
 
         #endregion -- Constants --
@@ -205,30 +214,16 @@ namespace LetsEncrypt.ACME
             if (string.IsNullOrEmpty(regUri))
                 throw new AcmeException("server did not provide a registration URI in the response");
 
-            // TODO:  Link headers can be returned:
-            //   HTTP/1.1 201 Created
-            //   Content-Type: application/json
-            //   Location: https://example.com/acme/reg/asdf
-            //   Link: <https://example.com/acme/new-authz>;rel="next"
-            //   Link: <https://example.com/acme/recover-reg>;rel="recover"
-            //   Link: <https://example.com/acme/terms>;rel="terms-of-service"
-            //
-            // The "terms-of-service" URI should be included in the "agreement" field
-            // in a subsequent registration update
-            var links = resp.Headers["Link"];
-            var tosUri = ExtractTosLinkUri(resp);
-
-            var respMsg = JsonConvert.DeserializeObject<RegResponse>(resp.Content);
 
             var newReg = new AcmeRegistration
             {
                 PublicKey = Signer.ExportJwk(),
                 RegistrationUri = regUri,
                 Contacts = respMsg.Contact,
-                Links = string.IsNullOrEmpty(links)
-                        ? null
-                        : links.Split(','),
-                TosLinkUri = tosUri,
+                Links = resp.Links,
+                /// Extracts the "Terms of Service" related link header if there is one and
+                /// returns the URI associated with it.  Otherwise returns <c>null</c>.
+                TosLinkUri = resp.Links[TOS_LINK_REL].FirstOrDefault(),
                 AuthorizationsUri = respMsg.Authorizations,
                 CertificatesUri = respMsg.Certificates,
                 TosAgreementUri = respMsg.Agreement,
@@ -266,9 +261,6 @@ namespace LetsEncrypt.ACME
                         "Unexpected error", resp);
             }
 
-            var links = resp.Headers["Link"];
-            var tosUri = ExtractTosLinkUri(resp);
-
             var respMsg = JsonConvert.DeserializeObject<RegResponse>(resp.Content);
 
             var updReg = new AcmeRegistration
@@ -276,10 +268,10 @@ namespace LetsEncrypt.ACME
                 PublicKey = Signer.ExportJwk(),
                 RegistrationUri = Registration.RegistrationUri,
                 Contacts = respMsg.Contact,
-                Links = string.IsNullOrEmpty(links)
-                        ? null
-                        : links.Split(','),
-                TosLinkUri = tosUri,
+                Links = resp.Links,
+                /// Extracts the "Terms of Service" related link header if there is one and
+                /// returns the URI associated with it.  Otherwise returns <c>null</c>.
+                TosLinkUri = resp.Links[TOS_LINK_REL].FirstOrDefault(),
                 AuthorizationsUri = respMsg.Authorizations,
                 CertificatesUri = respMsg.Certificates,
                 TosAgreementUri = respMsg.Agreement,
@@ -533,34 +525,6 @@ namespace LetsEncrypt.ACME
                 throw new AcmeException("Missing initial replay-nonce header value");
         }
 
-        /// <summary>
-        /// Extracts the "Terms of Service" related link header if there is one and
-        /// returns the URI associated with it.  Otherwise returns <c>null</c>.
-        /// </summary>
-        /// <param name="resp"></param>
-        /// <returns></returns>
-        private string ExtractTosLinkUri(AcmeHttpResponse resp)
-        {
-            var links = resp.Headers.GetValues("Link");
-
-            if (links != null && links.Length > 0)
-            {
-                // We're looking for something like this:
-                //     <http://localhost:4000/terms/v1>;rel=\"terms-of-service\"
-                foreach (var l in links)
-                {
-                    var m = LINK_HEADER_REGEX.Match(l);
-                    if (m.Success)
-                    {
-                        if (TOS_LINK_REL.Equals(m.Groups[2].Value))
-                            return m.Groups[1].Value;
-                    }
-                }
-            }
-
-            return null;
-        }
-
         #endregion -- Methods --
 
         #region -- Nested Types --
@@ -572,6 +536,7 @@ namespace LetsEncrypt.ACME
                 StatusCode = resp.StatusCode;
                 Headers = resp.Headers;
                 using (var s = new StreamReader(resp.GetResponseStream()))
+                Links = new LinkCollection(Headers.GetValues("Link"));
                 {
                     Content = s.ReadToEnd();
                 }
@@ -584,6 +549,8 @@ namespace LetsEncrypt.ACME
             { get; set; }
             
             public string Content
+
+            public LinkCollection Links
             { get; set; }
 
             public bool IsError

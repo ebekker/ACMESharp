@@ -60,6 +60,8 @@
     <Compile Include="AcmeServerDirectory.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
+    <Compile Include="HTTP\Link.cs" />
+    <Compile Include="HTTP\LinkCollection.cs" />
     <Compile Include="JOSE\ISigner.cs" />
     <Compile Include="JOSE\JwsHeaders.cs" />
     <Compile Include="JOSE\JwsHelper.cs" />

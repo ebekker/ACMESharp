@@ -214,6 +214,7 @@ namespace LetsEncrypt.ACME
             if (string.IsNullOrEmpty(regUri))
                 throw new AcmeException("server did not provide a registration URI in the response");
 
+            var respMsg = JsonConvert.DeserializeObject<RegResponse>(resp.ContentAsString);
 
             var newReg = new AcmeRegistration
             {
@@ -261,7 +262,7 @@ namespace LetsEncrypt.ACME
                         "Unexpected error", resp);
             }
 
-            var respMsg = JsonConvert.DeserializeObject<RegResponse>(resp.Content);
+            var respMsg = JsonConvert.DeserializeObject<RegResponse>(resp.ContentAsString);
 
             var updReg = new AcmeRegistration
             {
@@ -305,7 +306,7 @@ namespace LetsEncrypt.ACME
                         "Unexpected error", resp);
             }
 
-            var respMsg = JsonConvert.DeserializeObject<NewAuthzResponse>(resp.Content);
+            var respMsg = JsonConvert.DeserializeObject<NewAuthzResponse>(resp.ContentAsString);
 
             var authzState = new AuthorizationState
             {
@@ -341,7 +342,7 @@ namespace LetsEncrypt.ACME
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
             var requ = WebRequest.Create(requUri);
-            using (var resp = requ.GetResponse())
+            using (var resp = (HttpWebResponse)requ.GetResponse())
             {
                 using (var s = new StreamReader(resp.GetResponseStream()))
                 {
@@ -466,10 +467,10 @@ namespace LetsEncrypt.ACME
                     };
 
                     if (ProblemDetailResponse.CONTENT_TYPE == resp.ContentType
-                            && !string.IsNullOrEmpty(acmeResp.Content))
+                            && !string.IsNullOrEmpty(acmeResp.ContentAsString))
                     {
                         acmeResp.ProblemDetail = JsonConvert.DeserializeObject<ProblemDetailResponse>(
-                                acmeResp.Content);
+                                acmeResp.ContentAsString);
                     }
 
                     return acmeResp;
@@ -531,14 +532,19 @@ namespace LetsEncrypt.ACME
 
         public class AcmeHttpResponse
         {
+            private string _ContentAsString;
+
             public AcmeHttpResponse(HttpWebResponse resp)
             {
                 StatusCode = resp.StatusCode;
                 Headers = resp.Headers;
-                using (var s = new StreamReader(resp.GetResponseStream()))
                 Links = new LinkCollection(Headers.GetValues("Link"));
+
+                var rs = resp.GetResponseStream();
+                using (var ms = new MemoryStream())
                 {
-                    Content = s.ReadToEnd();
+                    rs.CopyTo(ms);
+                    RawContent = ms.ToArray();
                 }
             }
 
@@ -547,11 +553,32 @@ namespace LetsEncrypt.ACME
 
             public WebHeaderCollection Headers
             { get; set; }
-            
-            public string Content
 
             public LinkCollection Links
             { get; set; }
+
+            public byte[] RawContent
+            { get; set; }
+
+            public string ContentAsString
+            {
+                get
+                {
+                    if (_ContentAsString == null)
+                    {
+                        if (RawContent == null || RawContent.Length == 0)
+                            return null;
+                        using (var ms = new MemoryStream(RawContent))
+                        {
+                            using (var sr = new StreamReader(ms))
+                            {
+                                _ContentAsString = sr.ReadToEnd();
+                            }
+                        }
+                    }
+                    return _ContentAsString;
+                }
+            }
 
             public bool IsError
             { get; set; }

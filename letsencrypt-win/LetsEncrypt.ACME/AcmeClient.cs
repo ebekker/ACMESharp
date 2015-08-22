@@ -87,21 +87,6 @@ namespace LetsEncrypt.ACME
         public bool Initialized
         { get; private set; }
 
-        private WebClient Web
-        {
-            get
-            {
-                if (_Web == null)
-                {
-                    _Web = new WebClient();
-                    _Web.BaseAddress = RootUrl.ToString();
-                    _Web.Encoding = Encoding.UTF8;
-                    _Web.Headers["content-type"] = "application/json";
-                }
-                return _Web;
-            }
-        }
-
         public string NextNonce
         { get; private set; }
 
@@ -120,25 +105,18 @@ namespace LetsEncrypt.ACME
             if (Directory == null)
                 Directory = new AcmeServerDirectory();
 
-            var requ = WebRequest.Create(new Uri(RootUrl, "/"));
-
             // TODO:  according to ACME 5.5 we *should* be able to issue a HEAD
             // request to get an initial replay-nonce, but this is not working,
             // so we do a GET against the root URL to get that initial nonce
             //requ.Method = "HEAD";
-            requ.Method = "GET";
 
-            var resp = requ.GetResponse();
-            ExtractNonce(resp);
+            var resp = RequestHttpGet(new Uri(RootUrl, "/"));
 
             Initialized = true;
         }
 
         public void Dispose()
         {
-            if (Web != null)
-                Web.Dispose();
-
             Initialized = false;
         }
 
@@ -158,28 +136,20 @@ namespace LetsEncrypt.ACME
         {
             AssertInit();
 
-            var requ = WebRequest.Create(new Uri(RootUrl,
-                    Directory[AcmeServerDirectory.RES_DIRECTORY]));
-            requ.Method = "GET";
+            var requUri = new Uri(RootUrl, Directory[AcmeServerDirectory.RES_DIRECTORY]);
+            var resp = RequestHttpGet(requUri);
 
-            using (var resp = (HttpWebResponse)requ.GetResponse())
+            var resMap = JObject.Parse(resp.ContentAsString);
+            foreach (var kv in resMap)
             {
-                using (var s = new StreamReader(resp.GetResponseStream()))
+                if (kv.Value.Type == JTokenType.String)
                 {
-                    var resMap = JObject.Parse(s.ReadToEnd());
+                    var urlValue = (kv.Value as JValue).Value as string;
 
-                    foreach (var kv in resMap)
-                    {
-                        if (kv.Value.Type == JTokenType.String)
-                        {
-                            var urlValue = (kv.Value as JValue).Value as string;
+                    if (saveRelative)
+                        urlValue = new Uri(urlValue).PathAndQuery;
 
-                            if (saveRelative)
-                                urlValue = new Uri(urlValue).PathAndQuery;
-
-                            Directory[kv.Key] = urlValue;
-                        }
-                    }
+                    Directory[kv.Key] = urlValue;
                 }
             }
 
@@ -195,7 +165,7 @@ namespace LetsEncrypt.ACME
                 Contact = contacts,
             };
 
-            var resp = PostRequest(new Uri(RootUrl,
+            var resp = RequestHttpPost(new Uri(RootUrl,
                     Directory[AcmeServerDirectory.RES_NEW_REG]), requMsg);
 
             // HTTP 409 (Conflict) response for a previously registered pub key
@@ -254,7 +224,7 @@ namespace LetsEncrypt.ACME
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var resp = PostRequest(requUri, requMsg);
+            var resp = RequestHttpPost(requUri, requMsg);
 
             if (resp.IsError)
             {
@@ -297,7 +267,7 @@ namespace LetsEncrypt.ACME
                 }
             };
 
-            var resp = PostRequest(new Uri(RootUrl,
+            var resp = RequestHttpPost(new Uri(RootUrl,
                     Directory[AcmeServerDirectory.RES_NEW_AUTHZ]), requMsg);
 
             if (resp.IsError)
@@ -341,20 +311,14 @@ namespace LetsEncrypt.ACME
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var requ = WebRequest.Create(requUri);
-            using (var resp = (HttpWebResponse)requ.GetResponse())
-            {
-                using (var s = new StreamReader(resp.GetResponseStream()))
-                {
-                    var cp = JsonConvert.DeserializeObject<ChallengePart>(s.ReadToEnd());
+            var resp = RequestHttpGet(requUri);
+            var cp = JsonConvert.DeserializeObject<ChallengePart>(resp.ContentAsString);
 
-                    c.Type = cp.Type;
-                    c.Uri = cp.Uri;
-                    c.Token = cp.Token;
-                    c.Status = cp.Status;
-                    c.Tls = cp.Tls;
-                }
-            }
+            c.Type = cp.Type;
+            c.Uri = cp.Uri;
+            c.Token = cp.Token;
+            c.Status = cp.Status;
+            c.Tls = cp.Tls;
         }
 
         public void GenerateAuthorizeChallengeAnswer(AuthorizationState authzState, string type)
@@ -416,7 +380,7 @@ namespace LetsEncrypt.ACME
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var resp = PostRequest(requUri, c.ChallengeAnswerMessage);
+            var resp = RequestHttpPost(requUri, c.ChallengeAnswerMessage);
 
             if (resp.IsError)
             {
@@ -435,7 +399,7 @@ namespace LetsEncrypt.ACME
                 Csr = csrContent
             };
 
-            var resp = PostRequest(new Uri(RootUrl,
+            var resp = RequestHttpPost(new Uri(RootUrl,
                     Directory[AcmeServerDirectory.RES_NEW_CERT]), requMsg);
 
             if (resp.IsError)
@@ -471,33 +435,65 @@ namespace LetsEncrypt.ACME
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var requ = WebRequest.Create(requUri);
-            using (var resp = (HttpWebResponse)requ.GetResponse())
+            var acmeResp = RequestHttpGet(requUri);
+
+            if (acmeResp.StatusCode != HttpStatusCode.OK && acmeResp.StatusCode != HttpStatusCode.Accepted)
+                throw new AcmeProtocolException("Unexpected response status code", acmeResp);
+
+            certRequ.StatusCode = acmeResp.StatusCode;
+            certRequ.Links = acmeResp.Links;
+            certRequ.SetCertificateContent(acmeResp.RawContent);
+            certRequ.RetryAfter = null;
+
+            var certContent = acmeResp.RawContent;
+            var retryAfter = acmeResp.Headers["Retry-After"];
+            if (!string.IsNullOrEmpty(retryAfter))
             {
-                var acmeResp = new AcmeHttpResponse(resp);
-
-                if (acmeResp.StatusCode != HttpStatusCode.OK && acmeResp.StatusCode != HttpStatusCode.Accepted)
-                    throw new AcmeProtocolException("Unexpected response status code", acmeResp);
-
-                certRequ.StatusCode = acmeResp.StatusCode;
-                certRequ.Links = acmeResp.Links;
-                certRequ.SetCertificateContent(acmeResp.RawContent);
-                certRequ.RetryAfter = null;
-
-                var certContent = acmeResp.RawContent;
-                var retryAfter = acmeResp.Headers["Retry-After"];
-                if (!string.IsNullOrEmpty(retryAfter))
+                // According to spec (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.37)
+                // this could be a number of seconds or a date, so we have to parse appropriately
+                if (Regex.IsMatch(retryAfter, "[0-9]+"))
                 {
-                    // According to spec (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.37)
-                    // this could be a number of seconds or a date, so we have to parse appropriately
-                    if (Regex.IsMatch(retryAfter, "[0-9]+"))
+                    certRequ.RetryAfter = DateTime.Now.AddSeconds(int.Parse(retryAfter));
+                }
+                else
+                {
+                    certRequ.RetryAfter = DateTime.Parse(retryAfter);
+                }
+            }
+        }
+
+        private AcmeHttpResponse RequestHttpGet(Uri uri)
+        {
+            var requ = WebRequest.Create(uri);
+            requ.Method = "GET";
+            requ.Headers.Add("User-Agent", "ACMEdotNET");
+
+            try
+            {
+                using (var resp = (HttpWebResponse)requ.GetResponse())
+                {
+                    ExtractNonce(resp);
+                    return new AcmeHttpResponse(resp);
+                }
+            }
+            catch (WebException ex)
+            {
+                using (var resp = (HttpWebResponse)ex.Response)
+                {
+                    var acmeResp = new AcmeHttpResponse(resp)
                     {
-                        certRequ.RetryAfter = DateTime.Now.AddSeconds(int.Parse(retryAfter));
-                    }
-                    else
+                        IsError = true,
+                        Error = ex,
+                    };
+
+                    if (ProblemDetailResponse.CONTENT_TYPE == resp.ContentType
+                            && !string.IsNullOrEmpty(acmeResp.ContentAsString))
                     {
-                        certRequ.RetryAfter = DateTime.Parse(retryAfter);
+                        acmeResp.ProblemDetail = JsonConvert.DeserializeObject<ProblemDetailResponse>(
+                                acmeResp.ContentAsString);
                     }
+
+                    return acmeResp;
                 }
             }
         }
@@ -511,7 +507,7 @@ namespace LetsEncrypt.ACME
         /// <param name="uri"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        private AcmeHttpResponse PostRequest(Uri uri, object message)
+        private AcmeHttpResponse RequestHttpPost(Uri uri, object message)
         {
             var acmeSigned = ComputeAcmeSigned(message, Signer);
             var acmeBytes = Encoding.ASCII.GetBytes(acmeSigned);
@@ -520,6 +516,7 @@ namespace LetsEncrypt.ACME
             requ.Method = "POST";
             requ.ContentType = "application/json";
             requ.ContentLength = acmeBytes.Length;
+            requ.Headers.Add("User-Agent", "ACMEdotNET");
             using (var s = requ.GetRequestStream())
             {
                 s.Write(acmeBytes, 0, acmeBytes.Length);

@@ -41,6 +41,10 @@
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ManagedOpenSsl, Version=0.6.1.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ManagedOpenSsl.0.6.1.0\lib\net20\ManagedOpenSsl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -82,6 +86,7 @@
     <Compile Include="Messages\UpdateRegRequest.cs" />
     <Compile Include="Messages\AnswerDnsChallengeRequest.cs" />
     <Compile Include="Messages\AnswerHttpChallengeRequest.cs" />
+    <Compile Include="PKI\CsrHelper.cs" />
     <Compile Include="RequestMessage.cs" />
     <Compile Include="Messages\NewRegRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +95,14 @@
   <ItemGroup>
     <None Include="LICENSE" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libeay32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ssleay32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,6 +4,7 @@ using LetsEncrypt.ACME.JOSE;
 using System.IO;
 using System.Net;
 using System.Collections.Generic;
+using LetsEncrypt.ACME.PKI;
 
 namespace LetsEncrypt.ACME
 {
@@ -603,6 +604,70 @@ namespace LetsEncrypt.ACME
                         Assert.IsNotNull(ex.WebException);
                         Assert.IsNotNull(ex.Response);
                         Assert.AreEqual(HttpStatusCode.BadRequest, ex.Response.StatusCode);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestGenCsrAndRequestCertificate()
+        {
+            var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
+            using (var fs = new FileStream("..\\TestGenCsr-rsaKeys.txt", FileMode.Create))
+            {
+                rsaKeys.Save(fs);
+            }
+
+            var csrDetails = new CsrHelper.CsrDetails
+            {
+                CommonName = "foo.letsencrypt.cc"
+            };
+            var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
+            using (var fs = new FileStream("..\\TestGenCsr-csrDetails.txt", FileMode.Create))
+            {
+                csrDetails.Save(fs);
+            }
+            using (var fs = new FileStream("..\\TestGenCsr-csr.txt", FileMode.Create))
+            {
+                csr.Save(fs);
+            }
+
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                byte[] derRaw;
+                using (var bs = new MemoryStream())
+                {
+                    csr.ExportAsDer(bs);
+                    derRaw = bs.ToArray();
+                }
+                var derB64u = JwsHelper.Base64UrlEncode(derRaw);
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    var certRequ = client.RequestCertificate(derB64u);
+
+                    using (var fs = new FileStream("..\\TestCertRequ.acmeCertRequ", FileMode.Create))
+                    {
+                        certRequ.Save(fs);
                     }
                 }
             }

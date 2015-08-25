@@ -27,6 +27,8 @@ namespace LetsEncrypt.ACME
     {
         #region -- Constants --
 
+        public const string USER_AGENT_FMT = "ACMEdotNET v{0} (ACME 1.0)";
+
         /// <summary>
         /// The relation name for the "Terms of Service" related link header.
         /// </summary>
@@ -48,7 +50,6 @@ namespace LetsEncrypt.ACME
 
         #region -- Fields --
 
-        WebClient _Web;
         JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
@@ -66,11 +67,17 @@ namespace LetsEncrypt.ACME
             Directory = dir;
             Signer = signer;
             Registration = reg;
+
+            UserAgent = string.Format(USER_AGENT_FMT,
+                    this.GetType().Assembly.GetName().Version);
         }
 
         #endregion -- Constructors --
 
         #region -- Properties --
+
+        public string UserAgent
+        { get; private set; }
 
         public Uri RootUrl
         { get; set; }
@@ -464,9 +471,9 @@ namespace LetsEncrypt.ACME
 
         private AcmeHttpResponse RequestHttpGet(Uri uri)
         {
-            var requ = WebRequest.Create(uri);
+            var requ = (HttpWebRequest)WebRequest.Create(uri);
             requ.Method = "GET";
-            requ.Headers.Add("User-Agent", "ACMEdotNET");
+            requ.UserAgent = this.UserAgent;
 
             try
             {
@@ -512,11 +519,11 @@ namespace LetsEncrypt.ACME
             var acmeSigned = ComputeAcmeSigned(message, Signer);
             var acmeBytes = Encoding.ASCII.GetBytes(acmeSigned);
 
-            var requ = WebRequest.Create(uri);
+            var requ = (HttpWebRequest)WebRequest.Create(uri);
             requ.Method = "POST";
             requ.ContentType = "application/json";
             requ.ContentLength = acmeBytes.Length;
-            requ.Headers.Add("User-Agent", "ACMEdotNET");
+            requ.UserAgent = this.UserAgent;
             using (var s = requ.GetRequestStream())
             {
                 s.Write(acmeBytes, 0, acmeBytes.Length);

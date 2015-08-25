@@ -14,6 +14,7 @@ namespace LetsEncrypt.ACME
         Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestInit()
         {
             using (var signer = new RS256Signer())
@@ -29,6 +30,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestGetDirectory()
         {
             var boulderUrlBase = "http://localhost:4000";
@@ -68,6 +70,7 @@ namespace LetsEncrypt.ACME
 
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRegister()
         {
             using (var signer = new RS256Signer())
@@ -109,6 +112,7 @@ namespace LetsEncrypt.ACME
         /// spec 6.3</see>).
         /// </summary>
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRegisterEmptyUpdate()
         {
             using (var signer = new RS256Signer())
@@ -149,6 +153,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRegisterUpdateTosAgreement()
         {
             using (var signer = new RS256Signer())
@@ -188,6 +193,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRegisterUpdateContacts()
         {
             using (var signer = new RS256Signer())
@@ -230,6 +236,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRegisterDuplicate()
         {
             using (var signer = new RS256Signer())
@@ -268,6 +275,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestAuthorizeDnsBlacklisted()
         {
             using (var signer = new RS256Signer())
@@ -311,6 +319,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestAuthorizeIdentifier()
         {
             using (var signer = new RS256Signer())
@@ -356,6 +365,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRefreshAuthzDnsChallenge()
         {
             using (var signer = new RS256Signer())
@@ -398,6 +408,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRefreshAuthzHttpChallenge()
         {
             using (var signer = new RS256Signer())
@@ -440,6 +451,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestGenerateChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -483,6 +495,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestSubmitDnsChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -526,6 +539,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestSubmitHttpChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -569,6 +583,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRequestCertificateInvalidCsr()
         {
             using (var signer = new RS256Signer())
@@ -610,6 +625,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestGenCsrAndRequestCertificate()
         {
             var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
@@ -674,6 +690,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRequestCertificate()
         {
             using (var signer = new RS256Signer())
@@ -713,6 +730,7 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestRefreshCertificateRequest()
         {
             using (var signer = new RS256Signer())

@@ -9,6 +9,7 @@ namespace LetsEncrypt.ACME
     public class JwsHelperUnitTests
     {
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestSignFlagJson()
         {
             Func<byte[], byte[]> sigFunc = (x) =>

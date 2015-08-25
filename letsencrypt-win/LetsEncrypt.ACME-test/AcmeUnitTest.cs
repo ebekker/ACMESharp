@@ -21,6 +21,7 @@ namespace LetsEncrypt.ACME
         Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
 
         [TestMethod]
+        [TestCategory("skipCI")]
         public void TestNewRegRequest()
         {
             var requ = WebRequest.Create(_rootUrl);

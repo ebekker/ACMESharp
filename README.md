@@ -1,6 +1,10 @@
 # letsencrypt-win
 An ACME client that can update Windows IIS7+ configurations.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/letsencrypt-win)
+
+--
+
 This ACME implementation is broken up into layers that build:
 * Basic, minimum JSON Web Signature (JWS) support that is required for ACME
 * A raw ACME protocol client that can interact properly with an ACME server

@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.ACME", "LetsEnc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.ACME-test", "LetsEncrypt.ACME-test\LetsEncrypt.ACME-test.csproj", "{6D7BE73B-B9E7-431A-93AA-C4956B7827C3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{2D8381C9-5B29-400B-B86C-4669876052DB}"
+	ProjectSection(SolutionItems) = preProject
+		shared\SharedAssemblyInfo.cs = shared\SharedAssemblyInfo.cs
+		shared\SharedAssemblyVersionInfo.cs = shared\SharedAssemblyVersionInfo.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

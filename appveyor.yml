@@ -1,0 +1,9 @@
+version: 0.5.0.{build}
+install:
+- nuget.exe restore letsencrypt-win\letsencrypt-win.sln
+build:
+  verbosity: minimal
+test:
+  categories:
+    except:
+    - skipCI

@@ -1,4 +1,3 @@
-﻿using Jose;
 using LetsEncrypt.ACME.HTTP;
 using LetsEncrypt.ACME.JOSE;
 using LetsEncrypt.ACME.JSON;

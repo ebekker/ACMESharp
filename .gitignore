@@ -194,3 +194,4 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+letsencrypt-win/LetsEncrypt.ACME-test/dnsInfo.json

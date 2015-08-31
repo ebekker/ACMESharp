@@ -11,7 +11,15 @@ namespace LetsEncrypt.ACME
     [TestClass]
     public class AcmeClientUnitTests
     {
-        Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
+        public const string BASE_LOCAL_STORE = "..\\lostore\\";
+
+        // Running against a local (private) instance of Boulder CA
+        //Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
+        //string _dirUrlBase = "http://localhost:4000/";
+
+        // Running against the STAGE (public) instance of Boulder CA
+        Uri _rootUrl = new Uri("https://acme-staging.api.letsencrypt.org/");
+        string _dirUrlBase = "https://acme-staging.api.letsencrypt.org/";
 
         [TestMethod]
         [TestCategory("skipCI")]
@@ -33,13 +41,12 @@ namespace LetsEncrypt.ACME
         [TestCategory("skipCI")]
         public void TestGetDirectory()
         {
-            var boulderUrlBase = "http://localhost:4000";
             var boulderResMap = new Dictionary<string, string>
             {
-                ["new-authz"] = "http://localhost:4000/acme/new-authz",
-                ["new-cert"] = "http://localhost:4000/acme/new-cert",
-                ["new-reg"] = "http://localhost:4000/acme/new-reg",
-                ["revoke-cert"] = "http://localhost:4000/acme/revoke-cert",
+                ["new-authz"]   /**/ = $"{_dirUrlBase}acme/new-authz",
+                ["new-cert"]    /**/ = $"{_dirUrlBase}acme/new-cert",
+                ["new-reg"]     /**/ = $"{_dirUrlBase}acme/new-reg",
+                ["revoke-cert"] /**/ = $"{_dirUrlBase}acme/revoke-cert",
             };
 
             using (var signer = new RS256Signer())
@@ -49,20 +56,20 @@ namespace LetsEncrypt.ACME
                     client.Init();
 
                     // Test absolute URI paths
-                    var acmeDir = client.GetDirectory(false);
+                    var acmeDirAbs = client.GetDirectory(false);
                     foreach (var ent in boulderResMap)
                     {
-                        Assert.IsTrue(acmeDir.Contains(ent.Key));
-                        Assert.AreEqual(ent.Value, acmeDir[ent.Key]);
+                        Assert.IsTrue(acmeDirAbs.Contains(ent.Key));
+                        Assert.AreEqual(ent.Value, acmeDirAbs[ent.Key]);
                     }
 
                     // Test relative URI paths
-                    acmeDir = client.GetDirectory(true);
+                    var acmeDirRel = client.GetDirectory(true);
                     foreach (var ent in boulderResMap)
                     {
-                        var relUrl = ent.Value.Replace(boulderUrlBase, "");
-                        Assert.IsTrue(acmeDir.Contains(ent.Key));
-                        Assert.AreEqual(relUrl, acmeDir[ent.Key]);
+                        var relUrl = ent.Value.Replace(_dirUrlBase, "/");
+                        Assert.IsTrue(acmeDirRel.Contains(ent.Key));
+                        Assert.AreEqual(relUrl, acmeDirRel[ent.Key]);
                     }
                 }
             }

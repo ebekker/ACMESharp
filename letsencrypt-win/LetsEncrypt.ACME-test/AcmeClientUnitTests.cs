@@ -28,7 +28,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestInit()
+        public void Test0010_Init()
         {
             using (var signer = new RS256Signer())
             {
@@ -44,7 +44,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestGetDirectory()
+        public void Test0020_GetDirectory()
         {
             var boulderResMap = new Dictionary<string, string>
             {
@@ -80,10 +80,9 @@ namespace LetsEncrypt.ACME
             }
         }
 
-
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRegister()
+        public void Test0030_Register()
         {
             using (var signer = new RS256Signer())
             {
@@ -125,7 +124,7 @@ namespace LetsEncrypt.ACME
         /// </summary>
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRegisterEmptyUpdate()
+        public void Test0040_RegisterEmptyUpdate()
         {
             using (var signer = new RS256Signer())
             {
@@ -166,7 +165,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRegisterUpdateTosAgreement()
+        public void Test0050_RegisterUpdateTosAgreement()
         {
             using (var signer = new RS256Signer())
             {
@@ -206,7 +205,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRegisterUpdateContacts()
+        public void Test0060_RegisterUpdateContacts()
         {
             using (var signer = new RS256Signer())
             {
@@ -249,7 +248,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRegisterDuplicate()
+        public void Test0070_RegisterDuplicate()
         {
             using (var signer = new RS256Signer())
             {
@@ -288,7 +287,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestAuthorizeDnsBlacklisted()
+        public void Test0080_AuthorizeDnsBlacklisted()
         {
             using (var signer = new RS256Signer())
             {
@@ -332,7 +331,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestAuthorizeIdentifier()
+        public void Test0090_AuthorizeIdentifier()
         {
             using (var signer = new RS256Signer())
             {
@@ -378,7 +377,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRefreshAuthzDnsChallenge()
+        public void Test0100_RefreshAuthzDnsChallenge()
         {
             using (var signer = new RS256Signer())
             {
@@ -421,7 +420,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRefreshAuthzHttpChallenge()
+        public void Test0110_RefreshAuthzHttpChallenge()
         {
             using (var signer = new RS256Signer())
             {
@@ -464,7 +463,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestGenerateChallengeAnswers()
+        public void Test0120_GenerateChallengeAnswers()
         {
             using (var signer = new RS256Signer())
             {
@@ -508,7 +507,8 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestSubmitDnsChallengeAnswers()
+        [Timeout(120 * 1000)]
+        public void Test0130_HandleDnsChallenge()
         {
             using (var signer = new RS256Signer())
             {
@@ -552,7 +552,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestSubmitHttpChallengeAnswers()
+        public void Test0145_SubmitHttpChallengeAnswers()
         {
             using (var signer = new RS256Signer())
             {
@@ -638,7 +638,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestGenCsrAndRequestCertificate()
+        public void Test0170_GenCsrAndRequestCertificate()
         {
             var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
             using (var fs = new FileStream("..\\TestGenCsr-rsaKeys.txt", FileMode.Create))
@@ -703,7 +703,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRequestCertificate()
+        public void Test0180_RequestCertificate()
         {
             using (var signer = new RS256Signer())
             {
@@ -743,7 +743,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRefreshCertificateRequest()
+        public void Test0190_RefreshCertificateRequest()
         {
             using (var signer = new RS256Signer())
             {
@@ -759,8 +759,8 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                var csrRaw = File.ReadAllBytes("..\\test-csr.der");
-                var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
+                //var csrRaw = File.ReadAllBytes($"{BASE_LOCAL_STORE}test-csr.der");
+                //var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
 
                 using (var client = new AcmeClient())
                 {

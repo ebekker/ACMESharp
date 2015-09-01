@@ -1,18 +1,14 @@
-using LetsEncrypt.ACME.HTTP;
+﻿using LetsEncrypt.ACME.HTTP;
 using LetsEncrypt.ACME.JOSE;
 using LetsEncrypt.ACME.JSON;
 using LetsEncrypt.ACME.Messages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 

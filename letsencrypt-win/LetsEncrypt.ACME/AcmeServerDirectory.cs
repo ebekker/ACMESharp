@@ -9,6 +9,12 @@ namespace LetsEncrypt.ACME
 {
     public class AcmeServerDirectory : IDisposable, IEnumerable<KeyValuePair<string, string>>, ILookup<string, string>
     {
+        /// <summary>
+        /// Initial resource used to trieve the very first "nonce" header value before starting
+        /// a dialogue with the ACME server.  Typically this may just be a one of the other
+        /// resource paths, such as the directory instead of a dedicated resource.
+        /// </summary>
+        public const string RES_INIT = "init";
         public const string RES_DIRECTORY = "directory";
         public const string RES_NEW_REG = "new-reg";
         public const string RES_RECOVER_REG = "recover-reg";
@@ -21,6 +27,7 @@ namespace LetsEncrypt.ACME
         /// </summary>
         public const string RES_ISSUER_CERT = "issuer-cert";
 
+        protected const string DEFAULT_PATH_INIT = "/directory";
         protected const string DEFAULT_PATH_DIRECTORY = "/directory";
         protected const string DEFAULT_PATH_NEW_REG = "/new-reg";
         protected const string DEFAULT_PATH_RECOVER_REG = "/recover-reg";
@@ -35,6 +42,7 @@ namespace LetsEncrypt.ACME
         public AcmeServerDirectory()
         {
             // Populate the default path mappings
+            _dirMap[RES_INIT] = DEFAULT_PATH_INIT;
             _dirMap[RES_DIRECTORY] = DEFAULT_PATH_DIRECTORY;
             _dirMap[RES_NEW_REG] = DEFAULT_PATH_NEW_REG;
             _dirMap[RES_RECOVER_REG] = DEFAULT_PATH_RECOVER_REG;

@@ -1,10 +1,14 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace LetsEncrypt.ACME.DNS
+namespace LetsEncrypt.ACME.WebServer
 {
-    public class DnsInfo
+    public class WebServerInfo
     {
-        // TOOD: this is repeated from WebServerInfo, clean this up!
+        // TOOD: this is repeated from DnsInfo, clean this up!
         private static Newtonsoft.Json.JsonSerializerSettings JSS =
                 new Newtonsoft.Json.JsonSerializerSettings
                 {
@@ -12,10 +16,7 @@ namespace LetsEncrypt.ACME.DNS
                     TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
                 };
 
-        public string DefaultDomain
-        { get; set; }
-
-        public IDnsProvider Provider
+        public IWebServerProvider Provider
         { get; set; }
 
         public void Save(System.IO.Stream s)
@@ -35,16 +36,16 @@ namespace LetsEncrypt.ACME.DNS
             }
         }
 
-        public static DnsInfo Load(System.IO.Stream s)
+        public static WebServerInfo Load(System.IO.Stream s)
         {
             using (var r = new System.IO.StreamReader(s))
             {
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<DnsInfo>(
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<WebServerInfo>(
                         r.ReadToEnd(), JSS);
             }
         }
 
-        public static DnsInfo Load(string json)
+        public static WebServerInfo Load(string json)
         {
             using (var r = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(json)))
             {

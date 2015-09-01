@@ -28,6 +28,57 @@ namespace LetsEncrypt.ACME.DNS
 
         public void EditTxtRecord(string dnsName, IEnumerable<string> dnsValues)
         {
+            var dnsValuesJoined = string.Join("\" \"", dnsValues);
+            var rrset = new Amazon.Route53.Model.ResourceRecordSet
+            {
+                TTL = 30,
+                Name = dnsName,
+                Type = Amazon.Route53.RRType.TXT,
+                ResourceRecords = new List<Amazon.Route53.Model.ResourceRecord>
+                {
+                    new Amazon.Route53.Model.ResourceRecord(
+                            $"\"{dnsValuesJoined}\"")
+                }
+            };
+
+            EditR53Record(rrset);
+        }
+
+        public void EditARecord(string dnsName, string dnsValue)
+        {
+            var rrset = new Amazon.Route53.Model.ResourceRecordSet
+            {
+                TTL = 30,
+                Name = dnsName,
+                Type = Amazon.Route53.RRType.A,
+                ResourceRecords = new List<Amazon.Route53.Model.ResourceRecord>
+                {
+                    new Amazon.Route53.Model.ResourceRecord(dnsValue)
+                }
+            };
+
+            EditR53Record(rrset);
+        }
+
+        public void EditCnameRecord(string dnsName, string dnsValue)
+        {
+            var rrset = new Amazon.Route53.Model.ResourceRecordSet
+            {
+                TTL = 30,
+                Name = dnsName,
+                Type = Amazon.Route53.RRType.CNAME,
+                ResourceRecords = new List<Amazon.Route53.Model.ResourceRecord>
+                {
+                    new Amazon.Route53.Model.ResourceRecord(dnsValue)
+                }
+            };
+
+            EditR53Record(rrset);
+        }
+
+        private void EditR53Record(Amazon.Route53.Model.ResourceRecordSet rrset)
+        {
+
             var r53 = new Amazon.Route53.AmazonRoute53Client(
                     AccessKeyId, SecretAccessKey, RegionEndpoint);
 
@@ -41,15 +92,7 @@ namespace LetsEncrypt.ACME.DNS
                         new Amazon.Route53.Model.Change
                         {
                             Action = Amazon.Route53.ChangeAction.UPSERT,
-                            ResourceRecordSet = new Amazon.Route53.Model.ResourceRecordSet
-                            {
-                                TTL = 60,
-                                Name = dnsName,
-                                Type = Amazon.Route53.RRType.TXT,
-                                ResourceRecords = new List<Amazon.Route53.Model.ResourceRecord>(
-                                        dnsValues.Select(x =>
-                                                new Amazon.Route53.Model.ResourceRecord($"\"{x}\"")))
-                            }
+                            ResourceRecordSet = rrset
                         }
                     }
                 }

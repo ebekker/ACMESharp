@@ -9,6 +9,10 @@ namespace LetsEncrypt.ACME.DNS
 
     public interface IDnsProvider
     {
-        void EditTxtRecord(string dnsNames, IEnumerable<string> dnsValues);
+        void EditTxtRecord(string dnsName, IEnumerable<string> dnsValues);
+
+        void EditARecord(string dnsName, string dnsValue);
+
+        void EditCnameRecord(string dnsName, string dnsValue);
     }
 }

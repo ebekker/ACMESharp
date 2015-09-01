@@ -116,7 +116,8 @@ namespace LetsEncrypt.ACME
             // so we do a GET against the root URL to get that initial nonce
             //requ.Method = "HEAD";
 
-            var resp = RequestHttpGet(new Uri(RootUrl, "/"));
+            var requUri = new Uri(RootUrl, Directory[AcmeServerDirectory.RES_INIT]);
+            var resp = RequestHttpGet(requUri);
 
             Initialized = true;
         }

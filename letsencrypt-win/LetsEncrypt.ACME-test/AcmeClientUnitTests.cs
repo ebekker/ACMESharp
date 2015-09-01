@@ -26,6 +26,8 @@ namespace LetsEncrypt.ACME
         Uri _rootUrl = new Uri("https://acme-staging.api.letsencrypt.org/");
         string _dirUrlBase = "https://acme-staging.api.letsencrypt.org/";
 
+        public const string TEST_CN = "acme-win.acmetesting.zyborg.io";
+
         [TestMethod]
         [TestCategory("skipCI")]
         public void Test0010_Init()
@@ -314,7 +316,7 @@ namespace LetsEncrypt.ACME
 
                     try
                     {
-                        client.AuthorizeIdentifier("foo.example.com");
+                        client.AuthorizeIdentifier("acme-win-test.example.com");
                     }
                     catch (AcmeClient.AcmeWebException ex)
                     {
@@ -356,7 +358,7 @@ namespace LetsEncrypt.ACME
 
                     client.GetDirectory(true);
 
-                    var authzState = client.AuthorizeIdentifier("foo.letsencrypt.cc");
+                    var authzState = client.AuthorizeIdentifier(TEST_CN);
 
                     foreach (var c in authzState.Challenges)
                     {
@@ -534,7 +536,7 @@ namespace LetsEncrypt.ACME
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz", FileMode.Open))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
@@ -648,7 +650,7 @@ namespace LetsEncrypt.ACME
 
             var csrDetails = new CsrHelper.CsrDetails
             {
-                CommonName = "foo.letsencrypt.cc"
+                CommonName = TEST_CN
             };
             var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
             using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestGenCsr-csrDetails.txt", FileMode.Create))

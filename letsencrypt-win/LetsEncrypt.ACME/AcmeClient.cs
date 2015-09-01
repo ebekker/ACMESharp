@@ -328,7 +328,7 @@ namespace LetsEncrypt.ACME
             c.Tls = cp.Tls;
         }
 
-        public void GenerateAuthorizeChallengeAnswer(AuthorizationState authzState, string type)
+        public AuthorizeChallenge GenerateAuthorizeChallengeAnswer(AuthorizationState authzState, string type)
         {
             AssertInit();
             AssertRegistration();
@@ -369,9 +369,11 @@ namespace LetsEncrypt.ACME
                 default:
                     throw new ArgumentException("unsupported challenge type", nameof(type));
             }
+
+            return c;
         }
 
-        public void SubmitAuthorizeChallengeAnswer(AuthorizationState authzState, string type, bool useRootUrl = false)
+        public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState, string type, bool useRootUrl = false)
         {
             AssertInit();
             AssertRegistration();
@@ -394,6 +396,8 @@ namespace LetsEncrypt.ACME
                 throw new AcmeWebException(resp.Error as WebException,
                         "Unexpected error", resp);
             }
+
+            return c;
         }
 
         public CertificateRequest RequestCertificate(string csrContent)

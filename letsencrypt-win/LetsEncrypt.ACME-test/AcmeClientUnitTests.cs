@@ -104,12 +104,12 @@ namespace LetsEncrypt.ACME
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Create))
                     {
                         client.Registration.Save(fs);
                     }
                 }
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Create))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Create))
                 {
                     signer.Save(fs);
                 }
@@ -129,13 +129,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -155,7 +155,7 @@ namespace LetsEncrypt.ACME
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    using (var fs = new FileStream("..\\TestRegisterUpdate.acmeReg", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegisterUpdate.acmeReg", FileMode.Create))
                     {
                         client.Registration.Save(fs);
                     }
@@ -170,13 +170,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -195,7 +195,7 @@ namespace LetsEncrypt.ACME
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    using (var fs = new FileStream("..\\TestRegisterUpdate.acmeReg", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegisterUpdate.acmeReg", FileMode.Create))
                     {
                         client.Registration.Save(fs);
                     }
@@ -210,13 +210,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -238,7 +238,7 @@ namespace LetsEncrypt.ACME
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    using (var fs = new FileStream("..\\TestRegisterUpdate.acmeReg", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegisterUpdate.acmeReg", FileMode.Create))
                     {
                         client.Registration.Save(fs);
                     }
@@ -253,7 +253,7 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegisterDuplicate.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
@@ -292,13 +292,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -336,13 +336,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -367,7 +367,7 @@ namespace LetsEncrypt.ACME
                         }
                     }
 
-                    using (var fs = new FileStream("..\\TestAuthz.acmeAuthz", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -382,13 +382,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -403,14 +403,14 @@ namespace LetsEncrypt.ACME
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream("..\\TestAuthz.acmeAuthz", FileMode.Open))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
 
                     client.RefreshAuthorizeChallenge(authzState, "dns", true);
 
-                    using (var fs = new FileStream("..\\TestAuthz-DnsChallengeRefreshed.acmeAuthz", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-DnsChallengeRefreshed.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -425,13 +425,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -446,14 +446,14 @@ namespace LetsEncrypt.ACME
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream("..\\TestAuthz.acmeAuthz", FileMode.Open))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
 
                     client.RefreshAuthorizeChallenge(authzState, "simpleHttp", true);
 
-                    using (var fs = new FileStream("..\\TestAuthz-HttpChallengeRefreshed.acmeAuthz", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-HttpChallengeRefreshed.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -468,13 +468,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -489,7 +489,7 @@ namespace LetsEncrypt.ACME
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream("..\\TestAuthz.acmeAuthz", FileMode.Open))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
@@ -497,7 +497,7 @@ namespace LetsEncrypt.ACME
                     client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
                     client.GenerateAuthorizeChallengeAnswer(authzState, "simpleHttp");
 
-                    using (var fs = new FileStream("..\\TestAuthz-ChallengeAnswers.acmeAuthz", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-ChallengeAnswers.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -513,13 +513,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -534,7 +534,7 @@ namespace LetsEncrypt.ACME
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream("..\\TestAuthz-ChallengeAnswers.acmeAuthz", FileMode.Open))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz", FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
@@ -542,7 +542,7 @@ namespace LetsEncrypt.ACME
                     client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
                     client.SubmitAuthorizeChallengeAnswer(authzState, "dns", true);
 
-                    using (var fs = new FileStream("..\\TestAuthz-DnsChallengeAnswered.acmeAuthz", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-DnsChallengeAnswered.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -557,13 +557,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -578,7 +578,7 @@ namespace LetsEncrypt.ACME
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream("..\\TestAuthz-ChallengeAnswers.acmeAuthz", FileMode.Open))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-ChallengeAnswersHandleDns.acmeAuthz", FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
@@ -586,7 +586,7 @@ namespace LetsEncrypt.ACME
                     client.GenerateAuthorizeChallengeAnswer(authzState, "simpleHttp");
                     client.SubmitAuthorizeChallengeAnswer(authzState, "simpleHttp", true);
 
-                    using (var fs = new FileStream("..\\TestAuthz-HttpChallengeAnswered.acmeAuthz", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-HttpChallengeAnswered.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -601,13 +601,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -641,7 +641,7 @@ namespace LetsEncrypt.ACME
         public void Test0170_GenCsrAndRequestCertificate()
         {
             var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
-            using (var fs = new FileStream("..\\TestGenCsr-rsaKeys.txt", FileMode.Create))
+            using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestGenCsr-rsaKeys.txt", FileMode.Create))
             {
                 rsaKeys.Save(fs);
             }
@@ -651,11 +651,11 @@ namespace LetsEncrypt.ACME
                 CommonName = "foo.letsencrypt.cc"
             };
             var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
-            using (var fs = new FileStream("..\\TestGenCsr-csrDetails.txt", FileMode.Create))
+            using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestGenCsr-csrDetails.txt", FileMode.Create))
             {
                 csrDetails.Save(fs);
             }
-            using (var fs = new FileStream("..\\TestGenCsr-csr.txt", FileMode.Create))
+            using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestGenCsr-csr.txt", FileMode.Create))
             {
                 csr.Save(fs);
             }
@@ -663,13 +663,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -693,7 +693,7 @@ namespace LetsEncrypt.ACME
 
                     var certRequ = client.RequestCertificate(derB64u);
 
-                    using (var fs = new FileStream("..\\TestCertRequ.acmeCertRequ", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestCertRequ.acmeCertRequ", FileMode.Create))
                     {
                         certRequ.Save(fs);
                     }
@@ -708,18 +708,18 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                var csrRaw = File.ReadAllBytes("..\\test-csr.der");
+                var csrRaw = File.ReadAllBytes($"{BASE_LOCAL_STORE}test-csr.der");
                 var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
 
                 using (var client = new AcmeClient())
@@ -733,7 +733,7 @@ namespace LetsEncrypt.ACME
 
                     var certRequ = client.RequestCertificate(csrB64u);
 
-                    using (var fs = new FileStream("..\\TestCertRequ.acmeCertRequ", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestCertRequ.acmeCertRequ", FileMode.Create))
                     {
                         certRequ.Save(fs);
                     }
@@ -748,13 +748,13 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var fs = new FileStream("..\\TestRegister.acmeSigner", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
                 {
                     signer.Load(fs);
                 }
 
                 AcmeRegistration reg;
-                using (var fs = new FileStream("..\\TestRegister.acmeReg", FileMode.Open))
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
                 {
                     reg = AcmeRegistration.Load(fs);
                 }
@@ -772,21 +772,21 @@ namespace LetsEncrypt.ACME
                     client.GetDirectory(true);
 
                     CertificateRequest certRequ;
-                    using (var fs = new FileStream("..\\TestCertRequ.acmeCertRequ", FileMode.Open))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestCertRequ.acmeCertRequ", FileMode.Open))
                     {
                         certRequ = CertificateRequest.Load(fs);
                     }
 
                     client.RefreshCertificateRequest(certRequ, true);
 
-                    using (var fs = new FileStream("..\\TestCertRequ-Refreshed.acmeCertRequ", FileMode.Create))
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestCertRequ-Refreshed.acmeCertRequ", FileMode.Create))
                     {
                         certRequ.Save(fs);
                     }
 
                     if (!string.IsNullOrEmpty(certRequ.CertificateContent))
                     {
-                        using (var fs = new FileStream("..\\TestCertRequ-Refreshed.cer", FileMode.Create))
+                        using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestCertRequ-Refreshed.cer", FileMode.Create))
                         {
                             certRequ.SaveCertificate(fs);
                         }

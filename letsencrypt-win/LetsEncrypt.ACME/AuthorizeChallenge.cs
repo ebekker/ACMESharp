@@ -57,15 +57,17 @@ namespace LetsEncrypt.ACME
             var signed = JwsHelper.SignFlatJsonAsObject(
                     signer.Sign, json, unprotectedHeaders: hdrs);
 
+            /*
             // We format it as a set of lines broken on 100-character boundaries to make it
             // easier to copy and put into a DNS TXT RR which normally have a 255-char limit
             // so this result may need to be broken up into multiple smaller TXT RR entries
             var sigFormatted = Regex.Replace(signed.signature,
                     "(.{100,100})", "$1\r\n");
+            */
 
             return new KeyValuePair<string, string>(
                     $"{DNS_CHALLENGE_NAMEPREFIX}{dnsId}",
-                    sigFormatted);
+                    signed.signature); /*sigFormatted);*/
         }
 
         /// <summary>

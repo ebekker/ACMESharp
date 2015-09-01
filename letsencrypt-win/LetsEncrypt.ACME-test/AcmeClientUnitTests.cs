@@ -541,20 +541,27 @@ namespace LetsEncrypt.ACME
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
-                    client.SubmitAuthorizeChallengeAnswer(authzState, "dns", true);
-
-                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-DnsChallengeAnswered.acmeAuthz", FileMode.Create))
+                    var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-ChallengeAnswersHandleDns.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
+
+                    var dnsName = authzChallenge.ChallengeAnswer.Key;
+                    var dnsValue = Regex.Replace(authzChallenge.ChallengeAnswer.Value, "\\s", "");
+                    var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
+
+                    var dnsInfo = DnsInfo.Load(File.ReadAllText("dnsInfo.json"));
+                    dnsInfo.Provider.EditTxtRecord(authzChallenge.ChallengeAnswer.Key, dnsValues);
                 }
             }
+
+            Thread.Sleep(90 * 1000);
         }
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void Test0145_SubmitHttpChallengeAnswers()
+        public void Test0135_SubmitDnsChallengeAnswers()
         {
             using (var signer = new RS256Signer())
             {
@@ -585,6 +592,112 @@ namespace LetsEncrypt.ACME
                         authzState = AuthorizationState.Load(fs);
                     }
 
+                    client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
+                    client.SubmitAuthorizeChallengeAnswer(authzState, "dns", true);
+
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-DnsChallengeAnswered.acmeAuthz", FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("skipCI")]
+        public void Test0137_RefreshAuthzDnsChallenge()
+        {
+            Test0100_RefreshAuthzDnsChallenge();
+        }
+
+        [TestMethod]
+        [TestCategory("skipCI")]
+        [Timeout(120 * 1000)]
+        public void Test0140_HandleHttpChallenge()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, "simpleHttp");
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz", FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+
+                    var wsFilePath = authzChallenge.ChallengeAnswer.Key;
+                    var wsFileBody = authzChallenge.ChallengeAnswer.Value;
+
+                    var wsInfo = WebServerInfo.Load(File.ReadAllText("webServerInfo.json"));
+                    using (var s = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
+                    {
+                        var fileUrl = new Uri($"http://{authzState.Identifier}/{authzChallenge.ChallengeAnswer.Key}");
+                        wsInfo.Provider.UploadFile(fileUrl, s);
+                    }
+                }
+            }
+
+            Thread.Sleep(90 * 1000);
+        }
+
+        [TestMethod]
+        [TestCategory("skipCI")]
+        public void Test0145_SubmitHttpChallengeAnswers()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz", FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
                     client.GenerateAuthorizeChallengeAnswer(authzState, "simpleHttp");
                     client.SubmitAuthorizeChallengeAnswer(authzState, "simpleHttp", true);
 
@@ -598,7 +711,14 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
-        public void TestRequestCertificateInvalidCsr()
+        public void Test0147_RefreshAuthzHttpChallenge()
+        {
+            Test0110_RefreshAuthzHttpChallenge();
+        }
+
+        [TestMethod]
+        [TestCategory("skipCI")]
+        public void Test0160_RequestCertificateInvalidCsr()
         {
             using (var signer = new RS256Signer())
             {
@@ -703,6 +823,7 @@ namespace LetsEncrypt.ACME
             }
         }
 
+        /*
         [TestMethod]
         [TestCategory("skipCI")]
         public void Test0180_RequestCertificate()
@@ -742,6 +863,7 @@ namespace LetsEncrypt.ACME
                 }
             }
         }
+        */
 
         [TestMethod]
         [TestCategory("skipCI")]

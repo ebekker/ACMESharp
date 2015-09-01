@@ -1,11 +1,12 @@
 version: 0.5.0.{build}
 environment:
-  dnsInfoPassword:
+  secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
 install:
 - nuget restore letsencrypt-win\letsencrypt-win.sln
 - nuget install secure-file -ExcludeVersion
-- secure-file\tools\secure-file -decrypt letsencrypt-win\LetsEncrypt.ACME-test\dnsInfo.json.enc -secret %dnsInfoPassword%
+- secure-file\tools\secure-file -decrypt letsencrypt-win\LetsEncrypt.ACME-test\dnsInfo.json.enc -secret %secureInfoPassword%
+- secure-file\tools\secure-file -decrypt letsencrypt-win\LetsEncrypt.ACME-test\webServerInfo.json.enc -secret %secureInfoPassword%
 build:
   verbosity: minimal
 test:

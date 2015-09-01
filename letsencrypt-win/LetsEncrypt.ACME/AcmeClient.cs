@@ -487,7 +487,7 @@ namespace LetsEncrypt.ACME
                     return new AcmeHttpResponse(resp);
                 }
             }
-            catch (WebException ex)
+            catch (WebException ex) when (ex.Response != null)
             {
                 using (var resp = (HttpWebResponse)ex.Response)
                 {
@@ -541,7 +541,7 @@ namespace LetsEncrypt.ACME
                     return new AcmeHttpResponse(resp);
                 }
             }
-            catch (WebException ex)
+            catch (WebException ex) when (ex.Response != null)
             {
                 using (var resp = (HttpWebResponse)ex.Response)
                 {

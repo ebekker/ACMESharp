@@ -77,6 +77,9 @@ namespace LetsEncrypt.ACME
         public Uri RootUrl
         { get; set; }
 
+        public IWebProxy Proxy
+        { get; set; }
+
         public AcmeServerDirectory Directory
         { get; set; }
 
@@ -472,6 +475,8 @@ namespace LetsEncrypt.ACME
         private AcmeHttpResponse RequestHttpGet(Uri uri)
         {
             var requ = (HttpWebRequest)WebRequest.Create(uri);
+            if (Proxy != null)
+                requ.Proxy = Proxy;
             requ.Method = "GET";
             requ.UserAgent = this.UserAgent;
 
@@ -520,6 +525,8 @@ namespace LetsEncrypt.ACME
             var acmeBytes = Encoding.ASCII.GetBytes(acmeSigned);
 
             var requ = (HttpWebRequest)WebRequest.Create(uri);
+            if (Proxy != null)
+                requ.Proxy = Proxy;
             requ.Method = "POST";
             requ.ContentType = "application/json";
             requ.ContentLength = acmeBytes.Length;

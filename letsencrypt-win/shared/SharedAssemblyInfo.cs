@@ -7,5 +7,5 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyCompany("letsencrypt.org")]
 [assembly: AssemblyProduct("LetsEncrypt.ACME")]
-[assembly: AssemblyCopyright("Copyright ©  2015 Eugene Bekker")]
+[assembly: AssemblyCopyright("Copyright © 2015 Eugene Bekker")]
 [assembly: AssemblyTrademark("")]

@@ -552,7 +552,7 @@ namespace LetsEncrypt.ACME
                     var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
 
                     var dnsInfo = DnsInfo.Load(File.ReadAllText("dnsInfo.json"));
-                    dnsInfo.Provider.EditTxtRecord(authzChallenge.ChallengeAnswer.Key, dnsValues);
+                    dnsInfo.Provider.EditTxtRecord(dnsName, dnsValues);
                 }
             }
 
@@ -656,7 +656,7 @@ namespace LetsEncrypt.ACME
                     var wsInfo = WebServerInfo.Load(File.ReadAllText("webServerInfo.json"));
                     using (var s = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
                     {
-                        var fileUrl = new Uri($"http://{authzState.Identifier}/{authzChallenge.ChallengeAnswer.Key}");
+                        var fileUrl = new Uri($"http://{authzState.Identifier}/{wsFilePath}");
                         wsInfo.Provider.UploadFile(fileUrl, s);
                     }
                 }

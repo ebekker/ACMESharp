@@ -82,6 +82,7 @@
     <Compile Include="DNS\AwsRoute53DnsProvider.cs" />
     <Compile Include="DNS\DnsInfo.cs" />
     <Compile Include="DNS\IDnsProvider.cs" />
+    <Compile Include="DNS\ManualDnsProvider.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />
     <Compile Include="JOSE\ISigner.cs" />
@@ -104,8 +105,10 @@
     <Compile Include="Messages\NewRegRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AuthorizeChallenge.cs" />
+    <Compile Include="Util\BaseManualProvider.cs" />
     <Compile Include="WebServer\AwsS3WebServerProvider.cs" />
     <Compile Include="WebServer\IWebServerProvider.cs" />
+    <Compile Include="WebServer\ManualWebServerProvider.cs" />
     <Compile Include="WebServer\WebServerInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,6 @@
+﻿{
+    "Provider": {
+        "$type": "LetsEncrypt.ACME.WebServer.ManualWebServerProvider, LetsEncrypt.ACME",
+        "FilePath": ".\\path\\to\\web-content"
+    }
+}

@@ -54,6 +54,8 @@
     <Compile Include="..\shared\SharedAssemblyVersionInfo.cs">
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="EditProviderConfig.cs" />
+    <Compile Include="NewProviderConfig.cs" />
     <Compile Include="SetProxy.cs" />
     <Compile Include="SetServerDirectory.cs" />
     <Compile Include="SetVault.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="GetRegistration.cs" />
     <Compile Include="NewRegistration.cs" />
     <Compile Include="Util\IndexedDictionary.cs" />
+    <Compile Include="Vault\ProviderConfig.cs" />
     <Compile Include="Vault\ProxyConfig.cs" />
     <Compile Include="Vault\RegistrationInfo.cs" />
     <Compile Include="UpdateRegistration.cs" />
@@ -87,6 +90,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <EmbeddedResource Include="ProviderConfigSamples\dnsInfo.json.sample-AwsRoute53DnsProvider" />
+    <EmbeddedResource Include="ProviderConfigSamples\dnsInfo.json.sample-ManualDnsProvider" />
+    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-AwsS3WebServerProvider" />
+    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-ManualWebServerProvider" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

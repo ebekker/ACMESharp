@@ -1,0 +1,10 @@
+﻿{
+    "DefaultDomain": "sample.com",
+    "Provider": {
+        "$type": "LetsEncrypt.ACME.DNS.AwsRoute53DnsProvider, LetsEncrypt.ACME",
+        "HostedZoneId": "Route53-Hosted-Zone-ID",
+        "AccessKeyId": "IAM-Account-AccessKey",
+        "SecretAccessKey": "IAM-Account-SecretKey",
+        "Region": "us-east-1"
+    }
+}

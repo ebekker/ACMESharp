@@ -63,6 +63,7 @@
     <Compile Include="SetServerDirectory.cs" />
     <Compile Include="SetVault.cs" />
     <Compile Include="InitializeVault.cs" />
+    <Compile Include="SubmitChallenge.cs" />
     <Compile Include="UpdateIdentifier.cs" />
     <Compile Include="Util\EntityDictionary.cs" />
     <Compile Include="Util\EntityLookup.cs" />

@@ -12,18 +12,20 @@ namespace LetsEncrypt.ACME.POSH
     public class UpdateIdentifier : Cmdlet
     {
         public const string PSET_DEFAULT = "Default";
+        public const string PSET_CHALLENGE = "Challenge";
         public const string PSET_LOCAL_ONLY = "LocalOnly";
 
         [Parameter(Mandatory = true)]
         public string Ref
         { get; set; }
 
-        [Parameter(ParameterSetName = PSET_DEFAULT, Mandatory = true)]
+        [Parameter(ParameterSetName = PSET_CHALLENGE, Mandatory = true)]
         [ValidateSet("dns", "simpleHttp", IgnoreCase = true)]
         public string Challenge
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_DEFAULT)]
+        [Parameter(ParameterSetName = PSET_CHALLENGE)]
         public SwitchParameter UseBaseURI
         { get; set; }
 
@@ -72,8 +74,16 @@ namespace LetsEncrypt.ACME.POSH
                         c.Init();
                         c.GetDirectory(true);
 
-                        c.RefreshAuthorizeChallenge(authzState, Challenge, UseBaseURI);
-                        ii.Authorization = authzState;
+                        if (string.IsNullOrEmpty(Challenge))
+                        {
+                            authzState = ii.AuthorizationUpdate = c.RefreshIdentifierAuthorization(authzState, UseBaseURI);
+                            ii.AuthorizationUpdate = authzState;
+                        }
+                        else
+                        {
+                            c.RefreshAuthorizeChallenge(authzState, Challenge, UseBaseURI);
+                            ii.Authorization = authzState;
+                        }
                     }
                 }
 

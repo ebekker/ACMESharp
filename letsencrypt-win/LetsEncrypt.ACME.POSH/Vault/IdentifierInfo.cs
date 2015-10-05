@@ -30,6 +30,9 @@ namespace LetsEncrypt.ACME.POSH.Vault
         public AuthorizationState Authorization
         { get; set; }
 
+        public AuthorizationState AuthorizationUpdate
+        { get; set; }
+
         public Dictionary<string, AuthorizeChallenge> Challenges
         { get; set; }
 

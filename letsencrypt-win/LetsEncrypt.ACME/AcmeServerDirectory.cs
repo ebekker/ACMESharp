@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.ACME
 {
-    public class AcmeServerDirectory : IDisposable, IEnumerable<KeyValuePair<string, string>>, ILookup<string, string>
+    public class AcmeServerDirectory : IDisposable, IEnumerable<KeyValuePair<string, string>>,
+            IReadOnlyDictionary<string, string>//, ILookup<string, string>
     {
         /// <summary>
         /// Initial resource used to trieve the very first "nonce" header value before starting
@@ -41,21 +42,35 @@ namespace LetsEncrypt.ACME
 
         public AcmeServerDirectory()
         {
-            // Populate the default path mappings
-            _dirMap[RES_INIT] = DEFAULT_PATH_INIT;
-            _dirMap[RES_DIRECTORY] = DEFAULT_PATH_DIRECTORY;
-            _dirMap[RES_NEW_REG] = DEFAULT_PATH_NEW_REG;
-            _dirMap[RES_RECOVER_REG] = DEFAULT_PATH_RECOVER_REG;
-            _dirMap[RES_NEW_AUTHZ] = DEFAULT_PATH_NEW_AUTHZ;
-            _dirMap[RES_NEW_CERT] = DEFAULT_PATH_NEW_CERT;
-            _dirMap[RES_REVOKE_CERT] = DEFAULT_PATH_REVOKE_CERT;
+            InitDirMap();
+        }
 
-            _dirMap[RES_ISSUER_CERT] = DEFAULT_PATH_ISSUER_CERT;
+        public AcmeServerDirectory(IDictionary<string, string> dict)
+        {
+            InitDirMap();
+            foreach (var item in dict)
+                this[item.Key] = item.Value;
         }
 
         public int Count
         {
             get { return _dirMap.Count; }
+        }
+
+        public IEnumerable<string> Keys
+        {
+            get
+            {
+                return _dirMap.Keys;
+            }
+        }
+
+        public IEnumerable<string> Values
+        {
+            get
+            {
+                return _dirMap.Values;
+            }
         }
 
         public string this[string key]
@@ -73,13 +88,27 @@ namespace LetsEncrypt.ACME
             }
         }
 
-        IEnumerable<string> ILookup<string, string>.this[string key]
+      //IEnumerable<string> ILookup<string, string>.this[string key]
+      //{
+      //    get
+      //    {
+      //        if (_dirMap.ContainsKey(key))
+      //            yield return _dirMap[key];
+      //    }
+      //}
+
+        private void InitDirMap()
         {
-            get
-            {
-                if (_dirMap.ContainsKey(key))
-                    yield return _dirMap[key];
-            }
+            // Populate the default path mappings
+            _dirMap[RES_INIT] = DEFAULT_PATH_INIT;
+            _dirMap[RES_DIRECTORY] = DEFAULT_PATH_DIRECTORY;
+            _dirMap[RES_NEW_REG] = DEFAULT_PATH_NEW_REG;
+            _dirMap[RES_RECOVER_REG] = DEFAULT_PATH_RECOVER_REG;
+            _dirMap[RES_NEW_AUTHZ] = DEFAULT_PATH_NEW_AUTHZ;
+            _dirMap[RES_NEW_CERT] = DEFAULT_PATH_NEW_CERT;
+            _dirMap[RES_REVOKE_CERT] = DEFAULT_PATH_REVOKE_CERT;
+
+            _dirMap[RES_ISSUER_CERT] = DEFAULT_PATH_ISSUER_CERT;
         }
 
         public void Dispose()
@@ -103,33 +132,43 @@ namespace LetsEncrypt.ACME
             return _dirMap.ContainsKey(key);
         }
 
-        IEnumerator<IGrouping<string, string>> IEnumerable<IGrouping<string, string>>.GetEnumerator()
+      //IEnumerator<IGrouping<string, string>> IEnumerable<IGrouping<string, string>>.GetEnumerator()
+      //{
+      //    foreach (var item in _dirMap)
+      //    {
+      //        yield return new Grouping { KeyValuePair = item };
+      //    }
+      //}
+
+        public bool ContainsKey(string key)
         {
-            foreach (var item in _dirMap)
-            {
-                yield return new Grouping { KeyValuePair = item };
-            }
+            return _dirMap.ContainsKey(key);
         }
 
-        private class Grouping : IGrouping<string, string>
+        public bool TryGetValue(string key, out string value)
         {
-            public KeyValuePair<string, string> KeyValuePair
-            { get; set; }
-
-            public string Key
-            {
-                get { return KeyValuePair.Key; }
-            }
-
-            public IEnumerator<string> GetEnumerator()
-            {
-                yield return KeyValuePair.Value;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return (this as IEnumerable<string>).GetEnumerator();
-            }
+            return _dirMap.TryGetValue(key, out value);
         }
+
+      //private class Grouping : IGrouping<string, string>
+      //{
+      //    public KeyValuePair<string, string> KeyValuePair
+      //    { get; set; }
+      //
+      //    public string Key
+      //    {
+      //        get { return KeyValuePair.Key; }
+      //    }
+      //
+      //    public IEnumerator<string> GetEnumerator()
+      //    {
+      //        yield return KeyValuePair.Value;
+      //    }
+      //
+      //    IEnumerator IEnumerable.GetEnumerator()
+      //    {
+      //        return (this as IEnumerable<string>).GetEnumerator();
+      //    }
+      //}
     }
 }

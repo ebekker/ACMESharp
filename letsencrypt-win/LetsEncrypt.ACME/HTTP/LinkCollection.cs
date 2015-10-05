@@ -16,7 +16,7 @@ namespace LetsEncrypt.ACME.HTTP
     /// IEnumerable non-generic implementation, returns a sequence of strings
     /// which are the complete, formatted Link values.
     /// </remarks>
-    public class LinkCollection : IEnumerable<Link>, IEnumerable<string>, ILookup<string, string>
+    public class LinkCollection : IEnumerable<string>, IEnumerable<Link>, ILookup<string, string>
     {
         private List<Link> _Links = new List<Link>();
 

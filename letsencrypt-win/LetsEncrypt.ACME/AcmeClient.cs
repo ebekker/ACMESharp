@@ -282,12 +282,19 @@ namespace LetsEncrypt.ACME
                         "Unexpected error", resp);
             }
 
+            var uri = resp.Headers["Location"];
+            if (string.IsNullOrEmpty(uri))
+                throw new AcmeProtocolException("Response is missing an identifier authorization resource URI", resp);
+
             var respMsg = JsonConvert.DeserializeObject<NewAuthzResponse>(resp.ContentAsString);
 
             var authzState = new AuthorizationState
             {
+                IdentifierType = respMsg.Identifier.Type,
                 Identifier = respMsg.Identifier.Value,
+                Uri = uri,
                 Status = respMsg.Status,
+                Expires = respMsg.Expires,
                 Combinations = respMsg.Combinations,
 
                 // Simple copy/conversion from one form to another
@@ -302,6 +309,45 @@ namespace LetsEncrypt.ACME
             };
 
             return authzState;
+        }
+
+        public AuthorizationState RefreshIdentifierAuthorization(AuthorizationState authzState, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var requUri = new Uri(authzState.Uri);
+            if (useRootUrl)
+                requUri = new Uri(RootUrl, requUri.PathAndQuery);
+
+            var resp = RequestHttpGet(requUri);
+
+            if (resp.IsError)
+            {
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+            }
+
+            var respMsg = JsonConvert.DeserializeObject<AuthzStatusResponse>(resp.ContentAsString);
+
+            var authzStatusState = new AuthorizationState
+            {
+                IdentifierType = respMsg.Identifier.Type,
+                Identifier = respMsg.Identifier.Value,
+                Status = respMsg.Status,
+                Expires = respMsg.Expires,
+
+                Challenges = respMsg.Challenges.Select(x => new AuthorizeChallenge
+                {
+                    Type = x.Type,
+                    Status = x.Status,
+                    Uri = x.Uri,
+                    Token = x.Token,
+                    Tls = x.Tls,
+                }),
+            };
+
+            return authzStatusState;
         }
 
         public void RefreshAuthorizeChallenge(AuthorizationState authzState, string type, bool useRootUrl = false)

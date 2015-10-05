@@ -26,7 +26,10 @@ namespace LetsEncrypt.ACME
         Uri _rootUrl = new Uri("https://acme-staging.api.letsencrypt.org/");
         string _dirUrlBase = "https://acme-staging.api.letsencrypt.org/";
 
-        public const string TEST_CN = "acme-win.acmetesting.zyborg.io";
+        public const string TEST_CN1 = "acme-win.acmetesting.zyborg.io";
+        public const string TEST_EM1 = "mailto:letsencrypt@mailinator.com";
+        public const string TEST_PH1 = "tel:+14109361212";
+        public const string TEST_EM2 = "mailto:letsencrypt+update@mailinator.com";
 
         [TestMethod]
         [TestCategory("skipCI")]
@@ -97,11 +100,7 @@ namespace LetsEncrypt.ACME
 
                     client.GetDirectory(true);
 
-                    client.Register(new string[]
-                            {
-                                "mailto:letsencrypt@mailinator.com",
-                                "tel:+14109361212",
-                            });
+                    client.Register(new string[] { TEST_EM1, TEST_PH1, });
 
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
@@ -232,10 +231,7 @@ namespace LetsEncrypt.ACME
 
                     client.GetDirectory(true);
 
-                    client.UpdateRegistration(true, contacts: new string[]
-                            {
-                                "mailto:letsencrypt+update@mailinator.com",
-                            });
+                    client.UpdateRegistration(true, contacts: new string[] { TEST_EM2, });
 
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
@@ -358,7 +354,7 @@ namespace LetsEncrypt.ACME
 
                     client.GetDirectory(true);
 
-                    var authzState = client.AuthorizeIdentifier(TEST_CN);
+                    var authzState = client.AuthorizeIdentifier(TEST_CN1);
 
                     foreach (var c in authzState.Challenges)
                     {
@@ -372,6 +368,49 @@ namespace LetsEncrypt.ACME
                     using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Create))
                     {
                         authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("skipCI")]
+        public void Test0095_RefreshIdentifierAuthorization()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeSigner", FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestRegister.acmeReg", FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = new AcmeClient())
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz.acmeAuthz", FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    var authzRefreshState = client.RefreshIdentifierAuthorization(authzState, true);
+
+                    using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestAuthz-Refresh.acmeAuthz", FileMode.Create))
+                    {
+                        authzRefreshState.Save(fs);
                     }
                 }
             }
@@ -770,7 +809,7 @@ namespace LetsEncrypt.ACME
 
             var csrDetails = new CsrHelper.CsrDetails
             {
-                CommonName = TEST_CN
+                CommonName = TEST_CN1
             };
             var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
             using (var fs = new FileStream($"{BASE_LOCAL_STORE}TestGenCsr-csrDetails.txt", FileMode.Create))

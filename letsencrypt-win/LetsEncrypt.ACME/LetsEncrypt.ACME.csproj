@@ -93,6 +93,7 @@
     <Compile Include="Messages\ChallengePart.cs" />
     <Compile Include="Messages\IdentifierPart.cs" />
     <Compile Include="Messages\NewAuthzRequest.cs" />
+    <Compile Include="Messages\AuthzStatusResponse.cs" />
     <Compile Include="Messages\NewAuthzResponse.cs" />
     <Compile Include="Messages\NewCertRequest.cs" />
     <Compile Include="Messages\ProblemDetailResponse.cs" />

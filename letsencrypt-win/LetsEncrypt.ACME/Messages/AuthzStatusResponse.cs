@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.ACME.Messages
 {
-    public class NewAuthzResponse
+    public class AuthzStatusResponse
     {
         public string Status
         { get; set; }
@@ -18,9 +18,6 @@ namespace LetsEncrypt.ACME.Messages
         { get; set; }
 
         public IEnumerable<ChallengePart> Challenges
-        { get; set; }
-
-        public IEnumerable<IEnumerable<int>> Combinations
         { get; set; }
     }
 }

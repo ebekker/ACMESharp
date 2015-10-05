@@ -22,5 +22,8 @@ namespace LetsEncrypt.ACME.Messages
 
         public bool? Tls
         { get; set; }
+
+        public DateTime? Validated
+        { get; set; }
     }
 }

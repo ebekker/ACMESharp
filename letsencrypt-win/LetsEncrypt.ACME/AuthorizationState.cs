@@ -10,10 +10,19 @@ namespace LetsEncrypt.ACME
 {
     public class AuthorizationState
     {
+        public string IdentifierType
+        { get; set; }
+
         public string Identifier
         { get; set; }
 
+        public string Uri
+        { get; set; }
+
         public string Status
+        { get; set; }
+
+        public DateTime? Expires
         { get; set; }
 
         public IEnumerable<AuthorizeChallenge> Challenges

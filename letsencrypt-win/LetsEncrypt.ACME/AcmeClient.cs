@@ -305,6 +305,7 @@ namespace LetsEncrypt.ACME
                     Uri = x.Uri,
                     Token = x.Token,
                     Tls = x.Tls,
+                    ValidationRecord = x.ValidationRecord,
                 }),
             };
 
@@ -344,6 +345,7 @@ namespace LetsEncrypt.ACME
                     Uri = x.Uri,
                     Token = x.Token,
                     Tls = x.Tls,
+                    ValidationRecord = x.ValidationRecord,
                 }),
             };
 

@@ -37,6 +37,9 @@ namespace LetsEncrypt.ACME
         public object ChallengeAnswerMessage
         { get; set; }
 
+        public object ValidationRecord
+        { get; set; }
+
         /// <summary>
         /// Returns a key-value pair that represents the DNS domain name that needs
         /// to be configured (the key) and the value that should be returned (the value)

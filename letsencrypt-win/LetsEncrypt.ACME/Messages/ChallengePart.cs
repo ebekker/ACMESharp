@@ -25,5 +25,8 @@ namespace LetsEncrypt.ACME.Messages
 
         public DateTime? Validated
         { get; set; }
+
+        public object ValidationRecord
+        { get; set; }
     }
 }

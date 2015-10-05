@@ -22,7 +22,7 @@ namespace LetsEncrypt.ACME.POSH
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
 
-                var ri = (RegistrationInfo)v.Registrations[0];
+                var ri = v.Registrations[0];
                 var r = ri.Registration;
 
                 WriteObject(r);

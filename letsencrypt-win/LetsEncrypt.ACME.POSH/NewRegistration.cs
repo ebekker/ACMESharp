@@ -65,9 +65,9 @@ namespace LetsEncrypt.ACME.POSH
                     ri.Registration = r;
 
                     if (v.Registrations == null)
-                        v.Registrations = new OrderedDictionary();
+                        v.Registrations = new EntityDictionary<RegistrationInfo>();
 
-                    v.Registrations.Add(ri.Id, ri);
+                    v.Registrations.Add(ri);
                 }
 
                 vp.SaveVault(v);

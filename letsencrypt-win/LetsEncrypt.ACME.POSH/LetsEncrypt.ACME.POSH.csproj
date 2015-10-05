@@ -58,10 +58,14 @@
     <Compile Include="SetServerDirectory.cs" />
     <Compile Include="SetVault.cs" />
     <Compile Include="InitializeVault.cs" />
+    <Compile Include="Util\EntityDictionary.cs" />
+    <Compile Include="Util\EntityLookup.cs" />
     <Compile Include="Util\EntityHelper.cs" />
+    <Compile Include="Util\IIdentifiable.cs" />
     <Compile Include="Util\JsonHelper.cs" />
     <Compile Include="GetRegistration.cs" />
     <Compile Include="NewRegistration.cs" />
+    <Compile Include="Util\IndexedDictionary.cs" />
     <Compile Include="Vault\ProxyConfig.cs" />
     <Compile Include="Vault\RegistrationInfo.cs" />
     <Compile Include="UpdateRegistration.cs" />

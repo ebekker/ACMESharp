@@ -1,4 +1,5 @@
 ﻿using LetsEncrypt.ACME.HTTP;
+using LetsEncrypt.ACME.POSH.Vault;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,7 +17,7 @@ namespace LetsEncrypt.ACME.POSH.Util
                 new Newtonsoft.Json.JsonSerializerSettings
                 {
                     Formatting = Newtonsoft.Json.Formatting.Indented,
-                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
+                  //TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>
                     {
                         AcmeEntitySerializer.INSTANCE
@@ -46,8 +47,14 @@ namespace LetsEncrypt.ACME.POSH.Util
 
             public override bool CanConvert(Type objectType)
             {
-                return typeof(AcmeServerDirectory) == objectType
-                        || typeof(LinkCollection) == objectType;
+                return false
+                        //||typeof(AcmeServerDirectory) == objectType
+                        //|| typeof(LinkCollection) == objectType
+                        //|| (objectType.IsGenericType
+                        //        && typeof(EntityDictionary<IIdentifiable>).GetGenericTypeDefinition() ==
+                        //                objectType.GetGenericTypeDefinition())
+                        //|| typeof(EntityDictionary<RegistrationInfo>) == objectType;
+                        ;
             }
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -88,9 +95,9 @@ namespace LetsEncrypt.ACME.POSH.Util
                             lc.Add(new Link(jt.ToObject<string>()));
                         }
                     }
+
+                    return lc;
                 }
-
-
 
                 throw new NotSupportedException("Unsupported type");
             }

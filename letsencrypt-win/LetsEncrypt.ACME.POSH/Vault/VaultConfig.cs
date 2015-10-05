@@ -1,4 +1,5 @@
 ﻿using LetsEncrypt.ACME.JOSE;
+using LetsEncrypt.ACME.POSH.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -38,13 +39,16 @@ namespace LetsEncrypt.ACME.POSH.Vault
         public ProxyConfig Proxy
         { get; set; }
 
-        public OrderedDictionary Registrations
+        public EntityDictionary<ProviderConfig> ProviderConfigs
         { get; set; }
 
-        public OrderedDictionary Identifiers
+        public EntityDictionary<RegistrationInfo> Registrations
         { get; set; }
 
-        public OrderedDictionary Certificates
+        public EntityDictionary<IdentifierInfo> Identifiers
+        { get; set; }
+
+        public EntityDictionary<CertificateInfo> Certificates
         { get; set; }
     }
 }

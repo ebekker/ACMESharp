@@ -300,5 +300,25 @@ namespace LetsEncrypt.ACME.PKI
                 }
             }
         }
+
+        public class Crt
+        {
+            public static void ConvertDerToPem(Stream source, Stream target)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    source.CopyTo(ms);
+                    using (var bio = BIO.MemoryBuffer())
+                    {
+                        bio.Write(ms.ToArray());
+                        using (var crt = X509Certificate.FromDER(bio))
+                        {
+                            var pemBytes = Encoding.UTF8.GetBytes(crt.PEM);
+                            target.Write(pemBytes, 0, pemBytes.Length);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

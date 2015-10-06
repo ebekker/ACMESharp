@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ManagedOpenSsl, Version=0.6.1.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\ManagedOpenSsl.0.6.1.0\lib\net20\ManagedOpenSsl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -101,6 +105,10 @@
     <EmbeddedResource Include="ProviderConfigSamples\dnsInfo.json.sample-ManualDnsProvider" />
     <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-AwsS3WebServerProvider" />
     <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-ManualWebServerProvider" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libeay32.dll" />
+    <Content Include="ssleay32.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

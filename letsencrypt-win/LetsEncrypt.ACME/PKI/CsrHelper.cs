@@ -192,7 +192,7 @@ namespace LetsEncrypt.ACME.PKI
             {
                 using (var w = new StreamWriter(s))
                 {
-                    JsonConvert.SerializeObject(this);
+                    w.Write(JsonConvert.SerializeObject(this));
                 }
             }
 
@@ -297,6 +297,30 @@ namespace LetsEncrypt.ACME.PKI
                 using (var r = new StreamReader(s))
                 {
                     return JsonConvert.DeserializeObject<Csr>(r.ReadToEnd());
+                }
+            }
+
+            public static void ConvertPemToDer(Stream source, Stream target)
+            {
+                using (var ts = new StreamReader(source))
+                {
+                    var xr = new X509Request(ts.ReadToEnd());
+                    using (var bio = BIO.MemoryBuffer())
+                    {
+                        xr.Write_DER(bio);
+                        var arr = bio.ReadBytes((int)bio.BytesPending);
+                        target.Write(arr.Array, arr.Offset, arr.Count);
+                    }
+                }
+            }
+
+            public static void ConvertPemToDer(string sourcePath, string targetPath,
+                    FileMode fileMode = FileMode.Create)
+            {
+                using (FileStream source = new FileStream(sourcePath, FileMode.Open),
+                        target = new FileStream(targetPath, fileMode))
+                {
+                    ConvertPemToDer(source, target);
                 }
             }
         }

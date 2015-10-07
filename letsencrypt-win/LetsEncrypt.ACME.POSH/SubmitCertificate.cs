@@ -54,19 +54,23 @@ namespace LetsEncrypt.ACME.POSH
                         csrDetails = JsonHelper.Load<CsrHelper.CsrDetails>(fs);
                     }
 
+                    var keyGenFile = $"{ci.Id}-gen-key.json";
                     var keyPemFile = $"{ci.Id}-key.pem";
+                    var csrGenFile = $"{ci.Id}-gen-csr.json";
                     var csrPemFile = $"{ci.Id}-csr.pem";
 
                     var genKey = CsrHelper.GenerateRsaPrivateKey();
-                    using (var fs = new FileStream(keyPemFile, FileMode.CreateNew))
+                    using (var fs = new FileStream(keyGenFile, FileMode.CreateNew))
                     {
                         genKey.Save(fs);
+                        File.WriteAllText(keyPemFile, genKey.Pem);
                     }
 
                     var genCsr = CsrHelper.GenerateCsr(csrDetails, genKey);
-                    using (var fs = new FileStream(csrPemFile, FileMode.CreateNew))
+                    using (var fs = new FileStream(csrGenFile, FileMode.CreateNew))
                     {
                         genCsr.Save(fs);
+                        File.WriteAllText(csrPemFile, genCsr.Pem);
                     }
 
                     ci.KeyPemFile = keyPemFile;
@@ -74,15 +78,13 @@ namespace LetsEncrypt.ACME.POSH
                 }
 
                 byte[] derRaw;
-                CsrHelper.Csr csr;
                 using (var fs = new FileStream(ci.CsrPemFile, FileMode.Open))
                 {
-                    csr = CsrHelper.Csr.Load(fs);
-                }
-                using (var ms = new MemoryStream())
-                {
-                    csr.ExportAsDer(ms);
-                    derRaw = ms.ToArray();
+                    using (var ms = new MemoryStream())
+                    {
+                        CsrHelper.Csr.ConvertPemToDer(fs, ms);
+                        derRaw = ms.ToArray();
+                    }
                 }
 
                 var derB64u = JwsHelper.Base64UrlEncode(derRaw);

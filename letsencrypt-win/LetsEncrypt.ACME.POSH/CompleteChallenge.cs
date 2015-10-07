@@ -93,7 +93,7 @@ namespace LetsEncrypt.ACME.POSH
                     }
                 }
 
-                if (challengCompleted == null || Repeat)
+                if (Repeat || challengCompleted == null)
                 {
                     if (Challenge == "dns")
                     {

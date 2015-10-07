@@ -48,7 +48,7 @@ namespace LetsEncrypt.ACME.POSH
                 {
                     var ii = v.Identifiers.GetByRef(Ref);
                     if (ii == null)
-                        throw new Exception("Unable to find an Identifier for the given reference");
+                        throw new ItemNotFoundException("Unable to find an Identifier for the given reference");
 
                     var authzState = ii.Authorization;
 

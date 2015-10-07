@@ -37,11 +37,6 @@ namespace LetsEncrypt.ACME.HTTP
                     Add(new Link(lv));
         }
 
-        public void Add(Link link)
-        {
-            _Links.Add(link);
-        }
-
         public IEnumerable<string> this[string key]
         {
             get
@@ -58,9 +53,19 @@ namespace LetsEncrypt.ACME.HTTP
             }
         }
 
+        public void Add(Link link)
+        {
+            _Links.Add(link);
+        }
+
+        public Link GetFirstOrDefault(string key)
+        {
+            return _Links.FirstOrDefault(x => x.Relation == key);
+        }
+
         public bool Contains(string key)
         {
-            return _Links.FirstOrDefault(x => x.Relation == key) != null;
+            return GetFirstOrDefault(key) != null;
         }
 
         IEnumerator<Link> IEnumerable<Link>.GetEnumerator()

@@ -1,0 +1,101 @@
+﻿
+#cd C:\prj\letsencrypt\solutions\letsencrypt-win\letsencrypt-win\LetsEncrypt.ACME.POSH
+#Add-Type -Path .\bin\Debug\LetsEncrypt.ACME.POSH.dll
+
+<#
+Configure/install certs
+
+Install-ACMECertificateToIIS -Ref <cert-ref>
+	-ComputerName <target-server> - optional (defaults to local)
+	-Website <website-name> - required
+	-HostHeader <hostheader-name> - optional (defaults to none)
+	-IPAddress <ip-address> - optional (defaults to all)
+	-Port <port-num> - optional (defaults to 443)
+
+Install-ACMECertificateToAWS -Ref <cert-ref>
+	-IAMPath <path> - optional, prefix with /cloudfront/ to use with CloudFront
+	-IAMName <path> - required
+	-ELBName <elb-name> - optional to install on ELB
+	-ELBPort <elb-port> - required if elb-name is specified
+#>
+
+## We need the AWS POSH Module
+Import-Module AWSPowerShell
+
+## TODO:  We'll need to either "assume" that the user has
+## already imported the module or explicitly re-import it
+## and we'll also have to address the Default Noun Prefix
+##Import-Module ACMEPowerShell
+
+function Install-CertificateToAWS {
+	param(
+		[Parameter(Mandatory=$true)]
+		[string]$Certificate,
+		[string]$IAMPath,
+		[string]$IAMName,
+		[switch]$UseWithCloudFront,
+		[string]$ELBName,
+		[int]$ELBPort,
+
+		## AWS POSH Base Params
+		[object]$Region,
+		[string]$AccessKey,
+		[string]$SecretKey,
+		[string]$SessionToken,
+		[string]$ProfileName,
+		[string]$ProfilesLocation,
+		[Amazon.Runtime.AWSCredentials]$Credentials
+	)
+
+	## This switch is just a flag that we need to check for the IAM Server
+	## Certificate path to match some specific naming convention
+	if ($UseWithCloudFront) {
+		if (-not $IAMPath.StartsWith('/cloudfront/')) {
+			throw "IAM Server Certificate path must start with '/cloudfront/' to use with CloudFront"
+		}
+	}
+
+	$ci = Get-ACMECertificate -Ref $Certificate
+	if ($ci.IssuerSerialNumber) {
+		$ic = Get-ACMEIssuerCertificate -SerialNumber $ci.IssuerSerialNumber
+		if ($ic) {
+			if (-not $ic.CrtPemFile -or -not (Test-Path -PathType Leaf $ic.CrtPemFile)) {
+				throw "Unable to resolve Issuer Certificate PEM file"
+			}
+		}
+	}
+
+	if (-not $ci.KeyPemFile -or -not (Test-Path -PathType Leaf $ci.KeyPemFile)) {
+		throw "Unable to resolve Private Key PEM file"
+	}
+	if (-not $ci.CrtPemFile -or -not (Test-Path -PathType Leaf $ci.CrtPemFile)) {
+		throw "Unable to resolve Certificate PEM file"
+	}
+
+	$privKey = [System.IO.File]::ReadAllText($ci.KeyPemFile)
+	$certBody = [System.IO.File]::ReadAllText($ci.CrtPemFile)
+	if ($ic) {
+		$certChain = [System.IO.File]::ReadAllText($ic.CrtPemFile)
+	}
+
+
+	## Assemble AWS POSH Base Args to pass along for authentication
+	$awsBaseArgs = @{
+		Region = $Region
+		AccessKey = $AccessKey
+		SecretKey = $SecretKey
+		SessionToken = $SessionToken
+		ProfileName = $ProfileName
+		ProfilesLocation = $ProfilesLocation
+		Credentials = $Credentials
+	}
+
+	"privKey   =  $privKey  "
+	"certBody  =  $certBody "
+	"certChain =  $certChain"
+
+#	Publish-IAMServerCertificate -PrivateKey $privKey -CertificateBody $certBody -CertificateChain $certChain `
+#			-Path $IAMPath -ServerCertificateName $IAMName @awsBaseArgs
+}
+
+Export-ModuleMember -Function Install-CertificateToAWS

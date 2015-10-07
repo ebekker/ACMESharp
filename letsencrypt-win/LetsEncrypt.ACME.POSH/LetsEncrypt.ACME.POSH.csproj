@@ -103,6 +103,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ACMEPowerShell-AWS\ACMEPowerShell-AWS.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ACMEPowerShell-AWS\ACMEPowerShell-AWS.psd1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="ACMEPowerShell.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

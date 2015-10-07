@@ -111,10 +111,18 @@ namespace LetsEncrypt.ACME.POSH.Vault
             _vaultMeta.UpdateUser = who;
             _vaultMeta.Entity = vault;
 
-            using (var s = new FileStream(_vaultFile, FileMode.Create))
+            // Create a backup just in case there's any fault
+            if (File.Exists(_vaultFile))
+                File.Copy(_vaultFile, $"{_vaultFile}.bak", true);
+            // Sort of a 2-phase commit
+            var tmp = $"{_vaultFile}.tmp{DateTime.Now.ToFileTime()}";
+            using (var s = new FileStream(tmp, FileMode.Create))
             {
                 JsonHelper.Save(s, _vaultMeta);
             }
+            // Now commit the changes
+            File.Copy(tmp, _vaultFile, true);
+            File.Delete(tmp);
         }
 
         public void Dispose()

@@ -319,6 +319,16 @@ namespace LetsEncrypt.ACME.PKI
                     }
                 }
             }
+
+            public static void ConvertDerToPem(string sourcePath, string targetPath,
+                    FileMode fileMode = FileMode.Create)
+            {
+                using (FileStream source = new FileStream(sourcePath, FileMode.Open),
+                        target = new FileStream(targetPath, fileMode))
+                {
+                    ConvertDerToPem(source, target);
+                }
+            }
         }
     }
 }

@@ -31,9 +31,11 @@ function Install-CertificateToAWS {
 	param(
 		[Parameter(Mandatory=$true)]
 		[string]$Certificate,
-		[string]$IAMPath,
+		[Parameter(Mandatory=$true)]
 		[string]$IAMName,
+		[string]$IAMPath,
 		[switch]$UseWithCloudFront,
+		[switch]$IAMReplace,
 		[string]$ELBName,
 		[int]$ELBPort,
 
@@ -90,12 +92,65 @@ function Install-CertificateToAWS {
 		Credentials = $Credentials
 	}
 
-	"privKey   =  $privKey  "
-	"certBody  =  $certBody "
-	"certChain =  $certChain"
+	## -Certificate 1 -Verbose -ProfileName auto@aws3 -IAMName le1
+	## -Certificate 1 -Verbose -ProfileName auto@aws3 -IAMName le2 -ELBName foo
+	## -Certificate 1 -Verbose -ProfileName auto@aws3 -IAMName le2 -ELBName foo -ELBPort 8443 -Region us-east-1
+	## -Certificate 1 -Verbose -ProfileName auto@aws3 -IAMName le2 -ELBName STAGE-PP-MTB -ELBPort 8443 -Region us-east-1
 
-#	Publish-IAMServerCertificate -PrivateKey $privKey -CertificateBody $certBody -CertificateChain $certChain `
-#			-Path $IAMPath -ServerCertificateName $IAMName @awsBaseArgs
+	$awsCert = $null
+	$awsCertMeta = $null
+	if ($IAMName) {
+		try {
+			## See if a cert for that name already exists
+			$awsCert = Get-IAMServerCertificate -ServerCertificateName $IAMName -ErrorAction Ignore @awsBaseArgs
+			if ($awsCert) {
+				$awsCertMeta = $awsCert.ServerCertificateMetadata
+			}
+		} catch { }
+
+		if ($awsCertMeta) {
+			if ($IAMReplace) {
+				Remove-IAMServerCertificate -ServerCertificateName $IAMName -Force @awsBaseArgs
+				$awsCert = $null
+				$awsCertMeta = $null
+			}
+			elseif ($awsCert.CertificateBody.Trim() -ne $certBody.Trim()) {
+				throw "Non-matching certificate already installed under referenced Server Certificate Name"
+			}
+			else {
+				Write-Verbose "Matching certificate already installed under referenced Server Certificate Name"
+			}
+		}
+
+		if (-not $awsCertMeta -or $IAMReplace) {
+			$apiArgs = @{
+				PrivateKey = $privKey
+				CertificateBody = $certBody
+				CertificateChain = $certChain
+				ServerCertificateName = $IAMName
+			}
+			if ($IAMPath) {
+				$apiArgs.Path = $IAMPath
+			}
+			$awsCertMeta = Publish-IAMServerCertificate @apiArgs @awsBaseArgs
+		}
+	}
+
+	if ($ELBName) {
+		if (-not $ELBPort -or $ELBPort -lt 1) {
+			throw "Invalid or missing ELB port"
+		}
+
+		$apiArgs = @{
+			LoadBalancerName = $ELBName
+			LoadBalancerPort = $ELBPort
+			SSLCertificateId = $awsCertMeta.Arn
+		}
+		echo "SSLCertificate   = $($awsCert)"
+		echo "SSLCertificateM  = $($awsCertMeta)"
+		echo "SSLCertificateId = $($awsCertMeta.Arn)"
+		Set-ELBLoadBalancerListenerSSLCertificate @apiArgs @awsBaseArgs
+	}
 }
 
 Export-ModuleMember -Function Install-CertificateToAWS

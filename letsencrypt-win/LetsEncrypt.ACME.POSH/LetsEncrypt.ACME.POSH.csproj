@@ -82,6 +82,7 @@
     <Compile Include="GetRegistration.cs" />
     <Compile Include="NewRegistration.cs" />
     <Compile Include="Util\IndexedDictionary.cs" />
+    <Compile Include="Util\OrderedNameMap.cs" />
     <Compile Include="Vault\CertificateInfo.cs" />
     <Compile Include="Vault\IdentifierInfo.cs" />
     <Compile Include="Vault\IssuerCertificateInfo.cs" />

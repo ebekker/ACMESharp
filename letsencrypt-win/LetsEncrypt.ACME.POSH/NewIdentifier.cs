@@ -43,7 +43,6 @@ namespace LetsEncrypt.ACME.POSH
                 var ri = v.Registrations[0];
                 var r = ri.Registration;
 
-
                 AuthorizationState authzState = null;
                 var ii = new IdentifierInfo
                 {
@@ -62,7 +61,6 @@ namespace LetsEncrypt.ACME.POSH
 
                     authzState = c.AuthorizeIdentifier(Dns);
                     ii.Authorization = authzState;
-
 
                     if (v.Identifiers == null)
                         v.Identifiers = new EntityDictionary<IdentifierInfo>();

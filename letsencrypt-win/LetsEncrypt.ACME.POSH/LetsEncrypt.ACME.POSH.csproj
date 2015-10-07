@@ -59,15 +59,20 @@
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="EditProviderConfig.cs" />
+    <Compile Include="GetCertificate.cs" />
     <Compile Include="GetIdentifier.cs" />
     <Compile Include="CompleteChallenge.cs" />
+    <Compile Include="GetIssuerCertificate.cs" />
+    <Compile Include="NewCertificate.cs" />
     <Compile Include="NewIdentifier.cs" />
     <Compile Include="NewProviderConfig.cs" />
     <Compile Include="SetProxy.cs" />
     <Compile Include="SetServerDirectory.cs" />
     <Compile Include="SetVault.cs" />
     <Compile Include="InitializeVault.cs" />
+    <Compile Include="SubmitCertificate.cs" />
     <Compile Include="SubmitChallenge.cs" />
+    <Compile Include="UpdateCertificate.cs" />
     <Compile Include="UpdateIdentifier.cs" />
     <Compile Include="Util\EntityDictionary.cs" />
     <Compile Include="Util\EntityLookup.cs" />
@@ -79,6 +84,7 @@
     <Compile Include="Util\IndexedDictionary.cs" />
     <Compile Include="Vault\CertificateInfo.cs" />
     <Compile Include="Vault\IdentifierInfo.cs" />
+    <Compile Include="Vault\IssuerCertificateInfo.cs" />
     <Compile Include="Vault\ProviderConfig.cs" />
     <Compile Include="Vault\ProxyConfig.cs" />
     <Compile Include="Vault\RegistrationInfo.cs" />

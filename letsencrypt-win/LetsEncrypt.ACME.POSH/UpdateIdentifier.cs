@@ -76,7 +76,7 @@ namespace LetsEncrypt.ACME.POSH
 
                         if (string.IsNullOrEmpty(Challenge))
                         {
-                            authzState = ii.AuthorizationUpdate = c.RefreshIdentifierAuthorization(authzState, UseBaseURI);
+                            authzState = c.RefreshIdentifierAuthorization(authzState, UseBaseURI);
                             ii.AuthorizationUpdate = authzState;
                         }
                         else

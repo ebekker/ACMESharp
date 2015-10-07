@@ -125,7 +125,7 @@ namespace LetsEncrypt.ACME.POSH
                                     var sernum = cacert.GetSerialNumberString();
 
                                     if (v.IssuerCertificates == null)
-                                        v.IssuerCertificates = new IndexedDictionary<string, IssuerCertificateInfo>();
+                                        v.IssuerCertificates = new OrderedNameMap<IssuerCertificateInfo>();
                                     if (!v.IssuerCertificates.ContainsKey(sernum))
                                     {
                                         var cacertDerFile = $"ca-{sernum}-crt.der";

@@ -51,7 +51,7 @@ namespace LetsEncrypt.ACME.POSH.Vault
         public EntityDictionary<CertificateInfo> Certificates
         { get; set; }
 
-        public IndexedDictionary<string, IssuerCertificateInfo> IssuerCertificates
+        public OrderedNameMap<IssuerCertificateInfo> IssuerCertificates
         { get; set; }
     }
 }

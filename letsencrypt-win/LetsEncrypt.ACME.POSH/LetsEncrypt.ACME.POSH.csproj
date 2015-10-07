@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="libeay32.dll" />
+    <Content Include="README-TESTING.txt" />
     <Content Include="ssleay32.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

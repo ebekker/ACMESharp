@@ -275,12 +275,14 @@ namespace LetsEncrypt.ACME.PKI
 
             public void ExportAsDer(Stream s)
             {
-                var xr = new X509Request(Pem);
-                using (var bio = BIO.MemoryBuffer())
+                using (var xr = new X509Request(Pem))
                 {
-                    xr.Write_DER(bio);
-                    var arr = bio.ReadBytes((int)bio.BytesPending);
-                    s.Write(arr.Array, arr.Offset, arr.Count);
+                    using (var bio = BIO.MemoryBuffer())
+                    {
+                        xr.Write_DER(bio);
+                        var arr = bio.ReadBytes((int)bio.BytesPending);
+                        s.Write(arr.Array, arr.Offset, arr.Count);
+                    }
                 }
             }
 
@@ -304,12 +306,14 @@ namespace LetsEncrypt.ACME.PKI
             {
                 using (var ts = new StreamReader(source))
                 {
-                    var xr = new X509Request(ts.ReadToEnd());
-                    using (var bio = BIO.MemoryBuffer())
+                    using (var xr = new X509Request(ts.ReadToEnd()))
                     {
-                        xr.Write_DER(bio);
-                        var arr = bio.ReadBytes((int)bio.BytesPending);
-                        target.Write(arr.Array, arr.Offset, arr.Count);
+                        using (var bio = BIO.MemoryBuffer())
+                        {
+                            xr.Write_DER(bio);
+                            var arr = bio.ReadBytes((int)bio.BytesPending);
+                            target.Write(arr.Array, arr.Offset, arr.Count);
+                        }
                     }
                 }
             }
@@ -351,6 +355,67 @@ namespace LetsEncrypt.ACME.PKI
                         target = new FileStream(targetPath, fileMode))
                 {
                     ConvertDerToPem(source, target);
+                }
+            }
+
+            /// <summary>
+            /// Converts a certificate and private key to a PKCS#12 (.PFX) file.
+            /// </summary>
+            public static void ConvertToPfx(Stream keyPemSource, Stream crtPemSource, Stream isrPemSource, Stream pfxTarget)
+            {
+                using (BIO keyBio = BIO.MemoryBuffer(),
+                        crtBio = BIO.MemoryBuffer(),
+                        isrBio = BIO.MemoryBuffer())
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        keyPemSource.CopyTo(ms);
+                        keyBio.Write(ms.ToArray());
+                    }
+                    using (var ms = new MemoryStream())
+                    {
+                        crtPemSource.CopyTo(ms);
+                        crtBio.Write(ms.ToArray());
+                    }
+                    using (var ms = new MemoryStream())
+                    {
+                        isrPemSource.CopyTo(ms);
+                        isrBio.Write(ms.ToArray());
+                    }
+
+                    using (var key = CryptoKey.FromPrivateKey(keyBio, null))
+                    {
+                        using (var crt = new X509Certificate(crtBio))
+                        {
+                            using (var isr = new X509Certificate(isrBio))
+                            {
+                                var isrStack = new OpenSSL.Core.Stack<X509Certificate>();
+                                isrStack.Add(isr);
+
+                                using (var pfx = new PKCS12(null, key, crt, isrStack))
+                                {
+                                    using (var pfxBio = BIO.MemoryBuffer())
+                                    {
+                                        pfx.Write(pfxBio);
+                                        var arr = pfxBio.ReadBytes((int)pfxBio.BytesPending);
+                                        pfxTarget.Write(arr.Array, arr.Offset, arr.Count);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            public static void ConvertToPfx(string keyPemFile, string crtPemFile, string isrPemFile, string pfxFile,
+                    FileMode fileMode = FileMode.Create)
+            {
+                using (FileStream keyFs = new FileStream(keyPemFile, FileMode.Open),
+                        crtFs = new FileStream(crtPemFile, FileMode.Open),
+                        isrFs = new FileStream(isrPemFile, FileMode.Open),
+                        pfxFs = new FileStream(pfxFile, fileMode))
+                {
+                    ConvertToPfx(keyFs, crtFs, isrFs, pfxFs);
                 }
             }
         }

@@ -180,6 +180,8 @@ cd c:\Vault
 Import-Module ACMEPowerShell
 Import-Module ACMEPowerShell-AWS
 
-Install-ACMECertificateToAWS -Certificate cert1 -IAMName myFirstAwsAcmeCert -IAMPath /Optional/Path -ELBName MY-FIRST-ELB -ELBPort 8443
+Install-ACMECertificateToAWS -Certificate cert1 `
+        -IAMName myFirstAwsAcmeCert -IAMPath /Optional/Path `
+        -ELBName MY-FIRST-ELB -ELBPort 8443
 ```
 Additionally, the installation cmdlet also accepts various combinations of parameters that resolve the user's authentication to the AWS services, the same as all other AWSPowerShell Cmdlets, such as ```-AccessKey```, ```-SecretKey```, ```-Region``` or ```-ProfileName```.

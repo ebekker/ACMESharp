@@ -1,9 +1,17 @@
 # letsencrypt-win
-An ACME client that can update Windows IIS7+ configurations.
+An [ACME](https://github.com/letsencrypt/acme-spec) client library and PowerShell module interoperable with the [Let's Encrypt](https://letsencrypt.org/) reference implemention [ACME Server](https://github.com/letsencrypt/boulder) and comparable to the feature set of the corresponding [client](https://github.com/letsencrypt/letsencrypt). 
+
+The PowerShell modules include installers for configuring:
+* IIS 7.0+ either locally or remotely (over PSSession)
+* AWS Server Certificates and ELB Listeners
+
+--
+
 
 [![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/letsencrypt-win)
 
---
+
+---
 
 This ACME implementation is broken up into layers that build:
 * Basic, minimum JSON Web Signature (JWS) support that is required for ACME

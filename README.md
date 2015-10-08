@@ -70,3 +70,112 @@ This example also demonstrates the use of a few common options available with mo
 
 The **Alias** allows you to reference the associated entity in subsequent operations.  Besides the user-assigned Alias, a system generated ID (GUID) is assigned and returned when the entity is created or updated.  To use the ID as a reference identifier, specify it prefixed with the ```=``` character.  Lastly, an entity may also be referenced via its sequential index (zero-based) relative to its create order.  In the example above, we assigned the unique Alias ```dns1``` to the first Identifier we want to authorize.
 
+After you create the new Identifier, it is immediately submitted to the ACME server which responds back with a list of one or more **Challenges** which must be completed in order to prove your ownership and authority over the requested DNS name.  You will also get a list of _combinations_ which indicate what combination of Challenges need to be completed for a succesful authorization.  Today, this ACME client supports the ```dns``` and ```simpleHttp``` Challenge types as described in the ACME spec, _however_, please note that first release of the Let's Encrypt CA (Boulder) implementation will only support ```simpleHttp``` and ```dvsni``` Challenge types, so only the simpleHttp is in common between the LE server and this client.
+
+In order to complete a given Challenge, this client supports the notion of **Providers** which can make necessary configuration changes to DNS or Web servers to satisfy the Challenge.  For each of the two Challenge types that we support (dns and simpleHttp), this client currently supports two Providers.  The first Provider for each is a _manual_ Provider which simply prints out the necessary details that must be manually implemented by the operator.  The other Providers implemented offer an automated approach to completing the Challenge by making use of the AWS Route 53 and S3 services.
+
+To make use of any Provider, you need to create an instance of it and adjust the configuration settings associated with that instance.  In this example, we create an instance of each of the four supported Providers across the two different Challenge types.
+```
+New-ACMEProviderConfig -DnsProvider Manual -Alias manualDnsProvider
+New-ACMEProviderConfig -DnsProvider AwsRoute53 -Alias r53DnsProvider
+New-ACMEProviderConfig -WebServerProvider Manual -Alias manualHttpProvider
+New-ACMEProviderConfig -WebServerProvider AwsS3 -Alias s3HttpProvider
+```
+
+When you create a Provider instance it will return back a file path to a configuration file (JSON format) that you should update with the necessary details to let that Provider function.  The manual Providers generally don't have any configuration as they simply print out details that must be configured to the console output.  For the others, you need to provide details such as credentials and paths so that they can execute properly.
+
+You can always see all Providers defined, as well as the current configuration file path of an existing Provider in the Vault.
+```
+Edit-ACMEProviderConfig -List
+Edit-ACMEProviderConfig -Ref s3HttpProvider
+```
+
+Here is an example Provider configuration file for the ```AwsS3``` Provider.  After you creat an instance you should edit the configuration file and update as necessary.
+```
+{
+    "Provider": {
+        "$type": "LetsEncrypt.ACME.WebServer.AwsS3WebServerProvider, LetsEncrypt.ACME",
+        "BucketName": "acmetesting.sample.com",
+        "AccessKeyId": "IAM-Account-AccessKey",
+        "SecretAccessKey": "IAM-Account-SecretKey",
+        "Region": "us-east-1",
+        "DnsProvider": {
+            "$type": "LetsEncrypt.ACME.DNS.AwsRoute53DnsProvider, LetsEncrypt.ACME",
+            "HostedZoneId": "Route53-Hosted-Zone-ID",
+            "AccessKeyId": "IAM-Account-AccessKey",
+            "SecretAccessKey": "IAM-Account-SecretKey",
+            "Region": "us-east-1"
+        },
+        "DnsCnameTarget":  "star.acmetesting.sample.com"
+    }
+}
+```
+
+Once, the Provider(s) are created and configured, you can complete the Challenges posed by the ACME server.
+```
+Get-ACMEIdentifier -Ref dns1
+Complete-ACMEIdentifier -Ref dns1 -Challenge simpleHttp -ProviderConfig s3HttpProvider
+```
+
+After you've completed all the Challenges you need to satisfy, you submit your responses for each Challenge type for validation by the ACME server.
+```
+Submit-ACMEChallenge -Ref dns1 -Challenge simpltHttp
+```
+
+You can check on the status of a particular Identifier, and you should see the status change from 'pending' to 'valid' if all the Challenges have been satisfied.
+```
+Update-ACMEIdentifier -Ref dns1
+```
+
+After an Identifier is authorized, you can create a new certificate request against it.  You can either provide your private key and CSR in PEM format, or have the PS module create new ones for you.
+```
+## Either import existing key/csr PEM files...
+New-ACMECertificate -Identifier dns1 -KeyPemFile path\to\key.pem -CsrPemFile path\to\csr.pem -Alias cert1
+
+## ...or generate new ones
+New-ACMECertificate -Identifier dns1 -Generate -Alias cert1
+```
+Then you submit the request and it either gets approved (or denied) immediately, or gets deferred and you can refresh the status after some delay.
+```
+Submit-ACMECertificate -Ref cert1
+Update-ACMECertificate -Ref cert1
+```
+
+At this point you should have your issued (signed) certificate in the Vault.  You can get at it any time and export various elements in a few different formats.
+```
+Get-ACMECertificate -Ref cert1 `
+    -ExportKeyPEM cert1-key.pem `
+    -ExportCsrPEM cert1-csr.pem `
+    -ExportCertificatePEM cert1-crt.pem `
+    -ExportCertificateDER cert1-crt.der `
+    -ExportPkcs12 cert1-all.pfx
+```
+
+### Installing Certificates
+
+Once you have a certificate issued, you can export the various components as shown in the last example and you can use those any way necessary to install the certificate.  However, this project also includes some automation-supporting installation cmdlets that cater to a few specific server/service use cases.
+
+#### Windows IIS
+
+For IIS 7.0 and greater on Windows 2008 and greater, you can use the IIS installer cmdlet to automatically install the SSL certificate and configure and endpoint on a Web Site.
+
+TODO:
+
+#### Amazon Web Services (AWS)
+
+In AWS, there are several services that make use of customer-provided SSL certificates to host customer content over an SSL/TLS interface.  Some of these include, the Elastic Load Balancer (ELB) service, the CloudFront service, the Elastic Beanstalk service and the OpsWorks service.  (See [here](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html) for more details.)
+
+For all of these services, AWS maintains a customer-managed repository of SSL certificates inside the AWS IAM service.  Once a certificate is installed into IAM, it can be referenced by any of the other services listed above.
+
+This ACME client package includes a PowerShell Script Module that allows you to install a PKI certificate into IAM, and optionally to configure an existing ELB listener endpoint to use it.  (The other services need to be manually configured to use an IAM server certificate.)  Note, this module _requires_ the AWSPowerShell module, which is installed as part of the AWS .NET SDK.
+
+```
+## Make sure you cd to your local Vault root directory
+cd c:\Vault
+
+Import-Module ACMEPowerShell
+Import-Module ACMEPowerShell-AWS
+
+Install-ACMECertificateToAWS -Certificate cert1 -IAMName myFirstAwsAcmeCert -IAMPath /Optional/Path -ELBName MY-FIRST-ELB -ELBPort 8443
+```
+Additionally, the installation cmdlet also accepts various combinations of parameters that resolve the user's authentication to the AWS services, the same as all other AWSPowerShell Cmdlets, such as ```-AccessKey```, ```-SecretKey```, ```-Region``` or ```-ProfileName```.

@@ -53,7 +53,7 @@ Here is a typical usage scenario based on the _current_ state of the project.
 
 ### Managing the Vault
 The PS Module uses a local _Vault_ for its state peristence and management.  The Vault root folder should have appropriate ACLs applied to guard the contents within which include sensitive elements, such as PKI private keys.  The following examples are executed from a PowerShell console:
-```powershell
+```PowerShell
 mkdir c:\Vault
 cd c:\Vault
 Import-Module ACMEPowerShell
@@ -67,17 +67,17 @@ Initialize-ACMEVault -BaseURI https://acme-staging.api.letsencrypt.org/
 The first step is to create a new **Registration** with the ACME server, a root account that will own all associated DNS Identifiers and issued Certificates.  Currently it is _assumed_ that there is only one active Registraion in the Vault.  In the future we may support multiple and you'll be able to indiacate a default and/or active one.
 
 The only required argument for a Registration is one or more contacts.  Email contacts must resolve to valid addresses with a valid MX domain.
-```
+```PowerShell
 New-ACMERegistration -Contacts mailto:user@domain.com
 ```
 
 You will get a Terms-of-Service (TOS) Agreement URI which you should review, and then agree to.
-```
+```PowerShell
 Update-ACMERegistration -AcceptTOS
 ```
 
 Next, you need to authorize an **Identifier** with the ACME server which associates it with your Registration and allows you to request certificates.  The only Identifier type supported by the current ACME spec is a DNS-based one, and thus you will only be able to request Domain-Validated (DV) server certificates afterwards.
-```
+```PowerShell
 New-ACMEIdentifer -Dns example.com -Alias dns1 -Label "My First DNS Identifier" -Memo "A sample DNS domain"
 ```
 This example also demonstrates the use of a few common options available with most of the POSH module cmdlets that allow you to create or update artifacts in the Vault:
@@ -104,7 +104,7 @@ New-ACMEProviderConfig -WebServerProvider AwsS3 -Alias s3HttpProvider
 When you create a Provider instance it will return back a file path to a configuration file (JSON format) that you should update with the necessary details to let that Provider function.  The manual Providers generally don't have any configuration as they simply print out details that must be configured to the console output.  For the others, you need to provide details such as credentials and paths so that they can execute properly.
 
 You can always see all Providers defined, as well as the current configuration file path of an existing Provider in the Vault.
-```
+```PowerShell
 Edit-ACMEProviderConfig -List
 Edit-ACMEProviderConfig -Ref s3HttpProvider
 ```
@@ -176,9 +176,14 @@ Once you have a certificate issued, you can export the various components as sho
 
 #### Windows IIS
 
-For IIS 7.0 and greater on Windows 2008 and greater, you can use the IIS installer cmdlet to automatically install the SSL certificate and configure and endpoint on a Web Site.
+For IIS 7.0 and greater (on Windows 2008 and greater), you can use the IIS installer cmdlet that's included in a PowerShell Script Module with this ACME client package to automatically install the SSL certificate and configure and endpoint on a Web Site.
 
-TODO:
+Note, this module _requires_ the ```WebAdministration``` PowerShell Module that's installed as part of the Windows Roles and Features administration.  You can also install it from an admin console:
+* On Windows 2008 (PowerShell or CMD):
+  * ```servermanagercmd.exe -install "Web-Scripting-Tools" -allSubFeatures```
+* On Windows 2012 (PowerShell):
+  * ```Install-WindowsFeature "Web-Scripting-Tools" -IncludeAllSubFeature -IncludeManagementTools ```
+  
 
 #### Amazon Web Services (AWS)
 
@@ -186,7 +191,7 @@ In AWS, there are several services that make use of customer-provided SSL certif
 
 For all of these services, AWS maintains a customer-managed repository of SSL certificates inside the AWS IAM service.  Once a certificate is installed into IAM, it can be referenced by any of the other services listed above.
 
-This ACME client package includes a PowerShell Script Module that allows you to install a PKI certificate into IAM, and optionally to configure an existing ELB listener endpoint to use it.  (The other services need to be manually configured to use an IAM server certificate.)  Note, this module _requires_ the AWSPowerShell module, which is installed as part of the AWS .NET SDK.
+This ACME client package includes a PowerShell Script Module that allows you to install a PKI certificate into IAM, and optionally to configure an existing ELB listener endpoint to use it.  (The other services need to be manually configured to use an IAM server certificate.)  Note, this module _requires_ the ```AWSPowerShell``` module, which is installed as part of the AWS .NET SDK.
 
 ```PowerShell
 ## Make sure you cd to your local Vault root directory

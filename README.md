@@ -35,11 +35,26 @@ This client is now operable and can successfully interact with the Let's Encrypt
 
 Here is a typical usage scenario based on the _current_ state of the project.
 
+The PS Module uses a local _Vault_ for its state peristenct and management.  The Vault root folder should have appropriate ACLs applied to guard the contents within which include sensitive elements, such as PKI private keys.  The following examples are executed from a PowerShell console:
 ```
-## In PowerShell console
 mkdir c:\Vault
 cd c:\Vault
 Import-Module ACMEPowerShell
-Initialize-ACMEVault
 ```
 
+You initialize the Vault and can optionally specify a base URL endpoint for the ACME Server.  If unspecified, it defaults to the current LE staging CA (after final release, this will default to the LE production CA).
+```
+Initialize-ACMEVault -BaseURI https://acme-staging.api.letsencrypt.org/
+```
+
+The first step is to create a new *Registration* with the ACME server, a root account that will own all associated DNS Identifiers and issued Certificates.  Currently it is _assumed_ that there is only one active Registraion in the Vault.  In the future we may support multiple and you'll be able to indiacate a default and/or active one.
+
+The only required argument for a Registration is one or more contacts.  Email contacts must resolve to valid addresses with a valid MX domain.
+```
+New-ACMERegistration -Contacts mailto:user@domain.com
+```
+
+You will get a Terms-of-Service (TOS) Agreement URI which you should review, and then agree to.
+```
+Update-ACMERegistration -AcceptTOS
+```

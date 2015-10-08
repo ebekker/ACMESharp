@@ -1,4 +1,5 @@
 ﻿using LetsEncrypt.ACME.PKI;
+using LetsEncrypt.ACME.POSH.Vault;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace LetsEncrypt.ACME.POSH
 {
     [Cmdlet(VerbsCommon.Get, "Certificate")]
+    [OutputType(typeof(CertificateInfo))]
     public class GetCertificate : Cmdlet
     {
         [Parameter(Mandatory = true)]
@@ -30,6 +32,14 @@ namespace LetsEncrypt.ACME.POSH
 
         [Parameter]
         public string ExportCertificateDER
+        { get; set; }
+
+        [Parameter]
+        public string ExportPkcs12
+        { get; set; }
+
+        [Parameter]
+        public SwitchParameter Overwrite
         { get; set; }
 
         protected override void ProcessRecord()
@@ -56,28 +66,41 @@ namespace LetsEncrypt.ACME.POSH
                 {
                     if (string.IsNullOrEmpty(ci.KeyPemFile))
                         throw new InvalidOperationException("Cannot export private key; it hasn't been imported or generated");
-                    File.Copy(ci.KeyPemFile, ExportKeyPEM);
+                    File.Copy(ci.KeyPemFile, ExportKeyPEM, Overwrite);
                 }
 
                 if (!string.IsNullOrEmpty(ExportCsrPEM))
                 {
                     if (string.IsNullOrEmpty(ci.CsrPemFile))
                         throw new InvalidOperationException("Cannot export CSR; it hasn't been imported or generated");
-                    File.Copy(ci.CsrPemFile, ExportCsrPEM);
+                    File.Copy(ci.CsrPemFile, ExportCsrPEM, Overwrite);
                 }
 
                 if (!string.IsNullOrEmpty(ExportCertificatePEM))
                 {
                     if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtPemFile))
                         throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                    File.Copy(ci.CrtPemFile, ExportCertificatePEM);
+                    File.Copy(ci.CrtPemFile, ExportCertificatePEM, Overwrite);
                 }
 
                 if (!string.IsNullOrEmpty(ExportCertificateDER))
                 {
                     if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtDerFile))
                         throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                    File.Copy(ci.CrtDerFile, ExportCertificateDER);
+                    File.Copy(ci.CrtDerFile, ExportCertificateDER, Overwrite);
+                }
+
+                if (!string.IsNullOrEmpty(ExportPkcs12))
+                {
+                    if (string.IsNullOrEmpty(ci.KeyPemFile))
+                        throw new InvalidOperationException("Cannot export PKCS12; private hasn't been imported or generated");
+                    if (string.IsNullOrEmpty(ci.CrtPemFile))
+                        throw new InvalidOperationException("Cannot export PKCS12; CSR hasn't been submitted or CRT hasn't been retrieved");
+                    if (string.IsNullOrEmpty(ci.IssuerSerialNumber) || !v.IssuerCertificates.ContainsKey(ci.IssuerSerialNumber))
+                        throw new InvalidOperationException("Cannot export PKCS12; Issuer certificate hasn't been resolved");
+                    CsrHelper.Crt.ConvertToPfx(ci.KeyPemFile, ci.CrtPemFile,
+                            v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile,
+                            ExportPkcs12, Overwrite ? FileMode.Create : FileMode.CreateNew);
                 }
 
                 WriteObject(ci);

@@ -178,12 +178,59 @@ Once you have a certificate issued, you can export the various components as sho
 
 For IIS 7.0 and greater (on Windows 2008 and greater), you can use the IIS installer cmdlet that's included in a PowerShell Script Module with this ACME client package to automatically install the SSL certificate and configure and endpoint on a Web Site.
 
-Note, this module _requires_ the ```WebAdministration``` PowerShell Module that's installed as part of the Windows Roles and Features administration.  You can also install it from an admin console:
+Note, this module _requires_ the ```WebAdministration``` PowerShell Module that's installed as part of the Windows Roles and Features administration.  This module needs to be installed on the server that's _hosting IIS_ which is not necessarily the same computer from which you're running the ACME client (see below).  You can also install it from an admin console:
 * On Windows 2008 (PowerShell or CMD):
   * ```servermanagercmd.exe -install "Web-Scripting-Tools" -allSubFeatures```
 * On Windows 2012 (PowerShell):
   * ```Install-WindowsFeature "Web-Scripting-Tools" -IncludeAllSubFeature -IncludeManagementTools ```
-  
+
+Once you've successfully requested and retrieved your PKI certificate from the ACME server and it's stored in your Vault, you can install the certificate and configure the IIS endpoint to use it.
+```PowerShell
+## Make sure you cd to your local Vault root directory
+cd c:\Vault
+
+Import-Module ACMEPowerShell
+Import-Module ACMEPowerShell-IIS
+
+## If the computer that's hosting IIS is the local computer
+Install-ACMECertificateToIIS -Certificate cert1 `
+        -WebSite "Default Web Site" -Replace
+
+## You can optionally narrow down the HTTPS interface with a
+## specific IP address, port or (on Win2012) SNI hostname
+Install-ACMECertificateToIIS -Certificate cert1 `
+        -WebSite "Default Web Site" -Port 8443
+
+Install-ACMECertificateToIIS -Certificate cert1 `
+        -WebSite "Default Web Site" -IPAddress 10.1.2.3 -SNIHostname www.stage.example.com
+```
+
+You can also target a remote computer to configure instead of the local host.  In this case, IIS must be installed on the target computer, and the ```WebAdministration``` module should be installed on that host.  You first need to establish a remote PSSession with that box, which can be done using a variety of configuration and authentication parameters.
+```PowerShell
+
+## Here we simply rely on integrated AD (Kerberos) authentication
+$pss = New-PSSession -ComputerName INTERNAL-WEB-SERVER
+
+## Connect up using a non-standard WinRM port
+$pss = New-PSSession -ComputerName INTERNAL-WEB-SERVER -Port 15986 -UseSSL 
+
+## Connect up using a diff credential and Basic authentication which will prompted for
+$pss = New-PSSession -ComputerName INTERNAL-WEB-SERVER -UseSSL -Authentication Basic `
+    -Credential ((Get-Credential -Message "I want your password" -UserName "myDom\myUsername") 
+
+## Once you have a session, you can optionally make sure that the WebAdministration module is installed
+Invoke-Command -Session $pss { Install-WindowsFeature Web-Scripting-Tools }
+
+## Finally, you can install any cert that's in the local Vault, same as above
+Install-ACMECertificateToIIS -Certificate cert1 -RemoteSession $pss `
+        -WebSite "Default Web Site" -Replace
+
+Install-ACMECertificateToIIS -Certificate cert1 -RemoteSession $pss `
+        -WebSite MyCustomWebSite -Port 8443 -SNIHostname www.example.com -SNIRequired
+
+## Don't forget to clean up your mess
+Remove-Session $pss
+```
 
 #### Amazon Web Services (AWS)
 

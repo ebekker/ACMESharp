@@ -47,7 +47,7 @@ You initialize the Vault and can optionally specify a base URL endpoint for the 
 Initialize-ACMEVault -BaseURI https://acme-staging.api.letsencrypt.org/
 ```
 
-The first step is to create a new *Registration* with the ACME server, a root account that will own all associated DNS Identifiers and issued Certificates.  Currently it is _assumed_ that there is only one active Registraion in the Vault.  In the future we may support multiple and you'll be able to indiacate a default and/or active one.
+The first step is to create a new **Registration** with the ACME server, a root account that will own all associated DNS Identifiers and issued Certificates.  Currently it is _assumed_ that there is only one active Registraion in the Vault.  In the future we may support multiple and you'll be able to indiacate a default and/or active one.
 
 The only required argument for a Registration is one or more contacts.  Email contacts must resolve to valid addresses with a valid MX domain.
 ```
@@ -58,3 +58,15 @@ You will get a Terms-of-Service (TOS) Agreement URI which you should review, and
 ```
 Update-ACMERegistration -AcceptTOS
 ```
+
+Next, you need to authorize an **Identifier** with the ACME server which associates it with your Registration and allows you to request certificates.  The only Identifier type supported by the current ACME spec is a DNS-based one, and thus you will only be able to request Domain-Validated (DV) server certificates afterwards.
+```
+New-ACMEIdentifer -Dns example.com -Alias dns1 -Label "My First DNS Identifier" -Memo "A sample DNS domain"
+```
+This example also demonstrates the use of a few common options available with most of the POSH module cmdlets that allow you to create or update artifacts in the Vault:
+* **```-Alias```** - allows you to assign a unique name for the entity, must conform to regex  ```[A-Za-z][A-Za-z0-9_-/+]{0,49}```
+* **```-Label```** - an optional, more-descriptive display name for the entity
+* **```-Memo```** - an optional, free-form attribute of notes and comments for the entity
+
+The **Alias** allows you to reference the associated entity in subsequent operations.  Besides the user-assigned Alias, a system generated ID (GUID) is assigned and returned when the entity is created or updated.  To use the ID as a reference identifier, specify it prefixed with the ```=``` character.  Lastly, an entity may also be referenced via its sequential index (zero-based) relative to its create order.  In the example above, we assigned the unique Alias ```dns1``` to the first Identifier we want to authorize.
+

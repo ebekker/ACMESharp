@@ -3,7 +3,9 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platf
 
 --
 
-[Overview](#Overview)
+Jump To:
+* [Overview](#overview)
+* 
 
 This project implements an ACME client library and PowerShell modules interoperable with the [Let's Encrypt](https://letsencrypt.org/) ACME [CA server](https://github.com/letsencrypt/boulder) reference implemention and includes features comparable to the Let's Encrypt [client](https://github.com/letsencrypt/letsencrypt) reference implementation.
 
@@ -18,7 +20,7 @@ The PowerShell modules include installers for configuring:
 
 ---
 
-## <a name="Overview">Overview</a>
+## Overview
 
 This ACME client implementation is broken up into layers that build upon each other:
 * Basic tools and service required for implementing ACME protocol (JSON Web Signature (JWS), persistence, PKI operations via OpenSSL) (.NET assembly)

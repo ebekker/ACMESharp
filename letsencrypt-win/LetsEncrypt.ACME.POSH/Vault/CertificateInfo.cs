@@ -44,5 +44,17 @@ namespace LetsEncrypt.ACME.POSH.Vault
 
         public string IssuerSerialNumber
         { get; set; }
+
+        public string SerialNumber
+        { get; set; }
+
+        public string Thumbprint
+        { get; set; }
+
+        public string Signature
+        { get; set; }
+
+        public string SignatureAlgorithm
+        { get; set; }
     }
 }

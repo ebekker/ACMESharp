@@ -98,6 +98,13 @@ namespace LetsEncrypt.ACME.POSH
 
                         CsrHelper.Crt.ConvertDerToPem(crtDerFile, crtPemFile, fileMode);
                         ci.CrtPemFile = crtPemFile;
+
+                        var crt = new X509Certificate2(crtDerFile);
+
+                        ci.SerialNumber = crt.SerialNumber;
+                        ci.Thumbprint = crt.Thumbprint;
+                        ci.SignatureAlgorithm = crt.SignatureAlgorithm?.FriendlyName;
+                        ci.Signature = crt.GetCertHashString();
                     }
 
                     if (Repeat || string.IsNullOrEmpty(ci.IssuerSerialNumber))
@@ -121,8 +128,11 @@ namespace LetsEncrypt.ACME.POSH
                                         web.DownloadFile(uri, tmp);
                                     }
 
-                                    var cacert = X509Certificate.CreateFromCertFile(tmp);
+                                    var cacert = new X509Certificate2(tmp);
                                     var sernum = cacert.GetSerialNumberString();
+                                    var tprint = cacert.Thumbprint;
+                                    var sigalg = cacert.SignatureAlgorithm?.FriendlyName;
+                                    var sigval = cacert.GetCertHashString();
 
                                     if (v.IssuerCertificates == null)
                                         v.IssuerCertificates = new OrderedNameMap<IssuerCertificateInfo>();
@@ -132,13 +142,16 @@ namespace LetsEncrypt.ACME.POSH
                                         var cacertPemFile = $"ca-{sernum}-crt.pem";
 
                                         if (Repeat || !File.Exists(cacertDerFile))
-                                            File.Copy(tmp, cacertDerFile);
+                                            File.Copy(tmp, cacertDerFile, true);
                                         if (Repeat || !File.Exists(cacertPemFile))
                                             CsrHelper.Crt.ConvertDerToPem(cacertDerFile, cacertPemFile);
 
                                         v.IssuerCertificates[sernum] = new IssuerCertificateInfo
                                         {
                                             SerialNumber = sernum,
+                                            Thumbprint  = tprint,
+                                            SignatureAlgorithm = sigalg,
+                                            Signature = sigval,
                                             CrtDerFile = cacertDerFile,
                                             CrtPemFile = cacertPemFile,
                                         };

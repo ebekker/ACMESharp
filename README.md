@@ -78,7 +78,8 @@ Update-ACMERegistration -AcceptTOS
 
 Next, you need to authorize an **Identifier** with the ACME server which associates it with your Registration and allows you to request certificates.  The only Identifier type supported by the current ACME spec is a DNS-based one, and thus you will only be able to request Domain-Validated (DV) server certificates afterwards.
 ```PowerShell
-New-ACMEIdentifer -Dns example.com -Alias dns1 -Label "My First DNS Identifier" -Memo "A sample DNS domain"
+New-ACMEIdentifer -Dns example.com -Alias dns1 -Label "My First DNS Identifier" `
+    -Memo "A sample DNS domain"
 ```
 This example also demonstrates the use of a few common options available with most of the POSH module cmdlets that allow you to create or update artifacts in the Vault:
 * **```-Alias```** - allows you to assign a unique name for the entity, must conform to regex  ```[A-Za-z][A-Za-z0-9_-/+]{0,49}```

@@ -22,7 +22,7 @@ The PowerShell modules include installers for configuring:
 * IIS 7.0+ either locally or remotely (over PSSession)
 * AWS Server Certificates and ELB Listeners
 
---
+---
 
 ## Overview
 
@@ -37,13 +37,9 @@ This ACME client implementation is broken up into layers that build upon each ot
 
 This ACME client is being developed against the [Boulder CA](https://github.com/letsencrypt/boulder) ACME server reference implementation.  See how to [quickly spin up your own instance](https://github.com/ebekker/letsencrypt-win/wiki/Setup-Boulder-CA-on-Amazon-Linux) in AWS on an **Amazon Linux AMI**.
 
----
-
 ## Current State
 
 This client is now operable and can successfully interact with the Let's Encrypt  [staging CA](https://acme-staging.api.letsencrypt.org/) to initialize new Registrations, authorize DNS Identifiers and issue Certificates.  Further, it can succussfully install and configure the certificate and related SSL/TLS settings for a local or remote IIS 7.0+ server or an AWS environment.
-
-
 
 ## Example Usage
 

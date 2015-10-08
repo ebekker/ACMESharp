@@ -1,5 +1,7 @@
 # letsencrypt-win
-An [ACME](https://github.com/letsencrypt/acme-spec) client library and PowerShell module interoperable with the [Let's Encrypt](https://letsencrypt.org/) reference implemention [ACME Server](https://github.com/letsencrypt/boulder) and comparable to the feature set of the corresponding [client](https://github.com/letsencrypt/letsencrypt). 
+An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platform.
+
+This project implements an ACME client library and PowerShell modules interoperable with the [Let's Encrypt](https://letsencrypt.org/) ACME [CA server](https://github.com/letsencrypt/boulder) reference implemention and includes features comparable to the Let's Encrypt [client](https://github.com/letsencrypt/letsencrypt) reference implementation.
 
 The PowerShell modules include installers for configuring:
 * IIS 7.0+ either locally or remotely (over PSSession)
@@ -31,19 +33,21 @@ This ACME client is being developed against the [Boulder CA](https://github.com/
 
 This client is now operable and can successfully interact with the Let's Encrypt  [staging CA](https://acme-staging.api.letsencrypt.org/) to initialize new Registrations, authorize DNS Identifiers and issue Certificates.  Further, it can succussfully install and configure the certificate and related SSL settings for a local or remote IIS 7.0+ server or an AWS environment.
 
+
+
 ## Example Operations
 
 Here is a typical usage scenario based on the _current_ state of the project.
 
 The PS Module uses a local _Vault_ for its state peristenct and management.  The Vault root folder should have appropriate ACLs applied to guard the contents within which include sensitive elements, such as PKI private keys.  The following examples are executed from a PowerShell console:
-```
+```powershell
 mkdir c:\Vault
 cd c:\Vault
 Import-Module ACMEPowerShell
 ```
 
 You initialize the Vault and can optionally specify a base URL endpoint for the ACME Server.  If unspecified, it defaults to the current LE staging CA (after final release, this will default to the LE production CA).
-```
+```PowerShell
 Initialize-ACMEVault -BaseURI https://acme-staging.api.letsencrypt.org/
 ```
 
@@ -75,7 +79,7 @@ After you create the new Identifier, it is immediately submitted to the ACME ser
 In order to complete a given Challenge, this client supports the notion of **Providers** which can make necessary configuration changes to DNS or Web servers to satisfy the Challenge.  For each of the two Challenge types that we support (dns and simpleHttp), this client currently supports two Providers.  The first Provider for each is a _manual_ Provider which simply prints out the necessary details that must be manually implemented by the operator.  The other Providers implemented offer an automated approach to completing the Challenge by making use of the AWS Route 53 and S3 services.
 
 To make use of any Provider, you need to create an instance of it and adjust the configuration settings associated with that instance.  In this example, we create an instance of each of the four supported Providers across the two different Challenge types.
-```
+```PowerShell
 New-ACMEProviderConfig -DnsProvider Manual -Alias manualDnsProvider
 New-ACMEProviderConfig -DnsProvider AwsRoute53 -Alias r53DnsProvider
 New-ACMEProviderConfig -WebServerProvider Manual -Alias manualHttpProvider
@@ -91,7 +95,7 @@ Edit-ACMEProviderConfig -Ref s3HttpProvider
 ```
 
 Here is an example Provider configuration file for the ```AwsS3``` Provider.  After you creat an instance you should edit the configuration file and update as necessary.
-```
+```JSON
 {
     "Provider": {
         "$type": "LetsEncrypt.ACME.WebServer.AwsS3WebServerProvider, LetsEncrypt.ACME",
@@ -112,23 +116,23 @@ Here is an example Provider configuration file for the ```AwsS3``` Provider.  Af
 ```
 
 Once, the Provider(s) are created and configured, you can complete the Challenges posed by the ACME server.
-```
+```PowerShell
 Get-ACMEIdentifier -Ref dns1
 Complete-ACMEIdentifier -Ref dns1 -Challenge simpleHttp -ProviderConfig s3HttpProvider
 ```
 
 After you've completed all the Challenges you need to satisfy, you submit your responses for each Challenge type for validation by the ACME server.
-```
+```PowerShell
 Submit-ACMEChallenge -Ref dns1 -Challenge simpltHttp
 ```
 
 You can check on the status of a particular Identifier, and you should see the status change from 'pending' to 'valid' if all the Challenges have been satisfied.
-```
+```PowerShell
 Update-ACMEIdentifier -Ref dns1
 ```
 
 After an Identifier is authorized, you can create a new certificate request against it.  You can either provide your private key and CSR in PEM format, or have the PS module create new ones for you.
-```
+```PowerShell
 ## Either import existing key/csr PEM files...
 New-ACMECertificate -Identifier dns1 -KeyPemFile path\to\key.pem -CsrPemFile path\to\csr.pem -Alias cert1
 
@@ -136,13 +140,13 @@ New-ACMECertificate -Identifier dns1 -KeyPemFile path\to\key.pem -CsrPemFile pat
 New-ACMECertificate -Identifier dns1 -Generate -Alias cert1
 ```
 Then you submit the request and it either gets approved (or denied) immediately, or gets deferred and you can refresh the status after some delay.
-```
+```PowerShell
 Submit-ACMECertificate -Ref cert1
 Update-ACMECertificate -Ref cert1
 ```
 
 At this point you should have your issued (signed) certificate in the Vault.  You can get at it any time and export various elements in a few different formats.
-```
+```PowerShell
 Get-ACMECertificate -Ref cert1 `
     -ExportKeyPEM cert1-key.pem `
     -ExportCsrPEM cert1-csr.pem `
@@ -169,7 +173,7 @@ For all of these services, AWS maintains a customer-managed repository of SSL ce
 
 This ACME client package includes a PowerShell Script Module that allows you to install a PKI certificate into IAM, and optionally to configure an existing ELB listener endpoint to use it.  (The other services need to be manually configured to use an IAM server certificate.)  Note, this module _requires_ the AWSPowerShell module, which is installed as part of the AWS .NET SDK.
 
-```
+```PowerShell
 ## Make sure you cd to your local Vault root directory
 cd c:\Vault
 

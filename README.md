@@ -43,7 +43,7 @@ This ACME client is being developed against the [Boulder CA](https://github.com/
 
 ## Current State
 
-This client is now operable and can successfully interact with the Let's Encrypt  [staging CA](https://acme-staging.api.letsencrypt.org/) to initialize new Registrations, authorize DNS Identifiers and issue Certificates.  Further, it can succussfully install and configure the certificate and related SSL settings for a local or remote IIS 7.0+ server or an AWS environment.
+This client is now operable and can successfully interact with the Let's Encrypt  [staging CA](https://acme-staging.api.letsencrypt.org/) to initialize new Registrations, authorize DNS Identifiers and issue Certificates.  Further, it can succussfully install and configure the certificate and related SSL/TLS settings for a local or remote IIS 7.0+ server or an AWS environment.
 
 
 
@@ -176,9 +176,9 @@ Once you have a certificate issued, you can export the various components as sho
 
 #### Windows IIS
 
-For IIS 7.0 and greater (on Windows 2008 and greater), you can use the IIS installer cmdlet that's included in a PowerShell Script Module with this ACME client package to automatically install the SSL certificate and configure and endpoint on a Web Site.
+For IIS 7.0 and greater (on Windows 2008 and greater), you can use the IIS installer cmdlet that's included in a PowerShell Script Module with this ACME client package to automatically install the PKI certificate and configure an endpoint on a Web Site.
 
-Note, this module _requires_ the ```WebAdministration``` PowerShell Module that's installed as part of the Windows Roles and Features administration.  This module needs to be installed on the server that's _hosting IIS_ which is not necessarily the same computer from which you're running the ACME client (see below).  You can also install it from an admin console:
+**NOTE:**  This module _requires_ the ```WebAdministration``` PowerShell Module that can be installed from Windows Roles and Features administration.  This module needs to be installed on the server that's _hosting IIS_ which is not necessarily the same computer from which you're running the ACME client (see below).  You can also install it from an admin console as follows:
 * On Windows 2008 (PowerShell or CMD):
   * ```servermanagercmd.exe -install "Web-Scripting-Tools" -allSubFeatures```
 * On Windows 2012 (PowerShell):
@@ -192,17 +192,19 @@ cd c:\Vault
 Import-Module ACMEPowerShell
 Import-Module ACMEPowerShell-IIS
 
-## If the computer that's hosting IIS is the local computer
+## If the computer that's hosting IIS is the local computer this will install
+## the certificate on the default HTTPS endpoint (*:443) of the default site
 Install-ACMECertificateToIIS -Certificate cert1 `
         -WebSite "Default Web Site" -Replace
 
 ## You can optionally narrow down the HTTPS interface with a
-## specific IP address, port or (on Win2012) SNI hostname
+## specific IP address, port or (on Win2012R2) SNI hostname
 Install-ACMECertificateToIIS -Certificate cert1 `
         -WebSite "Default Web Site" -Port 8443
 
 Install-ACMECertificateToIIS -Certificate cert1 `
-        -WebSite "Default Web Site" -IPAddress 10.1.2.3 -SNIHostname www.stage.example.com
+        -WebSite "Default Web Site" -IPAddress 10.1.2.3 `
+        -SNIHostname www.stage.example.com
 ```
 
 You can also target a remote computer to configure instead of the local host.  In this case, IIS must be installed on the target computer, and the ```WebAdministration``` module should be installed on that host.  You first need to establish a remote PSSession with that box, which can be done using a variety of configuration and authentication parameters.
@@ -214,11 +216,13 @@ $pss = New-PSSession -ComputerName INTERNAL-WEB-SERVER
 ## Connect up using a non-standard WinRM port
 $pss = New-PSSession -ComputerName INTERNAL-WEB-SERVER -Port 15986 -UseSSL 
 
-## Connect up using a diff credential and Basic authentication which will prompted for
+## Connect up using Basic authentication and a cred
+## which will be collected from the current operator
 $pss = New-PSSession -ComputerName INTERNAL-WEB-SERVER -UseSSL -Authentication Basic `
     -Credential ((Get-Credential -Message "I want your password" -UserName "myDom\myUsername") 
 
-## Once you have a session, you can optionally make sure that the WebAdministration module is installed
+## Once you have a session, you can optionally make sure that the WebAdministration
+## module is installed; there's no harm in running this if it's already installed
 Invoke-Command -Session $pss { Install-WindowsFeature Web-Scripting-Tools }
 
 ## Finally, you can install any cert that's in the local Vault, same as above
@@ -226,7 +230,8 @@ Install-ACMECertificateToIIS -Certificate cert1 -RemoteSession $pss `
         -WebSite "Default Web Site" -Replace
 
 Install-ACMECertificateToIIS -Certificate cert1 -RemoteSession $pss `
-        -WebSite MyCustomWebSite -Port 8443 -SNIHostname www.example.com -SNIRequired
+        -WebSite MyCustomWebSite -Port 8443 `
+        -SNIHostname www.example.com -SNIRequired
 
 ## Don't forget to clean up your mess
 Remove-Session $pss
@@ -234,11 +239,13 @@ Remove-Session $pss
 
 #### Amazon Web Services (AWS)
 
-In AWS, there are several services that make use of customer-provided SSL certificates to host customer content over an SSL/TLS interface.  Some of these include, the Elastic Load Balancer (ELB) service, the CloudFront service, the Elastic Beanstalk service and the OpsWorks service.  (See [here](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html) for more details.)
+In AWS, there are several services that make use of customer-provided PKI certificates to host customer content over an SSL/TLS interface.  Some of these include the Elastic Load Balancer (ELB) service, the CloudFront service, the Elastic Beanstalk service and the OpsWorks service.  (See [here](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html) for more details.)
 
-For all of these services, AWS maintains a customer-managed repository of SSL certificates inside the AWS IAM service.  Once a certificate is installed into IAM, it can be referenced by any of the other services listed above.
+For all of these services, AWS maintains a customer-managed repository of PKI certificates inside the AWS IAM service.  Once a certificate is installed into IAM, it can be referenced by any of the other services listed above.
 
-This ACME client package includes a PowerShell Script Module that allows you to install a PKI certificate into IAM, and optionally to configure an existing ELB listener endpoint to use it.  (The other services need to be manually configured to use an IAM server certificate.)  Note, this module _requires_ the ```AWSPowerShell``` module, which is installed as part of the AWS .NET SDK.
+This ACME client package includes a PowerShell Script Module that allows you to install a PKI certificate into IAM, and optionally to configure an existing ELB listener endpoint to use it.  (The other services need to be manually configured to use an IAM server certificate.)
+
+**NOTE:**  This module _requires_ the ```AWSPowerShell``` module, which is installed as part of the [AWS Tools for Windows](https://aws.amazon.com/powershell/).
 
 ```PowerShell
 ## Make sure you cd to your local Vault root directory

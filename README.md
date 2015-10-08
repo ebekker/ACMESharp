@@ -5,7 +5,13 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platf
 
 Jump To:
 * [Overview](#overview)
-* 
+* [Current State](#current-state)
+* [Example Usage](#example-usage)
+  * [Managing the Vault](#managing-the-vault)
+  * [Defining Providers](#defining-providers)
+  * [Installing Certificates](#installing-certificates)
+    * [Windows IIS](#windows-iis)
+    * [Amazon Web Services (AWS)](#amazon-web-services-aws)
 
 This project implements an ACME client library and PowerShell modules interoperable with the [Let's Encrypt](https://letsencrypt.org/) ACME [CA server](https://github.com/letsencrypt/boulder) reference implemention and includes features comparable to the Let's Encrypt [client](https://github.com/letsencrypt/letsencrypt) reference implementation.
 
@@ -41,11 +47,12 @@ This client is now operable and can successfully interact with the Let's Encrypt
 
 
 
-## Example Operations
+## Example Usage
 
 Here is a typical usage scenario based on the _current_ state of the project.
 
-The PS Module uses a local _Vault_ for its state peristenct and management.  The Vault root folder should have appropriate ACLs applied to guard the contents within which include sensitive elements, such as PKI private keys.  The following examples are executed from a PowerShell console:
+### Managing the Vault
+The PS Module uses a local _Vault_ for its state peristence and management.  The Vault root folder should have appropriate ACLs applied to guard the contents within which include sensitive elements, such as PKI private keys.  The following examples are executed from a PowerShell console:
 ```powershell
 mkdir c:\Vault
 cd c:\Vault
@@ -81,6 +88,8 @@ This example also demonstrates the use of a few common options available with mo
 The **Alias** allows you to reference the associated entity in subsequent operations.  Besides the user-assigned Alias, a system generated ID (GUID) is assigned and returned when the entity is created or updated.  To use the ID as a reference identifier, specify it prefixed with the ```=``` character.  Lastly, an entity may also be referenced via its sequential index (zero-based) relative to its create order.  In the example above, we assigned the unique Alias ```dns1``` to the first Identifier we want to authorize.
 
 After you create the new Identifier, it is immediately submitted to the ACME server which responds back with a list of one or more **Challenges** which must be completed in order to prove your ownership and authority over the requested DNS name.  You will also get a list of _combinations_ which indicate what combination of Challenges need to be completed for a succesful authorization.  Today, this ACME client supports the ```dns``` and ```simpleHttp``` Challenge types as described in the ACME spec, _however_, please note that first release of the Let's Encrypt CA (Boulder) implementation will only support ```simpleHttp``` and ```dvsni``` Challenge types, so only the simpleHttp is in common between the LE server and this client.
+
+### Defining Providers
 
 In order to complete a given Challenge, this client supports the notion of **Providers** which can make necessary configuration changes to DNS or Web servers to satisfy the Challenge.  For each of the two Challenge types that we support (dns and simpleHttp), this client currently supports two Providers.  The first Provider for each is a _manual_ Provider which simply prints out the necessary details that must be manually implemented by the operator.  The other Providers implemented offer an automated approach to completing the Challenge by making use of the AWS Route 53 and S3 services.
 

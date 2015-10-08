@@ -7,7 +7,7 @@ is to configure the local project's "Debug" settings to use the following:
       C:\windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe
 
   * Start Options > Command line arguments (note the exec policy, see #3 below):
-	  -NoExit -Command "Set-ExecutionPolicy -Force -Scope Process -ExecutionPolicy RemoteSigned;ipmo @('..\Debug\ACMEPowerShell', '..\Debug\ACMEPowerShell\ACMEPowerShell-AWS')"
+	  -NoExit -Command "Set-ExecutionPolicy -Force -Scope Process -ExecutionPolicy RemoteSigned;ipmo @('..\Debug\ACMEPowerShell', '..\Debug\ACMEPowerShell\ACMEPowerShell-AWS', '..\Debug\ACMEPowerShell\ACMEPowerShell-IIS')"
   * Start Options > Working directory:
       ..\..\TestVault
 

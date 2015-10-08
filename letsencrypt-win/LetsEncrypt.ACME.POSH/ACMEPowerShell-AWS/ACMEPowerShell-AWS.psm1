@@ -5,13 +5,6 @@
 <#
 Configure/install certs
 
-Install-ACMECertificateToIIS -Ref <cert-ref>
-	-ComputerName <target-server> - optional (defaults to local)
-	-Website <website-name> - required
-	-HostHeader <hostheader-name> - optional (defaults to none)
-	-IPAddress <ip-address> - optional (defaults to all)
-	-Port <port-num> - optional (defaults to 443)
-
 Install-ACMECertificateToAWS -Ref <cert-ref>
 	-IAMPath <path> - optional, prefix with /cloudfront/ to use with CloudFront
 	-IAMName <path> - required

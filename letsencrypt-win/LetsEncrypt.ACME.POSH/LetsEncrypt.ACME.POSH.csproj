@@ -110,6 +110,12 @@
     <None Include="ACMEPowerShell-AWS\ACMEPowerShell-AWS.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="ACMEPowerShell-IIS\ACMEPowerShell-IIS.psd1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ACMEPowerShell-IIS\ACMEPowerShell-IIS.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="ACMEPowerShell.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

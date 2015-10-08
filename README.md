@@ -1,7 +1,10 @@
 # letsencrypt-win
 An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platform.
 
---
+[![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/letsencrypt-win)
+
+
+---
 
 Jump To:
 * [Overview](#overview)
@@ -20,11 +23,6 @@ The PowerShell modules include installers for configuring:
 * AWS Server Certificates and ELB Listeners
 
 --
-
-[![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/letsencrypt-win)
-
-
----
 
 ## Overview
 

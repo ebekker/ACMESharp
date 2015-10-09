@@ -1,6 +1,9 @@
 # letsencrypt-win
 An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platform.
 
+>:bangbang: **NOTE:**  At present, due to a limitation a dependency on OpenSSL, you must use the **32-bit version of PowerShell** for any of the PS modules.
+
+
 [![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/letsencrypt-win)
 
 

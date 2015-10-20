@@ -196,3 +196,4 @@ FakesAssemblies/
 *.opt
 letsencrypt-win/LetsEncrypt.ACME-test/dnsInfo.json
 letsencrypt-win/LetsEncrypt.ACME-test/webServerinfo.json
+letsencrypt-win/LetsEncrypt.ACME-test/testProxyConfig.json

@@ -1,0 +1,12 @@
+﻿{
+  /*
+  Use this file to toggle the use of a web proxy during unit
+  test automation and configuring the proxy parameters.  This
+  can be used to support integrating a Web Proxy-based test
+  support tool, such as Web Service mocking objects.
+  */
+  "UseProxy": false,
+  "HostName": "web-proxy-hostname",
+  "HostPort": 8888,
+  "AcceptAllServerCerts": true
+}

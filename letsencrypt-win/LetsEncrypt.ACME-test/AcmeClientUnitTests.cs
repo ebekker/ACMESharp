@@ -17,6 +17,7 @@ namespace LetsEncrypt.ACME
     public class AcmeClientUnitTests
     {
         public const string BASE_LOCAL_STORE = "..\\lostore\\";
+        public const string WEB_PROXY_CONFIG = "testProxyConfig.json";
 
         // Running against a local (private) instance of Boulder CA
         //Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
@@ -31,13 +32,46 @@ namespace LetsEncrypt.ACME
         public const string TEST_PH1 = "tel:+14109361212";
         public const string TEST_EM2 = "mailto:letsencrypt+update@mailinator.com";
 
+        private static IWebProxy _proxy;
+
+        [ClassInitialize]
+        public static void OneTimeSetup(TestContext tctx)
+        {
+            if (File.Exists(WEB_PROXY_CONFIG))
+            {
+                var wpc = WebProxyConfig.Load(WEB_PROXY_CONFIG);
+                if (wpc != null && wpc.UseProxy)
+                {
+                    _proxy = new WebProxy(wpc.HostName, wpc.HostPort);
+                    if (wpc.AcceptAllServerCerts)
+                    {
+                        System.Net.ServicePointManager.ServerCertificateValidationCallback =
+                                (a, b, c, d) =>
+                                {
+                                    return true;
+                                };
+                    }
+                }
+            }
+        }
+
+        private static AcmeClient BuildClient(Uri rootUrl = null, ISigner signer = null)
+        {
+            var c = new AcmeClient(rootUrl, signer: signer);
+
+            if (_proxy != null)
+                c.Proxy = _proxy;
+
+            return c;
+        }
+
         [TestMethod]
         [TestCategory("skipCI")]
         public void Test0010_Init()
         {
             using (var signer = new RS256Signer())
             {
-                using (var client = new AcmeClient(_rootUrl, signer: signer))
+                using (var client = BuildClient(_rootUrl, signer: signer))
                 {
                     client.Init();
 
@@ -61,7 +95,7 @@ namespace LetsEncrypt.ACME
 
             using (var signer = new RS256Signer())
             {
-                using (var client = new AcmeClient(_rootUrl, signer: signer))
+                using (var client = BuildClient(_rootUrl, signer: signer))
                 {
                     client.Init();
 
@@ -92,7 +126,7 @@ namespace LetsEncrypt.ACME
             using (var signer = new RS256Signer())
             {
                 signer.Init();
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -141,7 +175,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -182,7 +216,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -222,7 +256,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -256,7 +290,7 @@ namespace LetsEncrypt.ACME
                     signer.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -301,7 +335,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -345,7 +379,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -391,7 +425,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -434,7 +468,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -477,7 +511,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -520,7 +554,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -565,7 +599,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -616,7 +650,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -668,7 +702,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -722,7 +756,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -773,7 +807,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -843,7 +877,7 @@ namespace LetsEncrypt.ACME
                 }
                 var derB64u = JwsHelper.Base64UrlEncode(derRaw);
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -884,7 +918,7 @@ namespace LetsEncrypt.ACME
                 var csrRaw = File.ReadAllBytes($"{BASE_LOCAL_STORE}test-csr.der");
                 var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -925,7 +959,7 @@ namespace LetsEncrypt.ACME
                 //var csrRaw = File.ReadAllBytes($"{BASE_LOCAL_STORE}test-csr.der");
                 //var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
 
-                using (var client = new AcmeClient())
+                using (var client = BuildClient())
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -954,6 +988,33 @@ namespace LetsEncrypt.ACME
                             certRequ.SaveCertificate(fs);
                         }
                     }
+                }
+            }
+        }
+
+
+        private class WebProxyConfig
+        {
+            public const string DEFAULT_HOST_NAME = "localhost";
+            public const int DEFAULT_HOST_PORT = 8888;
+
+            public bool UseProxy
+            { get; set; }
+
+            public string HostName
+            { get; set; } = DEFAULT_HOST_NAME;
+
+            public int HostPort
+            { get; set; } = DEFAULT_HOST_PORT;
+
+            public bool AcceptAllServerCerts
+            { get; set; }
+
+            public static WebProxyConfig Load(string filename)
+            {
+                using (var fs = new StreamReader(filename))
+                {
+                    return Newtonsoft.Json.JsonConvert.DeserializeObject<WebProxyConfig>(fs.ReadToEnd());
                 }
             }
         }

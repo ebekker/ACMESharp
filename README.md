@@ -133,7 +133,7 @@ Here is an example Provider configuration file for the ```AwsS3``` Provider.  Af
 Once, the Provider(s) are created and configured, you can complete the Challenges posed by the ACME server.
 ```PowerShell
 Get-ACMEIdentifier -Ref dns1
-Complete-ACMEIdentifier -Ref dns1 -Challenge simpleHttp -ProviderConfig s3HttpProvider
+Complete-ACMEChallenge -Ref dns1 -Challenge simpleHttp -ProviderConfig s3HttpProvider
 ```
 
 After you've completed all the Challenges you need to satisfy, you submit your responses for each Challenge type for validation by the ACME server.

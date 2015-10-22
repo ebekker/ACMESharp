@@ -1,5 +1,7 @@
 ﻿using LetsEncrypt.ACME.POSH.Util;
 using LetsEncrypt.ACME.POSH.Vault;
+using System;
+using System.IO;
 using System.Management.Automation;
 
 namespace LetsEncrypt.ACME.POSH
@@ -27,9 +29,13 @@ namespace LetsEncrypt.ACME.POSH
         public string Memo
         { get; set; }
 
+        [Parameter]
+        public string VaultProfile
+        { get; set; }
+
         protected override void ProcessRecord()
         {
-            using (var vp = GetVaultProvider())
+            using (var vp = GetVaultProvider(VaultProfile))
             {
                 vp.InitStorage(Force);
                 var v = new VaultConfig
@@ -47,10 +53,11 @@ namespace LetsEncrypt.ACME.POSH
         }
 
         // TODO:  this routine doesn't belong here
-        public static IVaultProvider GetVaultProvider(string providerName = null)
+        public static IVaultProvider GetVaultProvider(string profile, string provider = null)
         {
             // TODO: implement provider resolution
             var vp = new FileVaultProvider();
+            vp.VaultProfile = profile;
             vp.Init();
             return vp;
         }

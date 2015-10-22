@@ -39,6 +39,10 @@ namespace LetsEncrypt.ACME.POSH
         public string WebServerProvider
         { get; set; }
 
+        [Parameter]
+        public string VaultProfile
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             var pc = new ProviderConfig
@@ -53,7 +57,7 @@ namespace LetsEncrypt.ACME.POSH
 
             var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
 
-            using (var vp = InitializeVault.GetVaultProvider())
+            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
             {
                 vp.OpenStorage();
                 var v = vp.LoadVault();

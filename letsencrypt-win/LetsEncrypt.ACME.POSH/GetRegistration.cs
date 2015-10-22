@@ -12,9 +12,13 @@ namespace LetsEncrypt.ACME.POSH
     [OutputType(typeof(AcmeRegistration))]
     public class GetRegistration : Cmdlet
     {
+        [Parameter]
+        public string VaultProfile
+        { get; set; }
+
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider())
+            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
             {
                 vp.OpenStorage();
                 var v = vp.LoadVault();

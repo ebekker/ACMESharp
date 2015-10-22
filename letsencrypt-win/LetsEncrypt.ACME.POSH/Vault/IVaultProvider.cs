@@ -10,6 +10,9 @@ namespace LetsEncrypt.ACME.POSH.Vault
         bool IsOpen
         { get; }
 
+        string VaultProfile
+        { set; }
+
         void Init();
 
         void InitStorage(bool force = false);

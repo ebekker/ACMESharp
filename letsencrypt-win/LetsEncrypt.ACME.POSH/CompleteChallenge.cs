@@ -40,9 +40,13 @@ namespace LetsEncrypt.ACME.POSH
         public SwitchParameter UseBaseURI
         { get; set; }
 
+        [Parameter]
+        public string VaultProfile
+        { get; set; }
+
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider())
+            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
             {
                 vp.OpenStorage();
                 var v = vp.LoadVault();

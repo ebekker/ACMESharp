@@ -1,6 +1,7 @@
 ﻿using LetsEncrypt.ACME.POSH.Util;
 using System;
 using System.IO;
+using System.Management.Automation;
 
 namespace LetsEncrypt.ACME.POSH.Vault
 {
@@ -14,9 +15,14 @@ namespace LetsEncrypt.ACME.POSH.Vault
         public const string IDENTS /**/ = "20-IDENTS";
         public const string CERTS  /**/ = "30-CERTS";
 
+        private string _origCwd;
+
         private string _tagFile;
         private string _vaultFile;
         private EntityMeta<VaultConfig> _vaultMeta;
+
+        public string VaultProfile
+        { get; set; }
 
         public string RootPath
         { get; set; }
@@ -29,9 +35,38 @@ namespace LetsEncrypt.ACME.POSH.Vault
 
         public void Init()
         {
+            // TODO:  the Vault path resolution will require a little more thought
+            // and investigation, such as:
+            //    http://stackoverflow.com/a/8506768
+            //
+            // NOTE:  THIS HAS SIDE EFFECTS UNTIL WE DISPOSE!!!
+            // We're obviously changing the CWD here so this is altering the current
+            // user's session state during the life of this VaultProvider instance
+            // until we dispose and restore the CWD to the original.
+            //
+            // A better approach will be to have all the cmdlets
+            // interact directly with the VaultProvider for any "file I/O" which we'll
+            // need to do anyway in order to support non-file-based Vaults, such as ones
+            // that are stored in SQL Server or some other server storage (NoSQL).
+
+            var ss = new SessionState();
+            var psCwd = ss.Path.CurrentFileSystemLocation.Path;
+
             if (string.IsNullOrEmpty(RootPath))
-                RootPath = Environment.CurrentDirectory;
-            RootPath = Path.GetFullPath(RootPath);
+                RootPath = VaultProfile;
+            if (string.IsNullOrEmpty(RootPath))
+                RootPath = psCwd;
+
+            RootPath = Path.GetFullPath(Path.Combine(psCwd, RootPath));
+
+            // If the Root and CWD aren't the same, we need to
+            // temporarily move the CWD while we're working
+            var cwd = Environment.CurrentDirectory;
+            if (cwd != RootPath)
+            {
+                _origCwd = cwd;
+                Environment.CurrentDirectory = RootPath;
+            }
 
             _tagFile = Path.Combine(RootPath, TAG_FILE);
             _vaultFile = Path.Combine(RootPath, VAULT);
@@ -127,6 +162,9 @@ namespace LetsEncrypt.ACME.POSH.Vault
 
         public void Dispose()
         {
+            if (!string.IsNullOrEmpty(_origCwd))
+                Environment.CurrentDirectory = _origCwd;
+
             IsDisposed = true;
             IsOpen = false;
             RootPath = null;

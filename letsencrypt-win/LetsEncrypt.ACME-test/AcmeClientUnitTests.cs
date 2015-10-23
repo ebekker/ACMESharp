@@ -87,12 +87,17 @@ namespace LetsEncrypt.ACME
             }
         }
 
-        private static AcmeClient BuildClient(Uri rootUrl = null, ISigner signer = null)
+        private static AcmeClient BuildClient(Uri rootUrl = null, ISigner signer = null, string testTagHeader = null)
         {
             var c = new AcmeClient(rootUrl, signer: signer);
 
             if (_proxy != null)
                 c.Proxy = _proxy;
+            if (testTagHeader != null)
+                c.BeforeGetResponseAction = x =>
+                {
+                    x.Headers.Add("X-ACME-TestTag", testTagHeader);
+                };
 
             return c;
         }
@@ -103,7 +108,7 @@ namespace LetsEncrypt.ACME
         {
             using (var signer = new RS256Signer())
             {
-                using (var client = BuildClient(_rootUrl, signer: signer))
+                using (var client = BuildClient(_rootUrl, signer: signer, testTagHeader: nameof(Test0010_Init)))
                 {
                     client.Init();
 
@@ -127,7 +132,7 @@ namespace LetsEncrypt.ACME
 
             using (var signer = new RS256Signer())
             {
-                using (var client = BuildClient(_rootUrl, signer: signer))
+                using (var client = BuildClient(_rootUrl, signer: signer, testTagHeader: nameof(Test0020_GetDirectory)))
                 {
                     client.Init();
 
@@ -172,7 +177,7 @@ namespace LetsEncrypt.ACME
                     signer.Save(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0030_Register)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -218,7 +223,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0040_RegisterEmptyUpdate)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -260,7 +265,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0050_RegisterUpdateTosAgreement)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -301,7 +306,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0060_RegisterUpdateContacts)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -336,7 +341,7 @@ namespace LetsEncrypt.ACME
                     signer.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0070_RegisterDuplicate)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -381,7 +386,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0080_AuthorizeDnsBlacklisted)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -425,7 +430,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0090_AuthorizeIdentifier)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -477,7 +482,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0095_RefreshIdentifierAuthorization)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -521,7 +526,7 @@ namespace LetsEncrypt.ACME
         //            reg = AcmeRegistration.Load(fs);
         //        }
         //
-        //        using (var client = BuildClient())
+        //        using (var client = BuildClient(testTagHeader: nameof(Test0100_RefreshAuthzDnsChallenge)))
         //        {
         //            client.RootUrl = _rootUrl;
         //            client.Signer = signer;
@@ -565,7 +570,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0110_RefreshAuthzHttpChallenge)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -609,7 +614,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0120_GenerateChallengeAnswers)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -655,7 +660,7 @@ namespace LetsEncrypt.ACME
         //            reg = AcmeRegistration.Load(fs);
         //        }
         //
-        //        using (var client = BuildClient())
+        //        using (var client = BuildClient(testTagHeader: nameof(Test0130_HandleDnsChallenge)))
         //        {
         //            client.RootUrl = _rootUrl;
         //            client.Signer = signer;
@@ -707,7 +712,7 @@ namespace LetsEncrypt.ACME
         //            reg = AcmeRegistration.Load(fs);
         //        }
         //
-        //        using (var client = BuildClient())
+        //        using (var client = BuildClient(testTagHeader: nameof(Test0135_SubmitDnsChallengeAnswers)))
         //        {
         //            client.RootUrl = _rootUrl;
         //            client.Signer = signer;
@@ -760,7 +765,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0140_HandleHttpChallenge)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -815,7 +820,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0145_SubmitHttpChallengeAnswers)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -867,7 +872,7 @@ namespace LetsEncrypt.ACME
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0160_RequestCertificateInvalidCsr)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -940,7 +945,7 @@ namespace LetsEncrypt.ACME
                 }
                 var derB64u = JwsHelper.Base64UrlEncode(derRaw);
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0170_GenCsrAndRequestCertificate)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -982,7 +987,7 @@ namespace LetsEncrypt.ACME
                 var csrRaw = File.ReadAllBytes($"{_baseLocalStoreXXX}\\test-csr.der???");
                 var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0180_RequestCertificate)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -1024,7 +1029,7 @@ namespace LetsEncrypt.ACME
                 //var csrRaw = File.ReadAllBytes($"{_baseLocalStore}\\test-csr.der");
                 //var csrB64u = JwsHelper.Base64UrlEncode(csrRaw);
 
-                using (var client = BuildClient())
+                using (var client = BuildClient(testTagHeader: nameof(Test0190_RefreshCertificateRequest)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;

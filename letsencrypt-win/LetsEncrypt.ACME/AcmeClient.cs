@@ -80,6 +80,9 @@ namespace LetsEncrypt.ACME
         public IWebProxy Proxy
         { get; set; }
 
+        public Action<HttpWebRequest> BeforeGetResponseAction
+        { get; set; }
+
         public AcmeServerDirectory Directory
         { get; set; }
 
@@ -530,6 +533,9 @@ namespace LetsEncrypt.ACME
 
             try
             {
+                if (BeforeGetResponseAction != null)
+                    BeforeGetResponseAction(requ);
+
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);
@@ -586,6 +592,9 @@ namespace LetsEncrypt.ACME
             
             try
             {
+                if (BeforeGetResponseAction != null)
+                    BeforeGetResponseAction(requ);
+
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);

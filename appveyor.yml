@@ -14,3 +14,10 @@ test:
   categories:
     except:
     - skipCI
+artifacts:
+- path: letsencrypt-win\LetsEncrypt.ACME\bin
+  name: ACME-lib
+  type: zip
+- path: letsencrypt-win\LetsEncrypt.ACME.POSH\bin
+  name: ACME-posh
+  type: zip

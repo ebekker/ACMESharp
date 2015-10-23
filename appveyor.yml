@@ -5,8 +5,9 @@ environment:
 install:
 - nuget restore letsencrypt-win\letsencrypt-win.sln
 - nuget install secure-file -ExcludeVersion
-- secure-file\tools\secure-file -decrypt letsencrypt-win\LetsEncrypt.ACME-test\dnsInfo.json.enc -secret %secureInfoPassword%
-- secure-file\tools\secure-file -decrypt letsencrypt-win\LetsEncrypt.ACME-test\webServerInfo.json.enc -secret %secureInfoPassword%
+- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt letsencrypt-win\LetsEncrypt.ACME-test\dnsInfo.json.enc
+- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt letsencrypt-win\LetsEncrypt.ACME-test\webServerInfo.json.enc
+- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt letsencrypt-win\LetsEncrypt.ACME-test\testProxyConfig.json.enc
 build:
   verbosity: minimal
 test:

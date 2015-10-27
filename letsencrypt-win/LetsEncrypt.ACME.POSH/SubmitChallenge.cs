@@ -16,7 +16,12 @@ namespace LetsEncrypt.ACME.POSH
         { get; set; }
 
         [Parameter(Mandatory = true)]
-        [ValidateSet("dns", "simpleHttp")]
+        [ValidateSet(
+                AcmeProtocol.CHALLENGE_TYPE_DNS,
+                AcmeProtocol.CHALLENGE_TYPE_HTTP,
+                AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS,
+                AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP,
+                IgnoreCase = true)]
         public string Challenge
         { get; set; }
 

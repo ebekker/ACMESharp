@@ -73,6 +73,7 @@
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="AcmeClient.cs" />
+    <Compile Include="AcmeProtocol.cs" />
     <Compile Include="AcmeException.cs" />
     <Compile Include="AcmeRegistration.cs" />
     <Compile Include="AcmeServerDirectory.cs" />

@@ -15,7 +15,7 @@ namespace LetsEncrypt.ACME.POSH
     public class NewProviderConfig : Cmdlet
     {
         public const string PSET_DNS = "dns";
-        public const string PSET_SIMPLE_HTTP = "simpleHttp";
+        public const string PSET_HTTP = "http";
 
         [Parameter]
         public string Alias
@@ -34,7 +34,7 @@ namespace LetsEncrypt.ACME.POSH
         public string DnsProvider
         { get; set; }
 
-        [Parameter(ParameterSetName = PSET_SIMPLE_HTTP, Mandatory = true)]
+        [Parameter(ParameterSetName = PSET_HTTP, Mandatory = true)]
         [ValidateSet("Manual", "AwsS3")]
         public string WebServerProvider
         { get; set; }

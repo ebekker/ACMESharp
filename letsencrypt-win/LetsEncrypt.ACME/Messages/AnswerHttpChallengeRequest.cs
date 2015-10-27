@@ -12,7 +12,7 @@ namespace LetsEncrypt.ACME.Messages
         { }
 
         public string Type
-        { get; private set; } = "simpleHttp";
+        { get; private set; } = AcmeProtocol.CHALLENGE_TYPE_HTTP;
 
         public bool Tls
         { get; set; }

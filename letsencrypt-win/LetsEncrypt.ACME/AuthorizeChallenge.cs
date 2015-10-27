@@ -52,7 +52,7 @@ namespace LetsEncrypt.ACME
         {
             var resp = new
             {
-                type = "dns",
+                type = AcmeProtocol.CHALLENGE_TYPE_DNS,
                 token = Token
             };
             var json = JsonConvert.SerializeObject(resp);
@@ -86,7 +86,7 @@ namespace LetsEncrypt.ACME
         {
             var resp = new
             {
-                type = "simpleHttp",
+                type = AcmeProtocol.CHALLENGE_TYPE_HTTP,
                 token = Token,
                 tls = tls
             };

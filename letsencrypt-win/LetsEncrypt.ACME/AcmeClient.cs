@@ -20,29 +20,6 @@ namespace LetsEncrypt.ACME
     /// </summary>
     public class AcmeClient : IDisposable
     {
-        #region -- Constants --
-
-        public const string USER_AGENT_FMT = "ACMEdotNET v{0} (ACME 1.0)";
-
-        /// <summary>
-        /// The relation name for the "Terms of Service" related link header.
-        /// </summary>
-        /// <remarks>
-        /// Link headers can be returned as part of a registration:
-        ///   HTTP/1.1 201 Created
-        ///   Content-Type: application/json
-        ///   Location: https://example.com/acme/reg/asdf
-        ///   Link: <https://example.com/acme/new-authz>;rel="next"
-        ///   Link: <https://example.com/acme/recover-reg>;rel="recover"
-        ///   Link: <https://example.com/acme/terms>;rel="terms-of-service"
-        ///
-        /// The "terms-of-service" URI should be included in the "agreement" field
-        /// in a subsequent registration update
-        /// </remarks>
-        public const string TOS_LINK_REL = "terms-of-service";
-
-        #endregion -- Constants --
-
         #region -- Fields --
 
         JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
@@ -63,7 +40,7 @@ namespace LetsEncrypt.ACME
             Signer = signer;
             Registration = reg;
 
-            UserAgent = string.Format(USER_AGENT_FMT,
+            UserAgent = string.Format(AcmeProtocol.HTTP_USER_AGENT_FMT,
                     this.GetType().Assembly.GetName().Version);
         }
 
@@ -116,7 +93,7 @@ namespace LetsEncrypt.ACME
             // TODO:  according to ACME 5.5 we *should* be able to issue a HEAD
             // request to get an initial replay-nonce, but this is not working,
             // so we do a GET against the root URL to get that initial nonce
-            //requ.Method = "HEAD";
+            //requ.Method = AcmeProtocol.HTTP_METHOD_HEAD;
 
             var requUri = new Uri(RootUrl, Directory[AcmeServerDirectory.RES_INIT]);
             var resp = RequestHttpGet(requUri);
@@ -189,7 +166,7 @@ namespace LetsEncrypt.ACME
                             "Unexpected error", resp);
             }
 
-            var regUri = resp.Headers["Location"];
+            var regUri = resp.Headers[AcmeProtocol.HEADER_LOCATION];
             if (string.IsNullOrEmpty(regUri))
                 throw new AcmeException("server did not provide a registration URI in the response");
 
@@ -203,7 +180,7 @@ namespace LetsEncrypt.ACME
                 Links = resp.Links,
                 /// Extracts the "Terms of Service" related link header if there is one and
                 /// returns the URI associated with it.  Otherwise returns <c>null</c>.
-                TosLinkUri = resp.Links[TOS_LINK_REL].FirstOrDefault(),
+                TosLinkUri = resp.Links[AcmeProtocol.LINK_HEADER_REL_TOS].FirstOrDefault(),
                 AuthorizationsUri = respMsg.Authorizations,
                 CertificatesUri = respMsg.Certificates,
                 TosAgreementUri = respMsg.Agreement,
@@ -251,7 +228,7 @@ namespace LetsEncrypt.ACME
                 Links = resp.Links,
                 /// Extracts the "Terms of Service" related link header if there is one and
                 /// returns the URI associated with it.  Otherwise returns <c>null</c>.
-                TosLinkUri = resp.Links[TOS_LINK_REL].FirstOrDefault(),
+                TosLinkUri = resp.Links[AcmeProtocol.LINK_HEADER_REL_TOS].FirstOrDefault(),
                 AuthorizationsUri = respMsg.Authorizations,
                 CertificatesUri = respMsg.Certificates,
                 TosAgreementUri = respMsg.Agreement,
@@ -271,7 +248,7 @@ namespace LetsEncrypt.ACME
             {
                 Identifier = new IdentifierPart
                 {
-                    Type = "dns",
+                    Type = AcmeProtocol.IDENTIFIER_TYPE_DNS,
                     Value = dnsIdentifier
                 }
             };
@@ -285,7 +262,7 @@ namespace LetsEncrypt.ACME
                         "Unexpected error", resp);
             }
 
-            var uri = resp.Headers["Location"];
+            var uri = resp.Headers[AcmeProtocol.HEADER_LOCATION];
             if (string.IsNullOrEmpty(uri))
                 throw new AcmeProtocolException("Response is missing an identifier authorization resource URI", resp);
 
@@ -389,7 +366,8 @@ namespace LetsEncrypt.ACME
 
             switch (type)
             {
-                case "dns":
+                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS:
+                case AcmeProtocol.CHALLENGE_TYPE_DNS:
                     c.ChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
                     c.ChallengeAnswerMessage = new AnswerDnsChallengeRequest
                     {
@@ -399,7 +377,7 @@ namespace LetsEncrypt.ACME
                             header = new { alg = Signer.JwsAlg },
                             payload = JwsHelper.Base64UrlEncode(JsonConvert.SerializeObject(new
                             {
-                                type = "dns",
+                                type = type,
                                 token = c.Token
                             })),
                             signature = c.ChallengeAnswer.Value
@@ -407,7 +385,8 @@ namespace LetsEncrypt.ACME
                     };
                     break;
 
-                case "simpleHttp":
+                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP:
+                case AcmeProtocol.CHALLENGE_TYPE_HTTP:
                     var tls = c.Tls.GetValueOrDefault(true);
                     c.ChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer, tls);
                     c.ChallengeAnswerMessage = new AnswerHttpChallengeRequest
@@ -416,8 +395,14 @@ namespace LetsEncrypt.ACME
                     };
                     break;
 
+                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_DVSNI:
+                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_PRIORKEY:
+                case AcmeProtocol.CHALLENGE_TYPE_SNI:
+                case AcmeProtocol.CHALLENGE_TYPE_PRIORKEY:
+                    throw new ArgumentException("unimplemented or unsupported challenge type", nameof(type));
+
                 default:
-                    throw new ArgumentException("unsupported challenge type", nameof(type));
+                    throw new ArgumentException("unknown challenge type", nameof(type));
             }
 
             return c;
@@ -470,7 +455,7 @@ namespace LetsEncrypt.ACME
             if (resp.StatusCode != HttpStatusCode.Created)
                 throw new AcmeProtocolException("Unexpected response status code", resp);
 
-            var uri = resp.Headers["Location"];
+            var uri = resp.Headers[AcmeProtocol.HEADER_LOCATION];
             if (string.IsNullOrEmpty(uri))
                 throw new AcmeProtocolException("Response is missing a certificate resource URI", resp);
 
@@ -507,7 +492,7 @@ namespace LetsEncrypt.ACME
             certRequ.RetryAfter = null;
 
             var certContent = acmeResp.RawContent;
-            var retryAfter = acmeResp.Headers["Retry-After"];
+            var retryAfter = acmeResp.Headers[AcmeProtocol.HEADER_RETRY_AFTER];
             if (!string.IsNullOrEmpty(retryAfter))
             {
                 // According to spec (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.37)
@@ -528,7 +513,7 @@ namespace LetsEncrypt.ACME
             var requ = (HttpWebRequest)WebRequest.Create(uri);
             if (Proxy != null)
                 requ.Proxy = Proxy;
-            requ.Method = "GET";
+            requ.Method = AcmeProtocol.HTTP_METHOD_GET;
             requ.UserAgent = this.UserAgent;
 
             try
@@ -581,20 +566,20 @@ namespace LetsEncrypt.ACME
             var requ = (HttpWebRequest)WebRequest.Create(uri);
             if (Proxy != null)
                 requ.Proxy = Proxy;
-            requ.Method = "POST";
-            requ.ContentType = "application/json";
+            requ.Method = AcmeProtocol.HTTP_METHOD_POST;
+            requ.ContentType = AcmeProtocol.HTTP_CONTENT_TYPE_JSON;
             requ.ContentLength = acmeBytes.Length;
             requ.UserAgent = this.UserAgent;
-            using (var s = requ.GetRequestStream())
-            {
-                s.Write(acmeBytes, 0, acmeBytes.Length);
-            }
-            
             try
             {
                 if (BeforeGetResponseAction != null)
                     BeforeGetResponseAction(requ);
 
+                using (var s = requ.GetRequestStream())
+                {
+                    s.Write(acmeBytes, 0, acmeBytes.Length);
+                }
+            
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);
@@ -662,7 +647,7 @@ namespace LetsEncrypt.ACME
         private void ExtractNonce(WebResponse resp)
         {
             var nonceHeader = resp.Headers.AllKeys.FirstOrDefault(x =>
-                    x.Equals("Replay-nonce", StringComparison.OrdinalIgnoreCase));
+                    x.Equals(AcmeProtocol.HEADER_REPLAY_NONCE, StringComparison.OrdinalIgnoreCase));
             if (string.IsNullOrEmpty(nonceHeader))
                 throw new AcmeException("Missing initial replay-nonce header");
 
@@ -683,7 +668,7 @@ namespace LetsEncrypt.ACME
             {
                 StatusCode = resp.StatusCode;
                 Headers = resp.Headers;
-                Links = new LinkCollection(Headers.GetValues("Link"));
+                Links = new LinkCollection(Headers.GetValues(AcmeProtocol.HEADER_LINK));
 
                 var rs = resp.GetResponseStream();
                 using (var ms = new MemoryStream())

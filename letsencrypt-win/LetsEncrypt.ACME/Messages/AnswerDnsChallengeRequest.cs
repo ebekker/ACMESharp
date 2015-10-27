@@ -12,7 +12,7 @@ namespace LetsEncrypt.ACME.Messages
         { }
 
         public string Type
-        { get; private set; } = "dns";
+        { get; private set; } = AcmeProtocol.CHALLENGE_TYPE_DNS;
 
         public object ClientPublicKey
         { get; set; }

@@ -443,12 +443,14 @@ namespace LetsEncrypt.ACME
 
                     foreach (var c in authzState.Challenges)
                     {
-                        if (c.Type == "dns")
+                        if (c.Type == AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS
+                                || c.Type == AcmeProtocol.CHALLENGE_TYPE_DNS)
                         {
                             var dnsResponse = c.GenerateDnsChallengeAnswer(
                                     authzState.Identifier, signer);
                         }
-                        if (c.Type == "simpleHttp")
+                        if (c.Type == AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP
+                                || c.Type == AcmeProtocol.CHALLENGE_TYPE_HTTP)
                         {
                             var httpResponse = c.GenerateHttpChallengeAnswer(
                                 authzState.Identifier, signer, false);
@@ -541,7 +543,7 @@ namespace LetsEncrypt.ACME
         //                authzState = AuthorizationState.Load(fs);
         //            }
         //
-        //            client.RefreshAuthorizeChallenge(authzState, "dns", true);
+        //            client.RefreshAuthorizeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
         //
         //            _testAuthzChallengeDnsRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-DnsChallengeRefreshed.acmeAuthz";
         //            using (var fs = new FileStream(_testAuthzChallengeDnsRefresh_AcmeAuthzFile, FileMode.Create))
@@ -585,7 +587,7 @@ namespace LetsEncrypt.ACME
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.RefreshAuthorizeChallenge(authzState, "simpleHttp", true);
+                    client.RefreshAuthorizeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
                     _testAuthzChallengeHttpRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-HttpChallengeRefreshed.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpRefresh_AcmeAuthzFile, FileMode.Create))
@@ -629,8 +631,8 @@ namespace LetsEncrypt.ACME
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    //client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
-                    client.GenerateAuthorizeChallengeAnswer(authzState, "simpleHttp");
+                    //client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+                    client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
 
                     _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswers.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeAnswers_AcmeAuthzFile, FileMode.Create))
@@ -675,7 +677,7 @@ namespace LetsEncrypt.ACME
         //                authzState = AuthorizationState.Load(fs);
         //            }
         //
-        //            var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
+        //            var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
         //            _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
         //            using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Create))
         //            {
@@ -727,8 +729,8 @@ namespace LetsEncrypt.ACME
         //                authzState = AuthorizationState.Load(fs);
         //            }
         //
-        //            client.GenerateAuthorizeChallengeAnswer(authzState, "dns");
-        //            client.SubmitAuthorizeChallengeAnswer(authzState, "dns", true);
+        //            client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+        //            client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
         //
         //            _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-DnsChallengeAnswered.acmeAuthz";
         //            using (var fs = new FileStream(_testAuthzChallengeDnsAnswered_AcmeAuthzFile, FileMode.Create))
@@ -780,7 +782,7 @@ namespace LetsEncrypt.ACME
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, "simpleHttp");
+                    var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
                     _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpHandled_AcmeAuthzFile, FileMode.Create))
                     {
@@ -835,8 +837,8 @@ namespace LetsEncrypt.ACME
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.GenerateAuthorizeChallengeAnswer(authzState, "simpleHttp");
-                    client.SubmitAuthorizeChallengeAnswer(authzState, "simpleHttp", true);
+                    client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+                    client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
                     _testAuthzChallengeHttpAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-HttpChallengeAnswered.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpAnswered_AcmeAuthzFile, FileMode.Create))

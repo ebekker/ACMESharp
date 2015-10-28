@@ -11,10 +11,7 @@ namespace LetsEncrypt.ACME.Messages
         public AnswerHttpChallengeRequest() : base("challenge")
         { }
 
-        public string Type
-        { get; private set; } = AcmeProtocol.CHALLENGE_TYPE_HTTP;
-
-        public bool Tls
+        public string KeyAuthorization
         { get; set; }
     }
 }

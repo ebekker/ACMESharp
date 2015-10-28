@@ -48,16 +48,26 @@ namespace LetsEncrypt.ACME.JOSE
             }
         }
 
-        public object ExportJwk()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="canonical"></param>
+        /// <returns></returns>
+        public object ExportJwk(bool canonical = false)
         {
+            // Note, we only produce a canonical form of the JWK
+            // for export therefore we ignore the canonical param
+
             if (_jwk == null)
             {
                 var keyParams = _rsa.ExportParameters(false);
                 _jwk = new
                 {
+                    // As per RFC 7638 Section 3, these are the *required* elements of the
+                    // JWK and are sorted in lexicographic order to produce a canonical form
+                    e = JwsHelper.Base64UrlEncode(keyParams.Exponent),
                     kty = "RSA",
                     n = JwsHelper.Base64UrlEncode(keyParams.Modulus),
-                    e = JwsHelper.Base64UrlEncode(keyParams.Exponent),
                 };
             }
 

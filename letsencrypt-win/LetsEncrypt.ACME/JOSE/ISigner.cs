@@ -17,7 +17,7 @@ namespace LetsEncrypt.ACME.JOSE
 
         void Load(Stream stream);
 
-        object ExportJwk();
+        object ExportJwk(bool canonical = false);
 
         byte[] Sign(byte[] raw);
     }

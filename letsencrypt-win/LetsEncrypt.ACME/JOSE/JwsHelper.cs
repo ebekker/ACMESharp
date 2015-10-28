@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -142,6 +143,40 @@ namespace LetsEncrypt.ACME.JOSE
         {
             var jwsFlatJS = SignFlatJsonAsObject(sigFunc, payload, protectedHeaders, unprotectedHeaders);
             return JsonConvert.SerializeObject(jwsFlatJS, Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Computes a thumbprint of the JWK using the argument Hash Algorithm
+        /// as per <see cref="https://tools.ietf.org/html/rfc7638">RFC 7638</see>,
+        /// JSON Web Key (JWK) Thumbprint.
+        /// </summary>
+        /// <param name="algor"></param>
+        /// <returns></returns>
+        public static byte[] ComputeThumbprint(ISigner signer, HashAlgorithm algor)
+        {
+            // As per RFC 7638 Section 3, we export the JWK in a canonical form
+            // and then produce a JSON object with no whitespace or line breaks
+
+            var jwkCanon = signer.ExportJwk(true);
+            var jwkJson = JsonConvert.SerializeObject(jwkCanon, Formatting.None);
+            var jwkBytes = Encoding.UTF8.GetBytes(jwkJson);
+            var jwkHash = algor.ComputeHash(jwkBytes);
+
+            return jwkHash;
+        }
+
+        /// <summary>
+        /// Computes the ACME Key Authorization of the JSON Web Key (JWK) of an argument
+        /// Signer as prescribed in the
+        /// <see cref="https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.1"
+        /// >ACME specification, section 7.1</see>.
+        /// </summary>
+        /// <param name="signer"></param>
+        /// <returns></returns>
+        public static string ComputeKeyAuthorization(ISigner signer, string token)
+        {
+            var jwkThumb = Base64UrlEncode(ComputeThumbprint(signer, SHA256.Create()));
+            return $"{token}.{jwkThumb}";
         }
 
         public class JwsSigned

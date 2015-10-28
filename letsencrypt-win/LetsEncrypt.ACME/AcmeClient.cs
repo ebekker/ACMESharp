@@ -369,7 +369,7 @@ namespace LetsEncrypt.ACME
                 case AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS:
                 case AcmeProtocol.CHALLENGE_TYPE_DNS:
                     c.ChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
-                    c.ChallengeAnswerMessage = new AnswerDnsChallengeRequest
+                    c.ChallengeAnswerMessage = new AnswerLegacyDnsChallengeRequest
                     {
                         ClientPublicKey = Signer.ExportJwk(),
                         Validation = new
@@ -380,18 +380,25 @@ namespace LetsEncrypt.ACME
                                 type = type,
                                 token = c.Token
                             })),
-                            signature = c.ChallengeAnswer.Value
+                            signature = c.ChallengeAnswer.Value,
                         }
                     };
                     break;
 
                 case AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP:
-                case AcmeProtocol.CHALLENGE_TYPE_HTTP:
                     var tls = c.Tls.GetValueOrDefault(true);
-                    c.ChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer, tls);
-                    c.ChallengeAnswerMessage = new AnswerHttpChallengeRequest
+                    c.ChallengeAnswer = c.GenerateLegacyHttpChallengeAnswer(authzState.Identifier, Signer, tls);
+                    c.ChallengeAnswerMessage = new AnswerLegacyHttpChallengeRequest
                     {
                         Tls = tls
+                    };
+                    break;
+
+                case AcmeProtocol.CHALLENGE_TYPE_HTTP:
+                    c.ChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer);
+                    c.ChallengeAnswerMessage = new AnswerHttpChallengeRequest
+                    {
+                        KeyAuthorization = c.ChallengeAnswer.Value,
                     };
                     break;
 

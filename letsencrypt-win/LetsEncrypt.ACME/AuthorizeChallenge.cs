@@ -74,15 +74,15 @@ namespace LetsEncrypt.ACME
         }
 
         /// <summary>
-        /// Returns a key-value pair that represents the Simple HTTP resource path that
+        /// Returns a key-value pair that represents the Legacy HTTP resource path that
         /// needs to be configured (the key) and the resource content that should be returned
         /// for an HTTP request for this path on a server that the target DNS resolve to.
         /// </summary>
         /// <param name="dnsId"></param>
         /// <param name="signer"></param>
-        /// <param name="tls"></param>
+        /// <param name="tls">Only supported for Legacy HTTP (simpleHttp)</param>
         /// <returns></returns>
-        public KeyValuePair<string, string> GenerateHttpChallengeAnswer(string dnsId, ISigner signer, bool tls)
+        public KeyValuePair<string, string> GenerateLegacyHttpChallengeAnswer(string dnsId, ISigner signer, bool tls)
         {
             var resp = new
             {
@@ -98,6 +98,23 @@ namespace LetsEncrypt.ACME
             return new KeyValuePair<string, string>(
                     $"{HTTP_CHALLENGE_PATHPREFIX}{Token}",
                     JsonConvert.SerializeObject(signed, Formatting.Indented));
+        }
+
+        /// <summary>
+        /// Returns a key-value pair that represents the HTTP resource path that
+        /// needs to be configured (the key) and the resource content that should be returned
+        /// for an HTTP request for this path on a server that the target DNS resolve to.
+        /// </summary>
+        /// <param name="dnsId"></param>
+        /// <param name="signer"></param>
+        /// <param name="tls">Only supported for Legacy HTTP (simpleHttp)</param>
+        /// <returns></returns>
+        public KeyValuePair<string, string> GenerateHttpChallengeAnswer(string dnsId, ISigner signer)
+        {
+            var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, Token);
+            
+            return new KeyValuePair<string, string>(
+                    $"{HTTP_CHALLENGE_PATHPREFIX}{Token}", keyAuthz);
         }
     }
 }

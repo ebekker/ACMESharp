@@ -52,7 +52,7 @@ namespace LetsEncrypt.ACME.CLI
                     //client.UserAgent = UserAgent;
 
                     Console.WriteLine("Calling Register");
-                    var registration = client.Register(new string[] { });
+                    var registration = client.Register(new string[] { "mailto:bryanlivingston@gmail.com" });
 
                     Console.WriteLine($"Do you agree to {registration.TosLinkUri}? (Y/N)");
                     if (!PromptYesNo())
@@ -62,22 +62,42 @@ namespace LetsEncrypt.ACME.CLI
                     client.UpdateRegistration(true, true);
 
                     Console.WriteLine("Scanning IIS 7 Site Bindings for Hosts (Elevated Permissions Required)");
-                    var hosts = GetHostNames();
-                    foreach (var hostName in hosts)
-                    {
-                        Console.WriteLine($"  - {hostName}");
-                    }
+                    var bindings = GetHostNames();
 
-                    foreach (var hostName in hosts)
+                    Console.WriteLine("IIS Bindings");
+                    var count = 1;
+                    foreach (var binding in bindings)
                     {
-                        AuthorizeIdentifier(client, hostName.Host, hostName.PhysicalPath);
+                        Console.WriteLine($" {count}: {binding}");
+                        count++;
                     }
-
-                    //_testAuthz_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz.acmeAuthz";
-                    //using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Create))
-                    //{
-                    //    authzState.Save(fs);
-                    //}
+                    Console.WriteLine(" A: Cert all bindings");
+                    Console.WriteLine(" Q: Quit");
+                    Console.Write("Which binding do you want to get a cert for: ");
+                    var response = Console.ReadLine();
+                    switch (response.ToLowerInvariant())
+                    {
+                        case "a":
+                            foreach (var hostName in bindings)
+                            {
+                                Authorize(client, hostName.Host, hostName.PhysicalPath);
+                            }
+                            break;
+                        case "q":
+                            return;
+                        default:
+                            var bindingId = 0;
+                            if (Int32.TryParse(response, out bindingId))
+                            {
+                                bindingId--;
+                                if (bindingId >= 0 && bindingId < bindings.Count)
+                                {
+                                    var binding = bindings[bindingId];
+                                    Authorize(client, binding.Host, binding.PhysicalPath);
+                                }
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -104,7 +124,7 @@ namespace LetsEncrypt.ACME.CLI
             return result;
         }
 
-        static void AuthorizeIdentifier(AcmeClient client, string dnsIdentifier, string webRootPath)
+        static bool Authorize(AcmeClient client, string dnsIdentifier, string webRootPath)
         {
             Console.WriteLine($"Authorizing Identifier {dnsIdentifier}");
             var authzState = client.AuthorizeIdentifier(dnsIdentifier);
@@ -117,6 +137,8 @@ namespace LetsEncrypt.ACME.CLI
             Directory.CreateDirectory(Path.GetDirectoryName(answerPath));
             File.WriteAllText(answerPath, challenge.ChallengeAnswer.Value);
 
+            Console.WriteLine($" Answer should now be browsable at {challenge.Uri}");
+
             try
             {
                 Console.WriteLine(" Submitting answer");
@@ -128,19 +150,20 @@ namespace LetsEncrypt.ACME.CLI
 
                 // have to loop to wait for server to stop being pending.
                 // TODO: put timeout/retry limit in this loop
-                while (authzState.Status == "pending")
-                {
+                //while (authzState.Status == "pending")
+                //{
                     Console.WriteLine(" Refreshing authorization");
                     Thread.Sleep(1000); // this has to be here to give server a chance to think
                     authzState = client.RefreshIdentifierAuthorization(authzState);
-                }
+                //}
 
                 Console.WriteLine($" Authorization RESULT: {authzState.Status}");
+                return true;
             }
             finally
             {
-                Console.WriteLine(" Deleting answer");
-                File.Delete(answerPath);
+                //Console.WriteLine(" Deleting answer");
+                //File.Delete(answerPath);
             }
         }
     }

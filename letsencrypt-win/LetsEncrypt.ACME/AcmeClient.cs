@@ -309,6 +309,11 @@ namespace LetsEncrypt.ACME
                         "Unexpected error", resp);
             }
 
+#if DEBUG
+            Console.WriteLine("RefreshIdentifierAuthorization Response:");
+            Console.WriteLine(resp.ContentAsString);
+#endif
+
             var respMsg = JsonConvert.DeserializeObject<AuthzStatusResponse>(resp.ContentAsString);
 
             var authzStatusState = new AuthorizationState

@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LetsEncrypt.ACME.CLI</RootNamespace>
-    <AssemblyName>LetsEncrypt.ACME.CLI</AssemblyName>
+    <AssemblyName>LetsEncrypt</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

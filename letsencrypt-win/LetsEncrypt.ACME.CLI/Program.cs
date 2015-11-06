@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Web.Administration;
+using System.Threading;
 
 namespace LetsEncrypt.ACME.CLI
 {
@@ -108,35 +109,39 @@ namespace LetsEncrypt.ACME.CLI
             Console.WriteLine($"Authorizing Identifier {dnsIdentifier}");
             var authzState = client.AuthorizeIdentifier(dnsIdentifier);
 
-            Console.WriteLine("Getting challenge answer from ACME server.");
+            Console.WriteLine(" Getting challenge answer from ACME server.");
             var challenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-            var answerPath = Path.Combine(webRootPath, challenge.ChallengeAnswer.Key);
+            var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, challenge.ChallengeAnswer.Key));
 
-            Console.WriteLine($"Writing challenge answer to {answerPath}");
+            Console.WriteLine($" Writing challenge answer to {answerPath}");
             Directory.CreateDirectory(Path.GetDirectoryName(answerPath));
             File.WriteAllText(answerPath, challenge.ChallengeAnswer.Value);
 
             try
             {
-                Console.WriteLine("Submitting answer");
+                Console.WriteLine(" Submitting answer");
                 // This always throws throw new InvalidOperationException("challenge answer has not been generated"); because the authoState.Challenge list isn't changing for some reason
                 //client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
                 // so I pulled the core of SubmitAuthorizeChallengeAnswer into it's own method that I can call directly
-                client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
+                client.SubmitAuthorizeChallengeAnswer(challenge, true);
+
+                // have to loop to wait for server to stop being pending.
+                // TODO: put timeout/retry limit in this loop
+                while (authzState.Status == "pending")
+                {
+                    Console.WriteLine(" Refreshing authorization");
+                    Thread.Sleep(1000); // this has to be here to give server a chance to think
+                    authzState = client.RefreshIdentifierAuthorization(authzState);
+                }
+
+                Console.WriteLine($" Authorization RESULT: {authzState.Status}");
             }
             finally
             {
-                Console.WriteLine("Deleting answer");
+                Console.WriteLine(" Deleting answer");
                 File.Delete(answerPath);
             }
-
-            Console.WriteLine("Refreshing authorization");
-            authzState = client.RefreshIdentifierAuthorization(authzState);
-
-            // If I put a break point here, Status is invalid, otherwise it still shows as pending.
-
-            Console.WriteLine($"Authorization RESULT: {authzState.Status}");
         }
     }
 }

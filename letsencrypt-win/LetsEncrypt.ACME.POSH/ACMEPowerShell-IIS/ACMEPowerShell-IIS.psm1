@@ -113,17 +113,27 @@ function Install-CertificateToIIS {
 		}
 
 		## Import the PFX file to the local machine store and make sure its there
-	    $crtPath = "Cert:\LocalMachine\My\$($CrtThumbprint)"
-		if (Test-Path $crtPath -PathType Leaf) {
-			Write-Warning "Existing certificate with matching Thumbprint found; SKIPPING"
-		}
-		else {
+		## NOTE:  instead of using the native PKI Cert path provider and cmdlets, we're using the
+		##        .NET framework directly because it will work on older platforms (Win2008, PS3)
+		$crtStore = new-object System.Security.Cryptography.X509Certificates.X509Store "My","LocalMachine"
+		$crtBytes = [System.IO.File]::ReadAllBytes($pfxTemp)
+		$crt = new-object System.Security.Cryptography.X509Certificates.X509Certificate2
+		$crt.Import($crtBytes, $null, "Exportable,PersistKeySet”)
+		Write-Verbose "Using certificate [$($crt.Thumbprint)]"
+		$crtStore.Open("MaxAllowed")
+		$exists = $crtStore.Certificates | ? { $_.Thumbprint -eq $crt.Thumbprint }
+		if (-not $exists) {
 			Write-Verbose "Importing certificate from PFX [$pfxTemp]"
-			Import-PfxCertificate -FilePath $pfxTemp -CertStoreLocation Cert:\LocalMachine\My -Exportable
-			if (-not (Test-Path $crtPath -PathType Leaf)) {
+			$crtStore.Add($crt)
+			$exists = $crtStore.Certificates | ? { $_.Thumbprint -eq $crt.Thumbprint }
+			if (-not $exists) {
 	    		throw "Failed to import Certificate or import was misplaced"
 			}
 		}
+		else {
+			Write-Verbose "Existing certificate with matching Thumbprint found; SKIPPING"
+		}
+		$crtStore.Close()
 
 		if (Test-Path $pfxTemp) {
 			del $pfxTemp

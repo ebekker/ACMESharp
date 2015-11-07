@@ -40,6 +40,11 @@ namespace LetsEncrypt.ACME.POSH
         public string WebServerProvider
         { get; set; }
 
+
+        [Parameter]
+        public string EditWith
+        { get; set; }
+
         [Parameter]
         public string VaultProfile
         { get; set; }
@@ -56,7 +61,7 @@ namespace LetsEncrypt.ACME.POSH
                 WebServerProvider = WebServerProvider,
             };
 
-            var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
+            //!!!var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
 
             using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
             {
@@ -90,6 +95,7 @@ namespace LetsEncrypt.ACME.POSH
                 {
                     s.CopyTo(fs);
                 }
+                EditFile(temp, EditWith);
 
                 var pcAsset = vp.CreateAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
                 using (Stream fs = new FileStream(temp, FileMode.Open),
@@ -108,7 +114,22 @@ namespace LetsEncrypt.ACME.POSH
                 s.Dispose();
             }
 
-            WriteObject(pcFilePath);
+            //!!!WriteObject(pcFilePath);
+        }
+
+        public static void EditFile(string path, string editWith = null)
+        {
+            // TODO: For now we hard code the path to the default editor (Notepad)
+            //       but we should compute this from the registry:
+            //           HKEY_CLASSES_ROOT\txtfile\shell\open\command
+            if (editWith == null)
+                editWith = @"%SystemRoot%\system32\NOTEPAD.EXE";
+
+            // Expand any potential envvars
+            editWith = Environment.ExpandEnvironmentVariables(editWith);
+
+            var p = Process.Start(editWith, path);
+            p.WaitForExit();
         }
     }
 }

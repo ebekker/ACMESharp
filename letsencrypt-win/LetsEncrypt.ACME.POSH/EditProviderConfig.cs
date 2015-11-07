@@ -24,6 +24,10 @@ namespace LetsEncrypt.ACME.POSH
         { get; set; }
 
         [Parameter]
+        public string EditWith
+        { get; set; }
+
+        [Parameter]
         public string VaultProfile
         { get; set; }
 
@@ -58,6 +62,13 @@ namespace LetsEncrypt.ACME.POSH
                         {
                             s.CopyTo(fs);
                         }
+                    }
+                    NewProviderConfig.EditFile(temp, EditWith);
+
+                    using (Stream fs = new FileStream(temp, FileMode.Open),
+                            assetStream = vp.SaveAsset(pcAsset))
+                    {
+                        fs.CopyTo(assetStream);
                     }
                 }
             }

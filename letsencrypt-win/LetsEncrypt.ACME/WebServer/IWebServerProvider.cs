@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.ACME.WebServer
 {
-    public interface IWebServerProvider
+    public interface IWebServerProvider : IChallengeHandlingProvider
     {
         void UploadFile(Uri fileUrl, Stream s);
     }

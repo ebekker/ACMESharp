@@ -36,7 +36,7 @@ namespace LetsEncrypt.ACME.POSH
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_HTTP, Mandatory = true)]
-        [ValidateSet("Manual", "AwsS3")]
+        [ValidateSet("Manual", "AwsS3", "IisSitePath")]
         public string WebServerProvider
         { get; set; }
 

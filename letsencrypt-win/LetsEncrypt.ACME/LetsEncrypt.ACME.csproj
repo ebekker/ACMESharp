@@ -114,6 +114,7 @@
     <Compile Include="WebServer\AwsS3WebServerProvider.cs" />
     <Compile Include="WebServer\IWebServerProvider.cs" />
     <Compile Include="WebServer\ManualWebServerProvider.cs" />
+    <Compile Include="WebServer\IisSitePathProvider.cs" />
     <Compile Include="WebServer\WebServerInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +127,7 @@
     <Content Include="ssleay32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="WebServer\IisSitePathProvider-WebConfig" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

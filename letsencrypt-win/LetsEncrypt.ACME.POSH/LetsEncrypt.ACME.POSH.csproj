@@ -138,4 +138,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <!-- Normally this is something defined in the user-specific MSBuild configuration by
+       Visual Studio, but we put it in the durable config that's shared by all developers. -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
+    <StartArguments>-ExecutionPolicy RemoteSigned -NoExit -Command "ipmo .\$(Configuration)\ACMEPowerShell; if (-not (Test-Path TestVault)) { mkdir TestVault }; cd .\TestVault"</StartArguments>
+    <StartWorkingDirectory>..\..</StartWorkingDirectory>
+  </PropertyGroup>
 </Project>

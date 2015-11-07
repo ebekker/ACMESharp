@@ -26,6 +26,10 @@ namespace LetsEncrypt.ACME.WebServer
                     path = string.Format("{0}.{1}", FilePath, ++index);
             }
 
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+                throw new DirectoryNotFoundException("Missing folder in requested file path");
+            
             using (var fs = new FileStream(path, FileMode.CreateNew))
             {
                 s.CopyTo(fs);

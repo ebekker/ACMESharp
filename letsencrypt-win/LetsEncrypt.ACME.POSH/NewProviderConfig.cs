@@ -2,6 +2,7 @@
 using LetsEncrypt.ACME.POSH.Vault;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -35,8 +36,13 @@ namespace LetsEncrypt.ACME.POSH
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_HTTP, Mandatory = true)]
-        [ValidateSet("Manual", "AwsS3")]
+        [ValidateSet("Manual", "AwsS3", "IisSitePath")]
         public string WebServerProvider
+        { get; set; }
+
+
+        [Parameter]
+        public string EditWith
         { get; set; }
 
         [Parameter]
@@ -55,7 +61,7 @@ namespace LetsEncrypt.ACME.POSH
                 WebServerProvider = WebServerProvider,
             };
 
-            var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
+            //!!!var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
 
             using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
             {
@@ -67,32 +73,63 @@ namespace LetsEncrypt.ACME.POSH
                 v.ProviderConfigs.Add(pc);
 
                 vp.SaveVault(v);
+
+                // TODO: this is *so* hardcoded, clean
+                // up this provider resolution mechanism
+                Stream s = null;
+                if (!string.IsNullOrEmpty(DnsProvider))
+                {
+                    s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
+                            "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
+                            + $"dnsInfo.json.sample-{DnsProvider}DnsProvider");
+                }
+                if (!string.IsNullOrEmpty(WebServerProvider))
+                {
+                    s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
+                            "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
+                            + $"webServerInfo.json.sample-{WebServerProvider}WebServerProvider");
+                }
+
+                var temp = Path.GetTempFileName();
+                using (var fs = new FileStream(temp, FileMode.Create))
+                {
+                    s.CopyTo(fs);
+                }
+                EditFile(temp, EditWith);
+
+                var pcAsset = vp.CreateAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
+                using (Stream fs = new FileStream(temp, FileMode.Open),
+                        assetStream = vp.SaveAsset(pcAsset))
+                {
+                    fs.CopyTo(assetStream);
+                }
+                File.Delete(temp);
+
+                //!!!using (var fs = new FileStream(pcFilePath, FileMode.CreateNew))
+                //!!!{
+                //!!!    s.CopyTo(fs);
+                //!!!}
+
+                s.Close();
+                s.Dispose();
             }
 
-            // TODO: this is *so* hardcoded, clean
-            // up this provider resolution mechanism
-            Stream s = null;
-            if (!string.IsNullOrEmpty(DnsProvider))
-            {
-                s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
-                        "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
-                        + $"dnsInfo.json.sample-{DnsProvider}DnsProvider");
-            }
-            if (!string.IsNullOrEmpty(WebServerProvider))
-            {
-                s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
-                        "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
-                        + $"webServerInfo.json.sample-{WebServerProvider}WebServerProvider");
-            }
+            //!!!WriteObject(pcFilePath);
+        }
 
-            using (var fs = new FileStream(pcFilePath, FileMode.CreateNew))
-            {
-                s.CopyTo(fs);
-            }
-            s.Close();
-            s.Dispose();
+        public static void EditFile(string path, string editWith = null)
+        {
+            // TODO: For now we hard code the path to the default editor (Notepad)
+            //       but we should compute this from the registry:
+            //           HKEY_CLASSES_ROOT\txtfile\shell\open\command
+            if (editWith == null)
+                editWith = @"%SystemRoot%\system32\NOTEPAD.EXE";
 
-            WriteObject(pcFilePath);
+            // Expand any potential envvars
+            editWith = Environment.ExpandEnvironmentVariables(editWith);
+
+            var p = Process.Start(editWith, path);
+            p.WaitForExit();
         }
     }
 }

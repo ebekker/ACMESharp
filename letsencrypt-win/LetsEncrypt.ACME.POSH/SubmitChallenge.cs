@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.ACME.POSH
 {
-    [Cmdlet(VerbsLifecycle.Submit, "Challenges")]
+    [Cmdlet(VerbsLifecycle.Submit, "Challenge")]
     public class SubmitChallenge : Cmdlet
     {
         [Parameter(Mandatory = true)]

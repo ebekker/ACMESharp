@@ -66,32 +66,34 @@ namespace LetsEncrypt.ACME.POSH
                 if (ci == null)
                     throw new ItemNotFoundException("Unable to find a Certificate for the given reference");
 
+                var mode = Overwrite ? FileMode.Create : FileMode.CreateNew;
+
                 if (!string.IsNullOrEmpty(ExportKeyPEM))
                 {
                     if (string.IsNullOrEmpty(ci.KeyPemFile))
                         throw new InvalidOperationException("Cannot export private key; it hasn't been imported or generated");
-                    File.Copy(ci.KeyPemFile, ExportKeyPEM, Overwrite);
+                    CopyTo(vp, VaultAssetType.KeyPem, ci.KeyPemFile, ExportKeyPEM, mode);
                 }
 
                 if (!string.IsNullOrEmpty(ExportCsrPEM))
                 {
                     if (string.IsNullOrEmpty(ci.CsrPemFile))
                         throw new InvalidOperationException("Cannot export CSR; it hasn't been imported or generated");
-                    File.Copy(ci.CsrPemFile, ExportCsrPEM, Overwrite);
+                    CopyTo(vp, VaultAssetType.CsrPem, ci.CsrPemFile, ExportCsrPEM, mode);
                 }
 
                 if (!string.IsNullOrEmpty(ExportCertificatePEM))
                 {
                     if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtPemFile))
                         throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                    File.Copy(ci.CrtPemFile, ExportCertificatePEM, Overwrite);
+                    CopyTo(vp, VaultAssetType.CrtPem, ci.CrtPemFile, ExportCertificatePEM, mode);
                 }
 
                 if (!string.IsNullOrEmpty(ExportCertificateDER))
                 {
                     if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtDerFile))
                         throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                    File.Copy(ci.CrtDerFile, ExportCertificateDER, Overwrite);
+                    CopyTo(vp, VaultAssetType.CrtDer, ci.CrtDerFile, ExportCertificateDER, mode);
                 }
 
                 if (!string.IsNullOrEmpty(ExportPkcs12))
@@ -102,12 +104,32 @@ namespace LetsEncrypt.ACME.POSH
                         throw new InvalidOperationException("Cannot export PKCS12; CSR hasn't been submitted or CRT hasn't been retrieved");
                     if (string.IsNullOrEmpty(ci.IssuerSerialNumber) || !v.IssuerCertificates.ContainsKey(ci.IssuerSerialNumber))
                         throw new InvalidOperationException("Cannot export PKCS12; Issuer certificate hasn't been resolved");
-                    CsrHelper.Crt.ConvertToPfx(ci.KeyPemFile, ci.CrtPemFile,
-                            v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile,
-                            ExportPkcs12, Overwrite ? FileMode.Create : FileMode.CreateNew);
+
+                    var keyPemAsset = vp.GetAsset(VaultAssetType.KeyPem, ci.KeyPemFile);
+                    var crtPemAsset = vp.GetAsset(VaultAssetType.CrtPem, ci.CrtPemFile);
+                    var isuPemAsset = vp.GetAsset(VaultAssetType.IssuerPem,
+                            v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile);
+
+                    using (Stream keyStream = vp.LoadAsset(keyPemAsset),
+                            crtStream = vp.LoadAsset(crtPemAsset),
+                            isuStream = vp.LoadAsset(isuPemAsset),
+                            fs = new FileStream(ExportPkcs12, mode))
+                    {
+                        CsrHelper.Crt.ConvertToPfx(keyStream, crtStream, isuStream, fs);
+                    }
                 }
 
                 WriteObject(ci);
+            }
+        }
+
+        public static void CopyTo(IVaultProvider vp, VaultAssetType vat, string van, string target, FileMode mode)
+        {
+            var asset = vp.GetAsset(VaultAssetType.KeyPem, van);
+            using (Stream s = vp.LoadAsset(asset),
+                    fs = new FileStream(target, mode))
+            {
+                s.CopyTo(fs);
             }
         }
     }

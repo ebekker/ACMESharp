@@ -104,6 +104,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-ManualWebServerProvider" />
     <None Include="ACMEPowerShell-AWS\ACMEPowerShell-AWS.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -123,7 +124,7 @@
     <EmbeddedResource Include="ProviderConfigSamples\dnsInfo.json.sample-AwsRoute53DnsProvider" />
     <EmbeddedResource Include="ProviderConfigSamples\dnsInfo.json.sample-ManualDnsProvider" />
     <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-AwsS3WebServerProvider" />
-    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-ManualWebServerProvider" />
+    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-IisSitePathWebServerProvider" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="libeay32.dll" />
@@ -138,4 +139,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <!-- Normally this is something defined in the user-specific MSBuild configuration by
+       Visual Studio, but we put it in the durable config that's shared by all developers. -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
+    <StartArguments>-ExecutionPolicy RemoteSigned -NoExit -Command "ipmo .\$(Configuration)\ACMEPowerShell; if (-not (Test-Path TestVault)) { mkdir TestVault }; cd .\TestVault"</StartArguments>
+    <StartWorkingDirectory>..\..</StartWorkingDirectory>
+  </PropertyGroup>
 </Project>

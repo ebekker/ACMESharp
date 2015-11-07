@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LetsEncrypt.ACME.DNS
 {
 
-    public interface IDnsProvider
+    public interface IDnsProvider : IChallengeHandlingProvider
     {
         void EditTxtRecord(string dnsName, IEnumerable<string> dnsValues);
 

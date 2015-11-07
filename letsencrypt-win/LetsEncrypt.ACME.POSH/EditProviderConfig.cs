@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LetsEncrypt.ACME.POSH.Vault;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,10 @@ namespace LetsEncrypt.ACME.POSH
 
         [Parameter(ParameterSetName = PSET_EDIT, Mandatory = true)]
         public string Ref
+        { get; set; }
+
+        [Parameter]
+        public string EditWith
         { get; set; }
 
         [Parameter]
@@ -48,7 +53,23 @@ namespace LetsEncrypt.ACME.POSH
                         throw new Exception("Unable to find Provider Config for the given reference");
                     var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
 
-                    WriteObject(pcFilePath);
+                    // Copy out the asset to a temp file for editing
+                    var pcAsset = vp.GetAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
+                    var temp = Path.GetTempFileName();
+                    using (var s = vp.LoadAsset(pcAsset))
+                    {
+                        using (var fs = new FileStream(temp, FileMode.Create))
+                        {
+                            s.CopyTo(fs);
+                        }
+                    }
+                    NewProviderConfig.EditFile(temp, EditWith);
+
+                    using (Stream fs = new FileStream(temp, FileMode.Open),
+                            assetStream = vp.SaveAsset(pcAsset))
+                    {
+                        fs.CopyTo(assetStream);
+                    }
                 }
             }
         }

@@ -87,11 +87,10 @@ namespace LetsEncrypt.ACME.POSH
                     };
 
                     ci.GenerateDetailsFile = $"{ci.Id}-gen.json";
-
-                    using (var fs = new FileStream(Path.GetFullPath(ci.GenerateDetailsFile),
-                            FileMode.CreateNew))
+                    var asset = vp.CreateAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
+                    using (var s = vp.SaveAsset(asset))
                     {
-                        JsonHelper.Save(fs, csrDetails);
+                        JsonHelper.Save(s, csrDetails);
                     }
                 }
                 else
@@ -104,8 +103,19 @@ namespace LetsEncrypt.ACME.POSH
                     var keyPemFile = $"{ci.Id}-key.pem";
                     var csrPemFile = $"{ci.Id}-csr.pem";
 
-                    File.Copy(KeyPemFile, keyPemFile);
-                    File.Copy(CsrPemFile, csrPemFile);
+                    var keyAsset = vp.CreateAsset(VaultAssetType.KeyPem, keyPemFile, true);
+                    var csrAsset = vp.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
+
+                    using (Stream fs = new FileStream(KeyPemFile, FileMode.Open),
+                            s = vp.SaveAsset(keyAsset))
+                    {
+                        fs.CopyTo(s);
+                    }
+                    using (Stream fs = new FileStream(KeyPemFile, FileMode.Open),
+                            s = vp.SaveAsset(csrAsset))
+                    {
+                        fs.CopyTo(s);
+                    }
 
                     ci.KeyPemFile = keyPemFile;
                     ci.CsrPemFile = csrPemFile;

@@ -54,24 +54,36 @@ function Install-CertificateToAWS {
 	if ($ci.IssuerSerialNumber) {
 		$ic = Get-ACMEIssuerCertificate -SerialNumber $ci.IssuerSerialNumber
 		if ($ic) {
-			if (-not $ic.CrtPemFile -or -not (Test-Path -PathType Leaf $ic.CrtPemFile)) {
+			if (-not $ic.CrtPemFile) {
 				throw "Unable to resolve Issuer Certificate PEM file"
 			}
 		}
 	}
 
-	if (-not $ci.KeyPemFile -or -not (Test-Path -PathType Leaf $ci.KeyPemFile)) {
+	if (-not $ci.KeyPemFile) {
 		throw "Unable to resolve Private Key PEM file"
 	}
-	if (-not $ci.CrtPemFile -or -not (Test-Path -PathType Leaf $ci.CrtPemFile)) {
+	if (-not $ci.CrtPemFile) {
 		throw "Unable to resolve Certificate PEM file"
 	}
 
-	$privKey = [System.IO.File]::ReadAllText($ci.KeyPemFile)
-	$certBody = [System.IO.File]::ReadAllText($ci.CrtPemFile)
+	$privKeyFile = [System.IO.Path]::GetTempFileName()
+	$certBodyFile = [System.IO.Path]::GetTempFileName()
+
+	Get-ACMECertificate	-Ref $Certificate `
+			-ExportKeyPEM $privKeyFile `
+			-ExportCertificatePEM $certBodyFile
+
+	$privKey = [System.IO.File]::ReadAllText($privKeyFile)
+	$certBody = [System.IO.File]::ReadAllText($certBodyFile)
 	if ($ic) {
-		$certChain = [System.IO.File]::ReadAllText($ic.CrtPemFile)
+		$certChainFile = [System.IO.Path]::GetTempFileName()
+		Get-ACMEIssuerCertificate -ExportCertificatePEM $certChainFile
+		$certChain = [System.IO.File]::ReadAllText($certChainFile)
+		del $certChainFile
 	}
+	del $privKeyFile
+	del $certBodyFile
 
 
 	## Assemble AWS POSH Base Args to pass along for authentication

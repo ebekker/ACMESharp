@@ -1,6 +1,5 @@
 ﻿{
-    "DefaultDomain": "sample.com",
-    "Provider": {
-        "$type": "LetsEncrypt.ACME.DNS.ManualDnsProvider, LetsEncrypt.ACME",
-    }
+  "Provider": {
+    "$type": "LetsEncrypt.ACME.DNS.ManualDnsProvider, LetsEncrypt.ACME",
+  }
 }

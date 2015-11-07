@@ -118,6 +118,13 @@ namespace LetsEncrypt.ACME.POSH
                         CsrHelper.Crt.ConvertDerToPem(source, target);
                         ci.CrtPemFile = crtPemFile;
                     }
+
+                    var crt = new X509Certificate2(crtDerFile);
+
+                    ci.SerialNumber = crt.SerialNumber;
+                    ci.Thumbprint = crt.Thumbprint;
+                    ci.SignatureAlgorithm = crt.SignatureAlgorithm?.FriendlyName;
+                    ci.Signature = crt.GetCertHashString();
                 }
 
                 vp.SaveVault(v);

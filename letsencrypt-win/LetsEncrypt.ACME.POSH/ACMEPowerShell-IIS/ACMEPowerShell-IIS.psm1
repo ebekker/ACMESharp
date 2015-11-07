@@ -7,7 +7,7 @@ Configure/install certs
 
 Install-ACMECertificateToIIS -Ref <cert-ref>
 	-ComputerName <target-server> - optional (defaults to local)
-	-Website <website-name> - required
+	-Website <website-name> - optional (defaults to 'Default Web Site')
 	-HostHeader <hostheader-name> - optional (defaults to none)
 	-IPAddress <ip-address> - optional (defaults to all)
 	-Port <port-num> - optional (defaults to 443)
@@ -18,24 +18,14 @@ function Install-CertificateToIIS {
 	param(
 		[Parameter(Mandatory=$true)]
 		[string]$Certificate,
-		[Parameter(Mandatory=$true)]
-		[string]$WebSite,
+		[string]$WebSite = "Default Web Site",
 		[string]$IPAddress,
 		[int]$Port,
 		[string]$SNIHostname,
 		[switch]$SNIRequired,
 		[switch]$Replace,
 
-		[System.Management.Automation.Runspaces.PSSession]$RemoteSession,
-
-		## AWS POSH Base Params
-		[object]$Region,
-		[string]$AccessKey,
-		[string]$SecretKey,
-		[string]$SessionToken,
-		[string]$ProfileName,
-		[string]$ProfilesLocation,
-		[Amazon.Runtime.AWSCredentials]$Credentials
+		[System.Management.Automation.Runspaces.PSSession]$RemoteSession
 	)
 
 	## TODO:  We'll need to either "assume" that the user has
@@ -47,16 +37,16 @@ function Install-CertificateToIIS {
 	if ($ci.IssuerSerialNumber) {
 		$ic = Get-ACMEIssuerCertificate -SerialNumber $ci.IssuerSerialNumber
 		if ($ic) {
-			if (-not $ic.CrtPemFile -or -not (Test-Path -PathType Leaf $ic.CrtPemFile)) {
-				throw "Unable to resolve Issuer Certificate PEM file"
+			if (-not $ic.CrtPemFile) {
+				throw "Unable to resolve Issuer Certificate PEM file $($ci.IssuerSerialNumber)"
 			}
 		}
 	}
 
-	if (-not $ci.KeyPemFile -or -not (Test-Path -PathType Leaf $ci.KeyPemFile)) {
+	if (-not $ci.KeyPemFile) {
 		throw "Unable to resolve Private Key PEM file"
 	}
-	if (-not $ci.CrtPemFile -or -not (Test-Path -PathType Leaf $ci.CrtPemFile)) {
+	if (-not $ci.CrtPemFile) {
 		throw "Unable to resolve Certificate PEM file"
 	}
 

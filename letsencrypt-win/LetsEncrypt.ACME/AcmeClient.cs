@@ -415,14 +415,15 @@ namespace LetsEncrypt.ACME
             return c;
         }
 
-        public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState, string type, bool useRootUrl = false)
+        public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState,
+                string type, bool useRootUrl = false)
         {
             AssertInit();
             AssertRegistration();
 
             var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
             if (c == null)
-                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+                throw new ArgumentException("no challenge found matching requested type");
 
             if (c.ChallengeAnswer.Key == null || c.ChallengeAnswer.Value == null || c.ChallengeAnswerMessage == null)
                 throw new InvalidOperationException("challenge answer has not been generated");

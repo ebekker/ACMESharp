@@ -89,19 +89,28 @@ namespace LetsEncrypt.ACME.POSH
                     if ((Repeat || string.IsNullOrEmpty(ci.CrtPemFile))
                             && !string.IsNullOrEmpty(ci.CertificateRequest.CertificateContent))
                     {
-                        var fileMode = Repeat ? FileMode.Create : FileMode.CreateNew;
-
                         var crtDerFile = $"{ci.Id}-crt.der";
                         var crtPemFile = $"{ci.Id}-crt.pem";
 
-                        using (var fs = new FileStream(crtDerFile, fileMode))
+                        var crtDerAsset = vp.ListAssets(crtDerFile, VaultAssetType.CrtDer).FirstOrDefault();
+                        var crtPemAsset = vp.ListAssets(crtPemFile, VaultAssetType.CrtPem).FirstOrDefault();
+
+                        if (crtDerAsset == null)
+                            crtDerAsset = vp.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
+                        if (crtPemAsset == null)
+                            crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
+
+                        using (var s = vp.SaveAsset(crtDerAsset))
                         {
-                            ci.CertificateRequest.SaveCertificate(fs);
+                            ci.CertificateRequest.SaveCertificate(s);
                             ci.CrtDerFile = crtDerFile;
                         }
 
-                        CsrHelper.Crt.ConvertDerToPem(crtDerFile, crtPemFile, fileMode);
-                        ci.CrtPemFile = crtPemFile;
+                        using (Stream source = vp.LoadAsset(crtDerAsset), target = vp.SaveAsset(crtPemAsset))
+                        {
+                            CsrHelper.Crt.ConvertDerToPem(source, target);
+                            ci.CrtPemFile = crtPemFile;
+                        }
 
                         var crt = new X509Certificate2(crtDerFile);
 
@@ -140,15 +149,35 @@ namespace LetsEncrypt.ACME.POSH
 
                                     if (v.IssuerCertificates == null)
                                         v.IssuerCertificates = new OrderedNameMap<IssuerCertificateInfo>();
-                                    if (!v.IssuerCertificates.ContainsKey(sernum))
+                                    if (Repeat || !v.IssuerCertificates.ContainsKey(sernum))
                                     {
                                         var cacertDerFile = $"ca-{sernum}-crt.der";
                                         var cacertPemFile = $"ca-{sernum}-crt.pem";
+                                        var issuerDerAsset = vp.ListAssets(cacertDerFile,
+                                                VaultAssetType.IssuerDer).FirstOrDefault();
+                                        var issuerPemAsset = vp.ListAssets(cacertPemFile,
+                                                VaultAssetType.IssuerPem).FirstOrDefault();
 
-                                        if (Repeat || !File.Exists(cacertDerFile))
-                                            File.Copy(tmp, cacertDerFile, true);
-                                        if (Repeat || !File.Exists(cacertPemFile))
-                                            CsrHelper.Crt.ConvertDerToPem(cacertDerFile, cacertPemFile);
+                                        if (Repeat || issuerDerAsset == null)
+                                        {
+                                            if (issuerDerAsset == null)
+                                            issuerDerAsset = vp.CreateAsset(VaultAssetType.IssuerDer, cacertDerFile);
+                                                using (Stream fs = new FileStream(tmp, FileMode.Open),
+                                                    s = vp.SaveAsset(issuerDerAsset))
+                                            {
+                                                fs.CopyTo(s);
+                                            }
+                                        }
+                                        if (Repeat || issuerPemAsset == null)
+                                        {
+                                            if (issuerPemAsset == null)
+                                                issuerPemAsset = vp.CreateAsset(VaultAssetType.IssuerPem, cacertPemFile);
+                                            using (Stream source = vp.LoadAsset(issuerDerAsset),
+                                                    target = vp.SaveAsset(issuerPemAsset))
+                                            {
+                                                CsrHelper.Crt.ConvertDerToPem(source, target);
+                                            }
+                                        }
 
                                         v.IssuerCertificates[sernum] = new IssuerCertificateInfo
                                         {

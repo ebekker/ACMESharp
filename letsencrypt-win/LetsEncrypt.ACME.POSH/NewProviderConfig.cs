@@ -2,6 +2,7 @@
 using LetsEncrypt.ACME.POSH.Vault;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -67,30 +68,45 @@ namespace LetsEncrypt.ACME.POSH
                 v.ProviderConfigs.Add(pc);
 
                 vp.SaveVault(v);
-            }
 
-            // TODO: this is *so* hardcoded, clean
-            // up this provider resolution mechanism
-            Stream s = null;
-            if (!string.IsNullOrEmpty(DnsProvider))
-            {
-                s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
-                        "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
-                        + $"dnsInfo.json.sample-{DnsProvider}DnsProvider");
-            }
-            if (!string.IsNullOrEmpty(WebServerProvider))
-            {
-                s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
-                        "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
-                        + $"webServerInfo.json.sample-{WebServerProvider}WebServerProvider");
-            }
+                // TODO: this is *so* hardcoded, clean
+                // up this provider resolution mechanism
+                Stream s = null;
+                if (!string.IsNullOrEmpty(DnsProvider))
+                {
+                    s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
+                            "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
+                            + $"dnsInfo.json.sample-{DnsProvider}DnsProvider");
+                }
+                if (!string.IsNullOrEmpty(WebServerProvider))
+                {
+                    s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
+                            "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
+                            + $"webServerInfo.json.sample-{WebServerProvider}WebServerProvider");
+                }
 
-            using (var fs = new FileStream(pcFilePath, FileMode.CreateNew))
-            {
-                s.CopyTo(fs);
+                var temp = Path.GetTempFileName();
+                using (var fs = new FileStream(temp, FileMode.Create))
+                {
+                    s.CopyTo(fs);
+                }
+
+                var pcAsset = vp.CreateAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
+                using (Stream fs = new FileStream(temp, FileMode.Open),
+                        assetStream = vp.SaveAsset(pcAsset))
+                {
+                    fs.CopyTo(assetStream);
+                }
+                File.Delete(temp);
+
+                //!!!using (var fs = new FileStream(pcFilePath, FileMode.CreateNew))
+                //!!!{
+                //!!!    s.CopyTo(fs);
+                //!!!}
+
+                s.Close();
+                s.Dispose();
             }
-            s.Close();
-            s.Dispose();
 
             WriteObject(pcFilePath);
         }

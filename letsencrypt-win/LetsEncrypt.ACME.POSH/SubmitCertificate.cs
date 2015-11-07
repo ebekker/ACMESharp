@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,10 +53,10 @@ namespace LetsEncrypt.ACME.POSH
                     //    CSR:  Details pulled from CSR Details JSON file
 
                     CsrHelper.CsrDetails csrDetails;
-                    using (var fs = new FileStream(Path.GetFullPath(ci.GenerateDetailsFile),
-                            FileMode.Open))
+                    var csrDetailsAsset = vp.GetAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
+                    using (var s = vp.LoadAsset(csrDetailsAsset))
                     {
-                        csrDetails = JsonHelper.Load<CsrHelper.CsrDetails>(fs);
+                        csrDetails = JsonHelper.Load<CsrHelper.CsrDetails>(s);
                     }
 
                     var keyGenFile = $"{ci.Id}-gen-key.json";
@@ -63,30 +64,43 @@ namespace LetsEncrypt.ACME.POSH
                     var csrGenFile = $"{ci.Id}-gen-csr.json";
                     var csrPemFile = $"{ci.Id}-csr.pem";
 
+                    var keyGenAsset = vp.CreateAsset(VaultAssetType.KeyGen, keyGenFile);
+                    var keyPemAsset = vp.CreateAsset(VaultAssetType.KeyPem, keyPemFile);
+                    var csrGenAsset = vp.CreateAsset(VaultAssetType.CsrGen, csrGenFile);
+                    var csrPemAsset = vp.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
+
                     var genKey = CsrHelper.GenerateRsaPrivateKey();
-                    using (var fs = new FileStream(keyGenFile, FileMode.CreateNew))
+                    using (var s = vp.SaveAsset(keyGenAsset))
                     {
-                        genKey.Save(fs);
-                        File.WriteAllText(keyPemFile, genKey.Pem);
+                        genKey.Save(s);
+                    }
+                    using (var w = new StreamWriter(vp.SaveAsset(keyPemAsset)))
+                    {
+                        w.Write(genKey.Pem);
                     }
 
                     var genCsr = CsrHelper.GenerateCsr(csrDetails, genKey);
-                    using (var fs = new FileStream(csrGenFile, FileMode.CreateNew))
+                    using (var s = vp.SaveAsset(csrGenAsset))
                     {
-                        genCsr.Save(fs);
-                        File.WriteAllText(csrPemFile, genCsr.Pem);
+                        genCsr.Save(s);
+                    }
+                    using (var w = new StreamWriter(vp.SaveAsset(csrPemAsset)))
+                    {
+                        w.Write(genCsr.Pem);
                     }
 
                     ci.KeyPemFile = keyPemFile;
                     ci.CsrPemFile = csrPemFile;
                 }
 
+                var asset = vp.GetAsset(VaultAssetType.CsrPem, ci.CsrPemFile);
+
                 byte[] derRaw;
-                using (var fs = new FileStream(ci.CsrPemFile, FileMode.Open))
+                using (var s = vp.LoadAsset(asset))
                 {
                     using (var ms = new MemoryStream())
                     {
-                        CsrHelper.Csr.ConvertPemToDer(fs, ms);
+                        CsrHelper.Csr.ConvertPemToDer(s, ms);
                         derRaw = ms.ToArray();
                     }
                 }
@@ -106,14 +120,16 @@ namespace LetsEncrypt.ACME.POSH
                     var crtDerFile = $"{ci.Id}-crt.der";
                     var crtPemFile = $"{ci.Id}-crt.pem";
 
-                    using (var fs = new FileStream(crtDerFile, FileMode.CreateNew))
+                    var crtDerAsset = vp.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
+                    var crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
+
+                    using (var s = vp.SaveAsset(crtDerAsset))
                     {
-                        ci.CertificateRequest.SaveCertificate(fs);
+                        ci.CertificateRequest.SaveCertificate(s);
                         ci.CrtDerFile = crtDerFile;
                     }
 
-                    using (FileStream source = new FileStream(crtDerFile, FileMode.Open),
-                            target = new FileStream(crtPemFile, FileMode.CreateNew))
+                    using (Stream source = vp.LoadAsset(crtDerAsset), target = vp.SaveAsset(crtPemAsset))
                     {
                         CsrHelper.Crt.ConvertDerToPem(source, target);
                         ci.CrtPemFile = crtPemFile;

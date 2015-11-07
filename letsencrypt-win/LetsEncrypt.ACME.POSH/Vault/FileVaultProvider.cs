@@ -1,7 +1,11 @@
 ﻿using LetsEncrypt.ACME.POSH.Util;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
+using System.Text.RegularExpressions;
 
 namespace LetsEncrypt.ACME.POSH.Vault
 {
@@ -11,9 +15,36 @@ namespace LetsEncrypt.ACME.POSH.Vault
         public const string TAG_FILE = ".acme.vault";
 
         public const string VAULT  /**/ = "00-VAULT";
-        public const string REGS   /**/ = "10-REGS";
-        public const string IDENTS /**/ = "20-IDENTS";
-        public const string CERTS  /**/ = "30-CERTS";
+        public const string PRVDR  /**/ = "10-PRVDR";
+        public const string CSRDT  /**/ = "30-CSRDT";
+        public const string KEYGN  /**/ = "40-KEYGN";
+        public const string KEYPM  /**/ = "45-KEYPM";
+        public const string CSRGN  /**/ = "50-CSRGN";
+        public const string CSRPM  /**/ = "55-CSRPM";
+        public const string CSRDR  /**/ = "56-CSRDR";
+        public const string CRTPM  /**/ = "65-CRTPM";
+        public const string CRTDR  /**/ = "66-CRTDR";
+        public const string ISUPM  /**/ = "75-ISUPM";
+        public const string ISUDR  /**/ = "76-ISUDR";
+        public const string ASSET  /**/ = "99-ASSET";
+
+        public static readonly IReadOnlyDictionary<VaultAssetType, string> TYPE_PATHS =
+                new ReadOnlyDictionary<VaultAssetType, string>(
+                        new Dictionary<VaultAssetType, string>
+                        {
+                            { VaultAssetType.Other,               /**/ ASSET },
+                            { VaultAssetType.ProviderConfigInfo,  /**/ PRVDR },
+                            { VaultAssetType.CsrDetails,          /**/ CSRDT },
+                            { VaultAssetType.KeyGen,              /**/ KEYGN },
+                            { VaultAssetType.CsrGen,              /**/ CSRGN },
+                            { VaultAssetType.KeyPem,              /**/ KEYPM },
+                            { VaultAssetType.CsrPem,              /**/ CSRPM },
+                            { VaultAssetType.CsrDer,              /**/ CSRDR },
+                            { VaultAssetType.CrtPem,              /**/ CRTPM },
+                            { VaultAssetType.CrtDer,              /**/ CRTDR },
+                            { VaultAssetType.IssuerPem,           /**/ ISUPM },
+                            { VaultAssetType.IssuerDer,           /**/ ISUDR },
+                        });
 
         private string _origCwd;
 
@@ -160,6 +191,79 @@ namespace LetsEncrypt.ACME.POSH.Vault
             File.Delete(tmp);
         }
 
+        public IEnumerable<VaultAsset> ListAssets(string nameRegex = null, params VaultAssetType[] types)
+        {
+            AssertOpen();
+
+            if (types?.Length == 0)
+                types = Enum.GetValues(typeof(VaultAssetType)).Cast<VaultAssetType>().ToArray();
+
+            Regex regex = null;
+            if (!string.IsNullOrEmpty(nameRegex))
+                regex = new Regex(nameRegex);
+
+            var assets = new List<VaultAsset>();
+            foreach (var vat in types)
+            {
+                var vatPath = Path.Combine(RootPath, TYPE_PATHS[vat]);
+                if (Directory.Exists(vatPath))
+                {
+                    var vatFiles = (IEnumerable<string>)Directory.GetFiles(vatPath);
+                    if (regex != null)
+                        vatFiles = vatFiles.Where(x => regex.IsMatch(x));
+
+                    assets.AddRange(vatFiles.Select(x => new FileVaultAsset(
+                            x, Path.GetFileName(x), vat,
+                            File.GetAttributes(x).HasFlag(FileAttributes.Encrypted))));
+                }
+            }
+
+            return assets;
+        }
+
+        public VaultAsset CreateAsset(VaultAssetType type, string name, bool isSensitive = false)
+        {
+            var path = Path.Combine(RootPath, TYPE_PATHS[type], name);
+
+            if (File.Exists(path))
+                throw new IOException("asset file already exists");
+
+            // Make sure the asset root dir is there
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+            // Create a placeholder file to reserve and represent the created file
+            using (var fs = File.Create(path, 100,
+                    isSensitive ? FileOptions.Encrypted : FileOptions.None))
+            { }
+
+            return new FileVaultAsset(path, name, type, isSensitive);
+        }
+
+        public VaultAsset GetAsset(VaultAssetType type, string name)
+        {
+            var path = Path.Combine(RootPath, TYPE_PATHS[type], name);
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException("asset file does not exist");
+
+            return new FileVaultAsset(path, name, type,
+                    File.GetAttributes(path).HasFlag(FileAttributes.Encrypted));
+        }
+
+        public Stream SaveAsset(VaultAsset asset)
+        {
+            var va = (FileVaultAsset)asset;
+
+            return new FileStream(va.Path, FileMode.Create);
+        }
+
+        public Stream LoadAsset(VaultAsset asset)
+        {
+            var va = (FileVaultAsset)asset;
+
+            return new FileStream(va.Path, FileMode.Open);
+        }
+
         public void Dispose()
         {
             if (!string.IsNullOrEmpty(_origCwd))
@@ -211,6 +315,20 @@ namespace LetsEncrypt.ACME.POSH.Vault
             { get; set; }
 
             public T Entity
+            { get; set; }
+        }
+
+        public class FileVaultAsset : VaultAsset
+        {
+            public FileVaultAsset(string path, string name, VaultAssetType type, bool isSensitive)
+            {
+                Path = path;
+                Name = name;
+                Type = type;
+                IsSensitive = isSensitive;
+            }
+
+            public string Path
             { get; set; }
         }
     }

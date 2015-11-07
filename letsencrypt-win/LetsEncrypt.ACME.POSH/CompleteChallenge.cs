@@ -83,7 +83,6 @@ namespace LetsEncrypt.ACME.POSH
                 var pc = v.ProviderConfigs.GetByRef(ProviderConfig);
                 if (pc == null)
                     throw new InvalidOperationException("Unable to find a Provider Config for the given reference");
-                var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
 
                 AuthorizeChallenge challenge = null;
                 DateTime? challengCompleted = null;
@@ -104,6 +103,13 @@ namespace LetsEncrypt.ACME.POSH
 
                 if (Repeat || challengCompleted == null)
                 {
+                    var pcFilePath = $"{pc.Id}.json";
+                    var pcAsset = vp.GetAsset(Vault.VaultAssetType.ProviderConfigInfo, pcFilePath);
+
+                    // TODO:  There's *way* too much logic buried in here
+                    // this needs to be refactored and extracted out to be
+                    // more manageble and more reusable
+
                     if (Challenge == AcmeProtocol.CHALLENGE_TYPE_DNS
                             || Challenge == AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS)
                     {
@@ -114,9 +120,9 @@ namespace LetsEncrypt.ACME.POSH
                         var dnsValue = Regex.Replace(challenge.ChallengeAnswer.Value, "\\s", "");
                         var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
 
-                        using (var fs = new FileStream(pcFilePath, FileMode.Open))
+                        using (var s = vp.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
                         {
-                            var dnsInfo = DnsInfo.Load(fs);
+                            var dnsInfo = DnsInfo.Load(s);
                             dnsInfo.Provider.EditTxtRecord(dnsName, dnsValues);
                             ii.ChallengeCompleted[Challenge] = DateTime.Now;
                         }
@@ -131,9 +137,11 @@ namespace LetsEncrypt.ACME.POSH
                         var wsFileBody = challenge.ChallengeAnswer.Value;
                         var wsFileUrl = new Uri($"http://{authzState.Identifier}/{wsFilePath}");
 
-                        using (var fs = new FileStream(pcFilePath, FileMode.Open))
+
+
+                        using (var s = vp.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
                         {
-                            var webServerInfo = WebServerInfo.Load(fs);
+                            var webServerInfo = WebServerInfo.Load(s);
                             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
                             {
                                 webServerInfo.Provider.UploadFile(wsFileUrl, ms);

@@ -19,12 +19,11 @@ namespace LetsEncrypt.ACME.CLI
         public static string BaseURI { get; set; } = "https://acme-staging.api.letsencrypt.org/";
         public static string ProductionBaseURI { get; set; } = "https://acme-v01.api.letsencrypt.org/";
 
-        static string UserAgent = "Let's Encrypt Windows Command Line Client";
-
+        static ServerManager iisManager;
 
         static void Main(string[] args)
         {
-            Console.WriteLine(UserAgent);
+            Console.WriteLine("Let's Encrypt");
 
             Console.Write("\nUse production Let's Encrypt server? (Y/N) ");
             if (PromptYesNo())
@@ -45,55 +44,57 @@ namespace LetsEncrypt.ACME.CLI
                     Console.WriteLine("\nGetting AcmeServerDirectory");
                     client.GetDirectory(true);
 
-                    //client.UserAgent = UserAgent;
-
                     Console.WriteLine("Calling Register");
                     var registration = client.Register(new string[] { });
 
-                    Console.Write($"Do you agree to {registration.TosLinkUri}? (Y/N) ");
+                    Console.WriteLine($"Do you agree to {registration.TosLinkUri}? (Y/N) ");
                     if (!PromptYesNo())
                         return;
 
                     Console.WriteLine("Updating Registration");
                     client.UpdateRegistration(true, true);
 
-                    Console.WriteLine("Scanning IIS 7 Site Bindings for Hosts (Elevated Permissions Required)");
-                    var bindings = GetHostNames();
 
-                    Console.WriteLine("\nIIS Bindings");
-                    var count = 1;
-                    foreach (var binding in bindings)
+                    Console.WriteLine("\nScanning IIS 7 Site Bindings for Hosts (Elevated Permissions Required)");
+                    using (iisManager = new ServerManager())
                     {
-                        Console.WriteLine($" {count}: {binding}");
-                        count++;
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine(" A: Cert all bindings (ENCRYPT ALL THE THINGS!)");
-                    Console.WriteLine(" Q: Quit");
-                    Console.Write("Which binding do you want to get a cert for: ");
-                    var response = Console.ReadLine();
-                    switch (response.ToLowerInvariant())
-                    {
-                        case "a":
-                            foreach (var hostName in bindings)
-                            {
-                                Auto(client, hostName.Host, hostName.PhysicalPath);
-                            }
-                            break;
-                        case "q":
-                            return;
-                        default:
-                            var bindingId = 0;
-                            if (Int32.TryParse(response, out bindingId))
-                            {
-                                bindingId--;
-                                if (bindingId >= 0 && bindingId < bindings.Count)
+                        var bindings = GetHostNames();
+
+                        Console.WriteLine("IIS Bindings");
+                        var count = 1;
+                        foreach (var binding in bindings)
+                        {
+                            Console.WriteLine($" {count}: {binding}");
+                            count++;
+                        }
+                        Console.WriteLine();
+                        Console.WriteLine(" A: Cert all bindings (ENCRYPT ALL THE THINGS!)");
+                        Console.WriteLine(" Q: Quit");
+                        Console.Write("Which binding do you want to get a cert for: ");
+                        var response = Console.ReadLine();
+                        switch (response.ToLowerInvariant())
+                        {
+                            case "a":
+                                foreach (var siteHost in bindings)
                                 {
-                                    var binding = bindings[bindingId];
-                                    Auto(client, binding.Host, binding.PhysicalPath);
+                                    Auto(client, siteHost);
                                 }
-                            }
-                            break;
+                                break;
+                            case "q":
+                                return;
+                            default:
+                                var bindingId = 0;
+                                if (Int32.TryParse(response, out bindingId))
+                                {
+                                    bindingId--;
+                                    if (bindingId >= 0 && bindingId < bindings.Count)
+                                    {
+                                        var binding = bindings[bindingId];
+                                        Auto(client, binding);
+                                    }
+                                }
+                                break;
+                        }
                     }
                 }
             }
@@ -120,23 +121,22 @@ namespace LetsEncrypt.ACME.CLI
         static List<SiteHost> GetHostNames()
         {
             var result = new List<SiteHost>();
-            using (var iisManager = new ServerManager())
+
+            foreach (var site in iisManager.Sites)
             {
-                foreach (var site in iisManager.Sites)
+                foreach (var binding in site.Bindings)
                 {
-                    foreach (var binding in site.Bindings)
-                    {
-                        if (!String.IsNullOrEmpty(binding.Host) && binding.Protocol == "http")
-                            result.Add(new SiteHost() { Host = binding.Host, PhysicalPath = site.Applications["/"].VirtualDirectories["/"].PhysicalPath });
-                    }
+                    if (!String.IsNullOrEmpty(binding.Host) && binding.Protocol == "http")
+                        result.Add(new SiteHost() { Site = site, Host = binding.Host, PhysicalPath = site.Applications["/"].VirtualDirectories["/"].PhysicalPath });
                 }
             }
             return result;
         }
 
-        static void Auto(AcmeClient client, string dnsIdentifier, string webRootPath)
+        static void Auto(AcmeClient client, SiteHost siteHost)
         {
-            var auth = Authorize(client, dnsIdentifier, webRootPath);
+            var dnsIdentifier = siteHost.Host;
+            var auth = Authorize(client, dnsIdentifier, siteHost.PhysicalPath);
             if (auth.Status == "valid")
             {
                 var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
@@ -194,10 +194,45 @@ namespace LetsEncrypt.ACME.CLI
                     // can't create a pfx until we get an irsPemFile, which seems to be some issuer cert thing.
                     var isrPemFile = GetIssuerCertificate(certRequ);
 
-                    Console.WriteLine($" Saving Certificate to {crtPfxFile}");
+                    Console.WriteLine($" Saving Certificate to {crtPfxFile} (with no password set)");
                     CsrHelper.Crt.ConvertToPfx(keyPemFile, crtPemFile, isrPemFile, crtPfxFile, FileMode.Create);
+
+                    InstallCertificate(crtPfxFile, siteHost.Site, dnsIdentifier);
                 }
             }
+        }
+
+        static void InstallCertificate(string pfxFilename, Site site, string host)
+        {
+            Console.WriteLine($"\nDo you want to install the .pfx into the Certificate Store? (Y/N) ");
+            if (!PromptYesNo())
+                return;
+
+            Console.WriteLine($" Opening Certificate Store");
+            X509Store store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadWrite);
+
+            Console.WriteLine($" Loading .pfx");
+            X509Certificate2 certificate = new X509Certificate2(pfxFilename, "");
+
+            Console.WriteLine($" Adding Certificate to Store");
+            store.Add(certificate);
+
+            Console.WriteLine($" Closing Certificate Store");
+            store.Close();
+
+
+
+            Console.WriteLine($"\nDo you want to add an https IIS binding? (Y/N) ");
+            if (!PromptYesNo())
+                return;
+
+            Console.WriteLine($" Adding https Binding");
+            var binding = site.Bindings.Add(":443:" + host, certificate.GetCertHash(), store.Name);
+            binding.Protocol = "https";
+
+            Console.WriteLine($" Commiting binding changes to IIS");
+            iisManager.CommitChanges();
         }
 
         static string GetIssuerCertificate(CertificateRequest certificate)
@@ -311,7 +346,7 @@ namespace LetsEncrypt.ACME.CLI
                     Console.WriteLine(@"
 This could be caused by IIS not being setup to handle extensionless static
 files. Here's how to fix that:
-1. Goto Site/Server->Handler Mappings->View Ordered List
+1. In IIS manager goto Site/Server->Handler Mappings->View Ordered List
 2. Move the StaticFile mapping above the ExtensionlessUrlHandler mappings.
 (like this http://i.stack.imgur.com/nkvrL.png)
 ******************************************************************************");

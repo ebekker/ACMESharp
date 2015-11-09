@@ -9,6 +9,8 @@ using Microsoft.Web.Administration;
 using System.Threading;
 using LetsEncrypt.ACME.PKI;
 using System.Security.Cryptography.X509Certificates;
+using LetsEncrypt.ACME.HTTP;
+using System.Net;
 
 namespace LetsEncrypt.ACME.CLI
 {
@@ -124,7 +126,7 @@ namespace LetsEncrypt.ACME.CLI
                 {
                     foreach (var binding in site.Bindings)
                     {
-                        if (!String.IsNullOrEmpty(binding.Host))
+                        if (!String.IsNullOrEmpty(binding.Host) && binding.Protocol == "http")
                             result.Add(new SiteHost() { Host = binding.Host, PhysicalPath = site.Applications["/"].VirtualDirectories["/"].PhysicalPath });
                     }
                 }
@@ -151,7 +153,7 @@ namespace LetsEncrypt.ACME.CLI
                 }
                 var derB64u = JwsHelper.Base64UrlEncode(derRaw);
 
-                Console.WriteLine($"\nRequesting Cert");
+                Console.WriteLine($"\nRequesting Certificate");
                 var certRequ = client.RequestCertificate(derB64u);
 
                 Console.WriteLine($" Request Status: {certRequ.StatusCode}");
@@ -180,22 +182,87 @@ namespace LetsEncrypt.ACME.CLI
                         File.WriteAllText(csrPemFile, csr.Pem);
                     }
 
-                    Console.WriteLine($" Saving Cert to {crtDerFile}");
+                    Console.WriteLine($" Saving Certificate to {crtDerFile}");
                     using (var file = File.Create(crtDerFile))
                         certRequ.SaveCertificate(file);
-
 
                     using (FileStream source = new FileStream(crtDerFile, FileMode.Open), target = new FileStream(crtPemFile, FileMode.Create))
                     {
                         CsrHelper.Crt.ConvertDerToPem(source, target);
                     }
 
-                    //Console.WriteLine($" Saving Cert to {crtPfxFile}");
                     // can't create a pfx until we get an irsPemFile, which seems to be some issuer cert thing.
-                    //CsrHelper.Crt.ConvertToPfx(keyPemFile, crtPemFile, irsPemFile, crtPfxFile, FileMode.Create);
+                    var isrPemFile = GetIssuerCertificate(certRequ);
+
+                    Console.WriteLine($" Saving Certificate to {crtPfxFile}");
+                    CsrHelper.Crt.ConvertToPfx(keyPemFile, crtPemFile, isrPemFile, crtPfxFile, FileMode.Create);
                 }
             }
         }
+
+        static string GetIssuerCertificate(CertificateRequest certificate)
+        {
+            var linksEnum = certificate.Links;
+            if (linksEnum != null)
+            {
+                var links = new LinkCollection(linksEnum);
+                var upLink = links.GetFirstOrDefault("up");
+                if (upLink != null)
+                {
+                    var tmp = Path.GetTempFileName();
+                    try
+                    {
+                        using (var web = new WebClient())
+                        {
+                            //if (v.Proxy != null)
+                            //    web.Proxy = v.Proxy.GetWebProxy();
+
+                            var uri = new Uri(new Uri(BaseURI), upLink.Uri);
+                            web.DownloadFile(uri, tmp);
+                        }
+
+                        var cacert = new X509Certificate2(tmp);
+                        var sernum = cacert.GetSerialNumberString();
+                        var tprint = cacert.Thumbprint;
+                        var sigalg = cacert.SignatureAlgorithm?.FriendlyName;
+                        var sigval = cacert.GetCertHashString();
+
+                        var cacertDerFile = $"ca-{sernum}-crt.der";
+                        var cacertPemFile = $"ca-{sernum}-crt.pem";
+
+                        if (!File.Exists(cacertDerFile))
+                            File.Copy(tmp, cacertDerFile, true);
+
+                        Console.WriteLine($" Saving Issuer Certificate to {cacertPemFile}");
+                        if (!File.Exists(cacertPemFile))
+                            CsrHelper.Crt.ConvertDerToPem(cacertDerFile, cacertPemFile);
+
+                        return cacertPemFile;
+                    }
+                    finally
+                    {
+                        if (File.Exists(tmp))
+                            File.Delete(tmp);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        const string webConfig = @"<?xml version = ""1.0"" encoding=""UTF-8""?>
+ <configuration>
+     <system.webServer>
+         <staticContent>
+             <mimeMap fileExtension = "".*"" mimeType=""text/json"" />
+         </staticContent>
+     </system.webServer>
+ </configuration>";
+
+        //<handlers>
+        //    <clear />
+        //    <add name = ""StaticFile"" path=""*"" verb=""*"" type="""" modules=""StaticFileModule,DefaultDocumentModule,DirectoryListingModule"" scriptProcessor="""" resourceType=""Either"" requireAccess=""Read"" allowPathInfo=""false"" preCondition="""" responseBufferLimit=""4194304"" />
+        //</handlers>
 
         static AuthorizationState Authorize(AcmeClient client, string dnsIdentifier, string webRootPath)
         {
@@ -205,8 +272,13 @@ namespace LetsEncrypt.ACME.CLI
             var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, challenge.ChallengeAnswer.Key));
 
             Console.WriteLine($" Writing challenge answer to {answerPath}");
-            Directory.CreateDirectory(Path.GetDirectoryName(answerPath));
+            var directory = Path.GetDirectoryName(answerPath);
+            Directory.CreateDirectory(directory);
             File.WriteAllText(answerPath, challenge.ChallengeAnswer.Value);
+
+            var webConfigPath = Path.Combine(directory, "web.config");
+            Console.WriteLine($" Writing web.config to add extensionless mime type to {webConfigPath}");
+            File.WriteAllText(webConfigPath, webConfig);
 
             var answerUri = new Uri(new Uri("http://" + dnsIdentifier), challenge.ChallengeAnswer.Key);
             Console.WriteLine($" Answer should now be browsable at {answerUri}");
@@ -219,29 +291,28 @@ namespace LetsEncrypt.ACME.CLI
                 // so I pulled the core of SubmitAuthorizeChallengeAnswer into it's own method that I can call directly
                 client.SubmitAuthorizeChallengeAnswer(challenge, true);
 
-                // this loop is commented out because RefreshIdentifierAuthorization can't be called more than once currently.
                 // have to loop to wait for server to stop being pending.
                 // TODO: put timeout/retry limit in this loop
-                //while (authzState.Status == "pending")
-                //{
+                while (authzState.Status == "pending")
+                {
                     Console.WriteLine(" Refreshing authorization");
                     Thread.Sleep(1000); // this has to be here to give ACME server a chance to think
-                    authzState = client.RefreshIdentifierAuthorization(authzState);
-                //}
+                    var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
+                    if (newAuthzState.Status != "pending")
+                        authzState = newAuthzState;
+                }
 
                 Console.WriteLine($" Authorization RESULT: {authzState.Status}");
                 if (authzState.Status == "invalid")
                 {
                     Console.WriteLine("\n******************************************************************************");
-                    Console.WriteLine($"The ACME server was probably unable to reach {answerUri}.");
+                    Console.WriteLine($"The ACME server was probably unable to reach {answerUri}");
 
                     Console.WriteLine(@"
-Most likely this was caused by IIS not being setup to handle extensionless
-static files. Here's how to fix that:
-1. Goto Site/Server->Mime Types
-2. Add a mime type of .* (application/octet-stream)
-3. Goto Site/Server->Handler Mappings->View Ordered List
-4. Move the StaticFile mapping above the ExtensionlessUrlHandler mappings.
+This could be caused by IIS not being setup to handle extensionless static
+files. Here's how to fix that:
+1. Goto Site/Server->Handler Mappings->View Ordered List
+2. Move the StaticFile mapping above the ExtensionlessUrlHandler mappings.
 (like this http://i.stack.imgur.com/nkvrL.png)
 ******************************************************************************");
                 }

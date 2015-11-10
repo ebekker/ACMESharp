@@ -295,8 +295,8 @@ namespace LetsEncrypt.ACME.CLI
  </configuration>";
 
         //<handlers>
-        //    <clear />
-        //    <add name = ""StaticFile"" path=""*"" verb=""*"" type="""" modules=""StaticFileModule,DefaultDocumentModule,DirectoryListingModule"" scriptProcessor="""" resourceType=""Either"" requireAccess=""Read"" allowPathInfo=""false"" preCondition="""" responseBufferLimit=""4194304"" />
+        //    <remove name = "StaticFile" />
+        //    < add name="StaticFile" path="*." verb="*" type="" modules="StaticFileModule,DefaultDocumentModule,DirectoryListingModule" scriptProcessor="" resourceType="Either" requireAccess="Read" allowPathInfo="false" preCondition="" responseBufferLimit="4194304" />
         //</handlers>
 
         static AuthorizationState Authorize(AcmeClient client, string dnsIdentifier, string webRootPath)

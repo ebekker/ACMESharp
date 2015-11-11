@@ -29,14 +29,29 @@ namespace LetsEncrypt.ACME.CLI
             if (PromptYesNo())
                 BaseURI = ProductionBaseURI;
 
-            //var vaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LetsEncrypt");
-            //Console.WriteLine("Vault Path: " + vaultPath);
-
             Console.WriteLine($"\nACME Server: {BaseURI}");
+
+            var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LetsEncrypt", CleanFileName(BaseURI));
+            Console.WriteLine("Config Folder: " + configPath);
+            Directory.CreateDirectory(configPath);
 
             using (var signer = new RS256Signer())
             {
                 signer.Init();
+
+                var signerPath = Path.Combine(configPath, "Signer");
+                if (File.Exists(signerPath))
+                {
+                    Console.WriteLine($"Loading Signer from {signerPath}");
+                    using (var signerStream = File.OpenRead(signerPath))
+                        signer.Load(signerStream);
+                }
+                else
+                {
+                    Console.WriteLine("Saving Signer");
+                    using (var signerStream = File.OpenWrite(signerPath))
+                        signer.Save(signerStream);
+                }
 
                 using (var client = new AcmeClient(new Uri(BaseURI), new AcmeServerDirectory(), signer))
                 {
@@ -44,16 +59,29 @@ namespace LetsEncrypt.ACME.CLI
                     Console.WriteLine("\nGetting AcmeServerDirectory");
                     client.GetDirectory(true);
 
-                    Console.WriteLine("Calling Register");
-                    var registration = client.Register(new string[] { });
+                    var registrationPath = Path.Combine(configPath, "Registration");
+                    if (File.Exists(registrationPath))
+                    {
+                        Console.WriteLine($"Loading Registration from {registrationPath}");
+                        using (var registrationStream = File.OpenRead(registrationPath))
+                            client.Registration = AcmeRegistration.Load(registrationStream);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Calling Register");
+                        var registration = client.Register(new string[] { });
 
-                    Console.WriteLine($"Do you agree to {registration.TosLinkUri}? (Y/N) ");
-                    if (!PromptYesNo())
-                        return;
+                        Console.WriteLine($"Do you agree to {registration.TosLinkUri}? (Y/N) ");
+                        if (!PromptYesNo())
+                            return;
 
-                    Console.WriteLine("Updating Registration");
-                    client.UpdateRegistration(true, true);
+                        Console.WriteLine("Updating Registration");
+                        client.UpdateRegistration(true, true);
 
+                        Console.WriteLine("Saving Registration");
+                        using (var registrationStream = File.OpenWrite(registrationPath))
+                            client.Registration.Save(registrationStream);
+                    }
 
                     Console.WriteLine("\nScanning IIS 7 Site Bindings for Hosts (Elevated Permissions Required)");
                     using (iisManager = new ServerManager())
@@ -105,6 +133,11 @@ namespace LetsEncrypt.ACME.CLI
 #endif
         }
 
+        static string CleanFileName(string fileName)
+        {
+            return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
+        }
+
         static bool PromptYesNo()
         {
             while (true)
@@ -139,66 +172,72 @@ namespace LetsEncrypt.ACME.CLI
             var auth = Authorize(client, dnsIdentifier, siteHost.PhysicalPath);
             if (auth.Status == "valid")
             {
-                var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
-                var csrDetails = new CsrHelper.CsrDetails
+                GetCertificate(client, siteHost, dnsIdentifier);
+                //GetCertificate(client, siteHost, dnsIdentifier);
+            }
+        }
+
+        private static void GetCertificate(AcmeClient client, SiteHost siteHost, string dnsIdentifier)
+        {
+            var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
+            var csrDetails = new CsrHelper.CsrDetails
+            {
+                CommonName = dnsIdentifier
+            };
+            var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
+            byte[] derRaw;
+            using (var bs = new MemoryStream())
+            {
+                csr.ExportAsDer(bs);
+                derRaw = bs.ToArray();
+            }
+            var derB64u = JwsHelper.Base64UrlEncode(derRaw);
+
+            Console.WriteLine($"\nRequesting Certificate");
+            var certRequ = client.RequestCertificate(derB64u);
+
+            Console.WriteLine($" Request Status: {certRequ.StatusCode}");
+
+            //Console.WriteLine($"Refreshing Cert Request");
+            //client.RefreshCertificateRequest(certRequ);
+
+            if (certRequ.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var keyGenFile = $"{dnsIdentifier}-gen-key.json";
+                var keyPemFile = $"{dnsIdentifier}-key.pem";
+                var csrGenFile = $"{dnsIdentifier}-gen-csr.json";
+                var csrPemFile = $"{dnsIdentifier}-csr.pem";
+                var crtDerFile = $"{dnsIdentifier}-crt.der";
+                var crtPemFile = $"{dnsIdentifier}-crt.pem";
+                var crtPfxFile = $"{dnsIdentifier}-all.pfx";
+
+                using (var fs = new FileStream(keyGenFile, FileMode.Create))
                 {
-                    CommonName = dnsIdentifier
-                };
-                var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
-                byte[] derRaw;
-                using (var bs = new MemoryStream())
-                {
-                    csr.ExportAsDer(bs);
-                    derRaw = bs.ToArray();
+                    rsaKeys.Save(fs);
+                    File.WriteAllText(keyPemFile, rsaKeys.Pem);
                 }
-                var derB64u = JwsHelper.Base64UrlEncode(derRaw);
-
-                Console.WriteLine($"\nRequesting Certificate");
-                var certRequ = client.RequestCertificate(derB64u);
-
-                Console.WriteLine($" Request Status: {certRequ.StatusCode}");
-
-                //Console.WriteLine($"Refreshing Cert Request");
-                //client.RefreshCertificateRequest(certRequ);
-
-                if (certRequ.StatusCode == System.Net.HttpStatusCode.Created)
+                using (var fs = new FileStream(csrGenFile, FileMode.Create))
                 {
-                    var keyGenFile = $"{dnsIdentifier}-gen-key.json";
-                    var keyPemFile = $"{dnsIdentifier}-key.pem";
-                    var csrGenFile = $"{dnsIdentifier}-gen-csr.json";
-                    var csrPemFile = $"{dnsIdentifier}-csr.pem";
-                    var crtDerFile = $"{dnsIdentifier}-crt.der";
-                    var crtPemFile = $"{dnsIdentifier}-crt.pem";
-                    var crtPfxFile = $"{dnsIdentifier}-all.pfx";
-
-                    using (var fs = new FileStream(keyGenFile, FileMode.Create))
-                    {
-                        rsaKeys.Save(fs);
-                        File.WriteAllText(keyPemFile, rsaKeys.Pem);
-                    }
-                    using (var fs = new FileStream(csrGenFile, FileMode.Create))
-                    {
-                        csr.Save(fs);
-                        File.WriteAllText(csrPemFile, csr.Pem);
-                    }
-
-                    Console.WriteLine($" Saving Certificate to {crtDerFile}");
-                    using (var file = File.Create(crtDerFile))
-                        certRequ.SaveCertificate(file);
-
-                    using (FileStream source = new FileStream(crtDerFile, FileMode.Open), target = new FileStream(crtPemFile, FileMode.Create))
-                    {
-                        CsrHelper.Crt.ConvertDerToPem(source, target);
-                    }
-
-                    // can't create a pfx until we get an irsPemFile, which seems to be some issuer cert thing.
-                    var isrPemFile = GetIssuerCertificate(certRequ);
-
-                    Console.WriteLine($" Saving Certificate to {crtPfxFile} (with no password set)");
-                    CsrHelper.Crt.ConvertToPfx(keyPemFile, crtPemFile, isrPemFile, crtPfxFile, FileMode.Create);
-
-                    InstallCertificate(crtPfxFile, siteHost.Site, dnsIdentifier);
+                    csr.Save(fs);
+                    File.WriteAllText(csrPemFile, csr.Pem);
                 }
+
+                Console.WriteLine($" Saving Certificate to {crtDerFile}");
+                using (var file = File.Create(crtDerFile))
+                    certRequ.SaveCertificate(file);
+
+                using (FileStream source = new FileStream(crtDerFile, FileMode.Open), target = new FileStream(crtPemFile, FileMode.Create))
+                {
+                    CsrHelper.Crt.ConvertDerToPem(source, target);
+                }
+
+                // can't create a pfx until we get an irsPemFile, which seems to be some issuer cert thing.
+                var isrPemFile = GetIssuerCertificate(certRequ);
+
+                Console.WriteLine($" Saving Certificate to {crtPfxFile} (with no password set)");
+                CsrHelper.Crt.ConvertToPfx(keyPemFile, crtPemFile, isrPemFile, crtPfxFile, FileMode.Create);
+
+                InstallCertificate(crtPfxFile, siteHost.Site, dnsIdentifier);
             }
         }
 
@@ -301,7 +340,7 @@ namespace LetsEncrypt.ACME.CLI
 
         static AuthorizationState Authorize(AcmeClient client, string dnsIdentifier, string webRootPath)
         {
-            Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier}");
+            Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_HTTP}");
             var authzState = client.AuthorizeIdentifier(dnsIdentifier);
             var challenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
             var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, challenge.ChallengeAnswer.Key));
@@ -344,6 +383,8 @@ namespace LetsEncrypt.ACME.CLI
                     Console.WriteLine($"The ACME server was probably unable to reach {answerUri}");
 
                     Console.WriteLine(@"
+Check in a browser to see if the answer file is being served correctly.
+
 This could be caused by IIS not being setup to handle extensionless static
 files. Here's how to fix that:
 1. In IIS manager goto Site/Server->Handler Mappings->View Ordered List

@@ -20,6 +20,8 @@ namespace LetsEncrypt.ACME.CLI
         public static string ProductionBaseURI { get; set; } = "https://acme-v01.api.letsencrypt.org/";
 
         static ServerManager iisManager;
+        static string configPath;
+        static Settings settings;
 
         static void Main(string[] args)
         {
@@ -31,7 +33,9 @@ namespace LetsEncrypt.ACME.CLI
 
             Console.WriteLine($"\nACME Server: {BaseURI}");
 
-            var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LetsEncrypt", CleanFileName(BaseURI));
+            settings = new Settings(BaseURI);
+
+            configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LetsEncrypt", CleanFileName(BaseURI));
             Console.WriteLine("Config Folder: " + configPath);
             Directory.CreateDirectory(configPath);
 
@@ -173,11 +177,10 @@ namespace LetsEncrypt.ACME.CLI
             if (auth.Status == "valid")
             {
                 GetCertificate(client, siteHost, dnsIdentifier);
-                //GetCertificate(client, siteHost, dnsIdentifier);
             }
         }
 
-        private static void GetCertificate(AcmeClient client, SiteHost siteHost, string dnsIdentifier)
+        static void GetCertificate(AcmeClient client, SiteHost siteHost, string dnsIdentifier)
         {
             var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
             var csrDetails = new CsrHelper.CsrDetails
@@ -272,6 +275,21 @@ namespace LetsEncrypt.ACME.CLI
 
             Console.WriteLine($" Commiting binding changes to IIS");
             iisManager.CommitChanges();
+        }
+
+        static void ScheduleRenewal(SiteHost siteHost)
+        {
+
+        }
+
+        static void CheckRenewals()
+        {
+
+        }
+
+        static void RenewCertificate(ScheduledRenewal renewal)
+        {
+
         }
 
         static string GetIssuerCertificate(CertificateRequest certificate)
@@ -391,6 +409,14 @@ files. Here's how to fix that:
 2. Move the StaticFile mapping above the ExtensionlessUrlHandler mappings.
 (like this http://i.stack.imgur.com/nkvrL.png)
 ******************************************************************************");
+                }
+
+                if (authzState.Status == "valid")
+                {
+                    var authPath = Path.Combine(configPath, dnsIdentifier + ".auth");
+                    Console.WriteLine($" Saving authorization record to: {authPath}");
+                    using (var authStream = File.Create(authPath))
+                        authzState.Save(authStream);
                 }
 
                 return authzState;

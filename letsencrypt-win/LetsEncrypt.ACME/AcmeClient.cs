@@ -329,6 +329,14 @@ namespace LetsEncrypt.ACME
                 }),
             };
 
+#if DEBUG
+            if (respMsg.Status == "invalid")
+            {
+                Console.WriteLine("RefreshIdentifierAuthorization Response:");
+                Console.WriteLine(resp.ContentAsString);
+            }
+#endif
+
             return authzStatusState;
         }
 
@@ -424,22 +432,30 @@ namespace LetsEncrypt.ACME
             if (c == null)
                 throw new ArgumentOutOfRangeException("no challenge found matching requested type");
 
-            if (c.ChallengeAnswer.Key == null || c.ChallengeAnswer.Value == null || c.ChallengeAnswerMessage == null)
+            SubmitAuthorizeChallengeAnswer(c, useRootUrl);
+
+            return c;
+        }
+
+        public void SubmitAuthorizeChallengeAnswer(AuthorizeChallenge challenge, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            if (challenge.ChallengeAnswer.Key == null || challenge.ChallengeAnswer.Value == null || challenge.ChallengeAnswerMessage == null)
                 throw new InvalidOperationException("challenge answer has not been generated");
 
-            var requUri = new Uri(c.Uri);
+            var requUri = new Uri(challenge.Uri);
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var resp = RequestHttpPost(requUri, c.ChallengeAnswerMessage);
+            var resp = RequestHttpPost(requUri, challenge.ChallengeAnswerMessage);
 
             if (resp.IsError)
             {
                 throw new AcmeWebException(resp.Error as WebException,
                         "Unexpected error", resp);
             }
-
-            return c;
         }
 
         public CertificateRequest RequestCertificate(string csrContent)

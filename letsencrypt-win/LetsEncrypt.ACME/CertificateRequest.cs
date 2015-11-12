@@ -45,6 +45,13 @@ namespace LetsEncrypt.ACME
             }
         }
 
+        public byte[] GetCertificateContent()
+        {
+            if (string.IsNullOrEmpty(CertificateContent))
+                return null;
+            return JwsHelper.Base64UrlDecode(CertificateContent);
+        }
+
         public void Save(Stream s)
         {
             using (var w = new StreamWriter(s))

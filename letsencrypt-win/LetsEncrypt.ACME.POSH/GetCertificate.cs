@@ -125,7 +125,7 @@ namespace LetsEncrypt.ACME.POSH
 
         public static void CopyTo(IVaultProvider vp, VaultAssetType vat, string van, string target, FileMode mode)
         {
-            var asset = vp.GetAsset(VaultAssetType.KeyPem, van);
+            var asset = vp.GetAsset(vat, van);
             using (Stream s = vp.LoadAsset(asset),
                     fs = new FileStream(target, mode))
             {

@@ -10,6 +10,13 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platf
 
 ---
 
+Also check out [this alternative simple ACME client for Windows](https://github.com/Lone-Coder/letsencrypt-win-simple) which features:
+* simple usage for common scenarios
+* IIS support
+* automatic renewals
+
+---
+
 Jump To:
 * [Overview](#overview)
 * [Current State](#current-state)

@@ -14,10 +14,17 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platf
 
 ---
 
-Also check out [this alternative simple ACME client for Windows](https://github.com/Lone-Coder/letsencrypt-win-simple) which features:
-* simple usage for common scenarios
-* IIS support
-* automatic renewals
+## Related
+
+Also check out these other related projects:
+
+* An [alternative simple ACME client for Windows](https://github.com/Lone-Coder/letsencrypt-win-simple) which features:
+  * simple usage for common scenarios
+  * IIS support
+  * automatic renewals
+* A [GUI interface](http://webprofusion.com/apps/certify) to this project's PowerShell module
+* The official [python ACME client](https://github.com/letsencrypt/letsencrypt) of the [Let's Encrypt] project
+* The [ACME specification](https://github.com/ietf-wg-acme/acme) which brings this all together (under development)
 
 ---
 

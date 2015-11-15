@@ -7,6 +7,10 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platf
 
 [![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/letsencrypt-win)
 [![Join the chat at https://gitter.im/ebekker/letsencrypt-win](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ebekker/letsencrypt-win?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+<a href="https://scan.coverity.com/projects/acmesharp">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/7030/badge.svg"/>
+</a>
 
 ---
 

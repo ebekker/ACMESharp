@@ -69,19 +69,19 @@ namespace LetsEncrypt.ACME.PKI
             // Translate from our external form to our OpenSSL internal form
             // Ref:  https://www.openssl.org/docs/manmaster/crypto/X509_NAME_new.html
             var xn = new X509Name();
-            if (!string.IsNullOrEmpty(csrDetails.CommonName         /**/)) xn.Common = csrDetails.CommonName;       // CN;
-            if (!string.IsNullOrEmpty(csrDetails.Country            /**/)) xn.Common = csrDetails.Country;          // C;
-            if (!string.IsNullOrEmpty(csrDetails.StateOrProvince    /**/)) xn.Common = csrDetails.StateOrProvince;  // ST;
-            if (!string.IsNullOrEmpty(csrDetails.Locality           /**/)) xn.Common = csrDetails.Locality;         // L;
-            if (!string.IsNullOrEmpty(csrDetails.Organization       /**/)) xn.Common = csrDetails.Organization;     // O;
-            if (!string.IsNullOrEmpty(csrDetails.OrganizationUnit   /**/)) xn.Common = csrDetails.OrganizationUnit; // OU;
-            if (!string.IsNullOrEmpty(csrDetails.Description        /**/)) xn.Common = csrDetails.Description;      // D;
-            if (!string.IsNullOrEmpty(csrDetails.Surname            /**/)) xn.Common = csrDetails.Surname;          // S;
-            if (!string.IsNullOrEmpty(csrDetails.GivenName          /**/)) xn.Common = csrDetails.GivenName;        // G;
-            if (!string.IsNullOrEmpty(csrDetails.Initials           /**/)) xn.Common = csrDetails.Initials;         // I;
-            if (!string.IsNullOrEmpty(csrDetails.Title              /**/)) xn.Common = csrDetails.Title;            // T;
-            if (!string.IsNullOrEmpty(csrDetails.SerialNumber       /**/)) xn.Common = csrDetails.SerialNumber;     // SN;
-            if (!string.IsNullOrEmpty(csrDetails.UniqueIdentifier   /**/)) xn.Common = csrDetails.UniqueIdentifier; // UID;
+            if (!string.IsNullOrEmpty(csrDetails.CommonName         /**/)) xn.Common           = csrDetails.CommonName;       // CN;
+            if (!string.IsNullOrEmpty(csrDetails.Country            /**/)) xn.Country          = csrDetails.Country;          // C;
+            if (!string.IsNullOrEmpty(csrDetails.StateOrProvince    /**/)) xn.StateOrProvince  = csrDetails.StateOrProvince;  // ST;
+            if (!string.IsNullOrEmpty(csrDetails.Locality           /**/)) xn.Locality         = csrDetails.Locality;         // L;
+            if (!string.IsNullOrEmpty(csrDetails.Organization       /**/)) xn.Organization     = csrDetails.Organization;     // O;
+            if (!string.IsNullOrEmpty(csrDetails.OrganizationUnit   /**/)) xn.OrganizationUnit = csrDetails.OrganizationUnit; // OU;
+            if (!string.IsNullOrEmpty(csrDetails.Description        /**/)) xn.Description      = csrDetails.Description;      // D;
+            if (!string.IsNullOrEmpty(csrDetails.Surname            /**/)) xn.Surname          = csrDetails.Surname;          // S;
+            if (!string.IsNullOrEmpty(csrDetails.GivenName          /**/)) xn.Given            = csrDetails.GivenName;        // G;
+            if (!string.IsNullOrEmpty(csrDetails.Initials           /**/)) xn.Initials         = csrDetails.Initials;         // I;
+            if (!string.IsNullOrEmpty(csrDetails.Title              /**/)) xn.Title            = csrDetails.Title;            // T;
+            if (!string.IsNullOrEmpty(csrDetails.SerialNumber       /**/)) xn.SerialNumber     = csrDetails.SerialNumber;     // SN;
+            if (!string.IsNullOrEmpty(csrDetails.UniqueIdentifier   /**/)) xn.UniqueIdentifier = csrDetails.UniqueIdentifier; // UID;
 
             var xr = new X509Request(0, xn, rsaKeys);
             var md = MessageDigest.CreateByName(messageDigest); ;

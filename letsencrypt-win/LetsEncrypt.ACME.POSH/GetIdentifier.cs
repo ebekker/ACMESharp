@@ -32,9 +32,6 @@ namespace LetsEncrypt.ACME.POSH
                 vp.OpenStorage();
                 var v = vp.LoadVault();
 
-                if (v.Identifiers == null || v.Identifiers.Count < 1)
-                    throw new InvalidOperationException("No identifiers found");
-
                 if (string.IsNullOrEmpty(Ref))
                 {
                     int seq = 0;
@@ -50,6 +47,9 @@ namespace LetsEncrypt.ACME.POSH
                 }
                 else
                 {
+                    if (v.Identifiers == null || v.Identifiers.Count < 1)
+                        throw new InvalidOperationException("No identifiers found");
+
                     var ii = v.Identifiers.GetByRef(Ref);
                     if (ii == null)
                         throw new ItemNotFoundException("Unable to find an Identifier for the given reference");

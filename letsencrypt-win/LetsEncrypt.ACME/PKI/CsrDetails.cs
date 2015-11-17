@@ -49,21 +49,5 @@ namespace LetsEncrypt.ACME.PKI
 
         /// <summary>X509 'UID'</summary>
         public string UniqueIdentifier { get; set; }
-
-        //public void Save(Stream s)
-        //{
-        //    using (var w = new StreamWriter(s))
-        //    {
-        //        w.Write(JsonConvert.SerializeObject(this));
-        //    }
-        //}
-        //
-        //public static Csr Load(Stream s)
-        //{
-        //    using (var r = new StreamReader(s))
-        //    {
-        //        return JsonConvert.DeserializeObject<Csr>(r.ReadToEnd());
-        //    }
-        //}
     }
 }

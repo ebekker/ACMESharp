@@ -61,22 +61,6 @@ namespace LetsEncrypt.ACME.PKI
 
         public string Pem
         { get; private set; }
-
-        //public void Save(Stream s)
-        //{
-        //    using (var w = new StreamWriter(s))
-        //    {
-        //        w.Write(JsonConvert.SerializeObject(this));
-        //    }
-        //}
-        //
-        //public static RsaKeyPair Load(Stream s)
-        //{
-        //    using (var r = new StreamReader(s))
-        //    {
-        //        return JsonConvert.DeserializeObject<RsaKeyPair>(r.ReadToEnd());
-        //    }
-        //}
     }
 
     /// <summary>

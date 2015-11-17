@@ -68,9 +68,9 @@ namespace LetsEncrypt.ACME
             if (!Directory.Exists(DEFAULT_BASE_LOCAL_STORE))
                 Directory.CreateDirectory(DEFAULT_BASE_LOCAL_STORE);
 
-            _baseLocalStore = $"{DEFAULT_BASE_LOCAL_STORE}-{DateTime.Now.ToString("yyMMdd-HHmmss")}";
-            if (!Directory.Exists(_baseLocalStore))
-                Directory.CreateDirectory(_baseLocalStore);
+            //_baseLocalStore = $"{DEFAULT_BASE_LOCAL_STORE}-{DateTime.Now.ToString("yyMMdd-HHmmss")}";
+            //if (!Directory.Exists(_baseLocalStore))
+            //    Directory.CreateDirectory(_baseLocalStore);
 
             if (File.Exists(WEB_PROXY_CONFIG))
             {
@@ -1062,27 +1062,35 @@ namespace LetsEncrypt.ACME
         [TestCategory("skipCI")]
         public void Test0170_GenCsrAndRequestCertificate()
         {
-            var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
+            var cp = CertificateProvider.GetProvider();
+
+            var rsaKeyParams = new RsaPrivateKeyParams();
+            var rsaKey = cp.GeneratePrivateKey(rsaKeyParams);
+
             _testGenCsr_RsaKeysFile = $"{_baseLocalStore}\\TestGenCsr-rsaKeys.txt";
             using (var fs = new FileStream(_testGenCsr_RsaKeysFile, FileMode.Create))
             {
-                rsaKeys.Save(fs);
+                cp.SavePrivateKey(rsaKey, fs);
             }
 
-            var csrDetails = new CsrHelper.CsrDetails
+            var csrParams = new CsrParams
             {
-                CommonName = TEST_CN1
+                Details = new CsrDetails
+                {
+                    CommonName = TEST_CN1
+                }
             };
-            var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
+
+            var csr = cp.GenerateCsr(csrParams, rsaKey, Crt.MessageDigest.SHA256);
             _testGenCsr_CsrDetailsFile = $"{_baseLocalStore}\\TestGenCsr-csrDetails.txt";
             using (var fs = new FileStream(_testGenCsr_CsrDetailsFile, FileMode.Create))
             {
-                csrDetails.Save(fs);
+                cp.SaveCsrParams(csrParams, fs);
             }
             _testGenCsr_CsrFile = $"{_baseLocalStore}\\TestGenCsr-csr.txt";
             using (var fs = new FileStream(_testGenCsr_CsrFile, FileMode.Create))
             {
-                csr.Save(fs);
+                cp.SaveCsr(csr, fs);
             }
 
             using (var signer = new RS256Signer())
@@ -1102,7 +1110,7 @@ namespace LetsEncrypt.ACME
                 byte[] derRaw;
                 using (var bs = new MemoryStream())
                 {
-                    csr.ExportAsDer(bs);
+                    cp.ExportCsr(csr, EncodingFormat.DER, bs);
                     derRaw = bs.ToArray();
                 }
                 var derB64u = JwsHelper.Base64UrlEncode(derRaw);

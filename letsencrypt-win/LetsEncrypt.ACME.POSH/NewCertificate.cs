@@ -81,7 +81,7 @@ namespace LetsEncrypt.ACME.POSH
 
                 if (Generate)
                 {
-                    var csrDetails = new CsrHelper.CsrDetails
+                    var csrDetails = new CsrDetails
                     {
                         CommonName = ii.Dns,
                     };

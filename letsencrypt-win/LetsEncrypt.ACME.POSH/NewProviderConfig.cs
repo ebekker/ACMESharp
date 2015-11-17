@@ -61,8 +61,6 @@ namespace LetsEncrypt.ACME.POSH
                 WebServerProvider = WebServerProvider,
             };
 
-            //!!!var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
-
             using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
             {
                 vp.OpenStorage();
@@ -105,16 +103,9 @@ namespace LetsEncrypt.ACME.POSH
                 }
                 File.Delete(temp);
 
-                //!!!using (var fs = new FileStream(pcFilePath, FileMode.CreateNew))
-                //!!!{
-                //!!!    s.CopyTo(fs);
-                //!!!}
-
                 s.Close();
                 s.Dispose();
             }
-
-            //!!!WriteObject(pcFilePath);
         }
 
         public static void EditFile(string path, string editWith = null)

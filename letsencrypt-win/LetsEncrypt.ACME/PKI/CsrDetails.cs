@@ -49,5 +49,8 @@ namespace LetsEncrypt.ACME.PKI
 
         /// <summary>X509 'UID'</summary>
         public string UniqueIdentifier { get; set; }
+
+        /// <summary>X509 'emailAddress'</summary>
+        public string Email { get; set; }
     }
 }

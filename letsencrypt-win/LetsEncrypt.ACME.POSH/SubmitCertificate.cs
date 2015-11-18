@@ -54,119 +54,121 @@ namespace LetsEncrypt.ACME.POSH
                 if (ci == null)
                     throw new Exception("Unable to find a Certificate for the given reference");
 
-                var cp = CertificateProvider.GetProvider();
-
-                if (!string.IsNullOrEmpty(ci.GenerateDetailsFile))
+                using (var cp = CertificateProvider.GetProvider())
                 {
-                    // Generate a private key and CSR:
-                    //    Key:  RSA 2048-bit
-                    //    MD:   SHA 256
-                    //    CSR:  Details pulled from CSR Details JSON file
 
-                    CsrDetails csrDetails;
-                    var csrDetailsAsset = vp.GetAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
-                    using (var s = vp.LoadAsset(csrDetailsAsset))
+                    if (!string.IsNullOrEmpty(ci.GenerateDetailsFile))
                     {
-                        csrDetails = JsonHelper.Load<CsrDetails>(s);
+                        // Generate a private key and CSR:
+                        //    Key:  RSA 2048-bit
+                        //    MD:   SHA 256
+                        //    CSR:  Details pulled from CSR Details JSON file
+
+                        CsrDetails csrDetails;
+                        var csrDetailsAsset = vp.GetAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
+                        using (var s = vp.LoadAsset(csrDetailsAsset))
+                        {
+                            csrDetails = JsonHelper.Load<CsrDetails>(s);
+                        }
+
+                        var keyGenFile = $"{ci.Id}-gen-key.json";
+                        var keyPemFile = $"{ci.Id}-key.pem";
+                        var csrGenFile = $"{ci.Id}-gen-csr.json";
+                        var csrPemFile = $"{ci.Id}-csr.pem";
+
+                        var keyGenAsset = vp.CreateAsset(VaultAssetType.KeyGen, keyGenFile);
+                        var keyPemAsset = vp.CreateAsset(VaultAssetType.KeyPem, keyPemFile);
+                        var csrGenAsset = vp.CreateAsset(VaultAssetType.CsrGen, csrGenFile);
+                        var csrPemAsset = vp.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
+
+                        var genKeyParams = new RsaPrivateKeyParams();
+
+                        var genKey = cp.GeneratePrivateKey(genKeyParams);
+                        using (var s = vp.SaveAsset(keyGenAsset))
+                        {
+                            cp.SavePrivateKey(genKey, s);
+                        }
+                        using (var s = vp.SaveAsset(keyPemAsset))
+                        {
+                            cp.ExportPrivateKey(genKey, EncodingFormat.PEM, s);
+                        }
+
+                        // TODO: need to surface details of the CSR params up higher
+                        var csrParams = new CsrParams
+                        {
+                            Details = csrDetails
+                        };
+                        var genCsr = cp.GenerateCsr(csrParams, genKey, Crt.MessageDigest.SHA256);
+                        using (var s = vp.SaveAsset(csrGenAsset))
+                        {
+                            cp.SaveCsr(genCsr, s);
+                        }
+                        using (var s = vp.SaveAsset(csrPemAsset))
+                        {
+                            cp.ExportCsr(genCsr, EncodingFormat.PEM, s);
+                        }
+
+                        ci.KeyPemFile = keyPemFile;
+                        ci.CsrPemFile = csrPemFile;
                     }
 
-                    var keyGenFile = $"{ci.Id}-gen-key.json";
-                    var keyPemFile = $"{ci.Id}-key.pem";
-                    var csrGenFile = $"{ci.Id}-gen-csr.json";
-                    var csrPemFile = $"{ci.Id}-csr.pem";
 
-                    var keyGenAsset = vp.CreateAsset(VaultAssetType.KeyGen, keyGenFile);
-                    var keyPemAsset = vp.CreateAsset(VaultAssetType.KeyPem, keyPemFile);
-                    var csrGenAsset = vp.CreateAsset(VaultAssetType.CsrGen, csrGenFile);
-                    var csrPemAsset = vp.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
 
-                    var genKeyParams = new RsaPrivateKeyParams();
+                    byte[] derRaw;
 
-                    var genKey = cp.GeneratePrivateKey(genKeyParams);
-                    using (var s = vp.SaveAsset(keyGenAsset))
+                    var asset = vp.GetAsset(VaultAssetType.CsrPem, ci.CsrPemFile);
+                    // Convert the stored CSR in PEM format to DER
+                    using (var source = vp.LoadAsset(asset))
                     {
-                        cp.SavePrivateKey(genKey, s);
-                    }
-                    using (var s = vp.SaveAsset(keyPemAsset))
-                    {
-                        cp.ExportPrivateKey(genKey, EncodingFormat.PEM, s);
+                        var csr = cp.ImportCsr(EncodingFormat.PEM, source);
+                        using (var target = new MemoryStream())
+                        {
+                            cp.ExportCsr(csr, EncodingFormat.DER, target);
+                            derRaw = target.ToArray();
+                        }
                     }
 
-                    // TODO: need to surface details of the CSR params up higher
-                    var csrParams = new CsrParams
+                    var derB64u = JwsHelper.Base64UrlEncode(derRaw);
+
+                    using (var c = ClientHelper.GetClient(v, ri))
                     {
-                        Details = csrDetails
-                    };
-                    var genCsr = cp.GenerateCsr(csrParams, genKey, Crt.MessageDigest.SHA256);
-                    using (var s = vp.SaveAsset(csrGenAsset))
-                    {
-                        cp.SaveCsr(genCsr, s);
-                    }
-                    using (var s = vp.SaveAsset(csrPemAsset))
-                    {
-                        cp.ExportCsr(genCsr, EncodingFormat.PEM, s);
+                        c.Init();
+                        c.GetDirectory(true);
+
+                        ci.CertificateRequest = c.RequestCertificate(derB64u);
                     }
 
-                    ci.KeyPemFile = keyPemFile;
-                    ci.CsrPemFile = csrPemFile;
-                }
-
-
-
-                byte[] derRaw;
-
-                var asset = vp.GetAsset(VaultAssetType.CsrPem, ci.CsrPemFile);
-                // Convert the stored CSR in PEM format to DER
-                using (var source = vp.LoadAsset(asset))
-                {
-                    var csr = cp.ImportCsr(EncodingFormat.PEM, source);
-                    using (var target = new MemoryStream())
+                    if (!string.IsNullOrEmpty(ci.CertificateRequest.CertificateContent))
                     {
-                        cp.ExportCsr(csr, EncodingFormat.DER, target);
-                        derRaw = target.ToArray();
+                        var crtDerFile = $"{ci.Id}-crt.der";
+                        var crtPemFile = $"{ci.Id}-crt.pem";
+
+                        var crtDerBytes = ci.CertificateRequest.GetCertificateContent();
+
+                        var crtDerAsset = vp.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
+                        var crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
+
+                        using (Stream source = new MemoryStream(crtDerBytes),
+                                derTarget = vp.SaveAsset(crtDerAsset),
+                                pemTarget = vp.SaveAsset(crtPemAsset))
+                        {
+                            var crt = cp.ImportCertificate(EncodingFormat.DER, source);
+
+                            cp.ExportCertificate(crt, EncodingFormat.DER, derTarget);
+                            ci.CrtDerFile = crtDerFile;
+
+                            cp.ExportCertificate(crt, EncodingFormat.PEM, pemTarget);
+                            ci.CrtPemFile = crtPemFile;
+                        }
+
+                        // Extract a few pieces of info from the issued
+                        // cert that we like to have quick access to
+                        var x509 = new X509Certificate2(ci.CertificateRequest.GetCertificateContent());
+                        ci.SerialNumber = x509.SerialNumber;
+                        ci.Thumbprint = x509.Thumbprint;
+                        ci.SignatureAlgorithm = x509.SignatureAlgorithm?.FriendlyName;
+                        ci.Signature = x509.GetCertHashString();
                     }
-                }
-
-                var derB64u = JwsHelper.Base64UrlEncode(derRaw);
-
-                using (var c = ClientHelper.GetClient(v, ri))
-                {
-                    c.Init();
-                    c.GetDirectory(true);
-
-                    ci.CertificateRequest = c.RequestCertificate(derB64u);
-                }
-
-                if (!string.IsNullOrEmpty(ci.CertificateRequest.CertificateContent))
-                {
-                    var crtDerFile = $"{ci.Id}-crt.der";
-                    var crtPemFile = $"{ci.Id}-crt.pem";
-
-                    var crtDerBytes = ci.CertificateRequest.GetCertificateContent();
-
-                    var crtDerAsset = vp.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
-                    var crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
-
-                    using (Stream source = new MemoryStream(crtDerBytes),
-                            derTarget = vp.SaveAsset(crtDerAsset),
-                            pemTarget = vp.SaveAsset(crtPemAsset))
-                    {
-                        var crt = cp.ImportCertificate(EncodingFormat.DER, source);
-
-                        cp.ExportCertificate(crt, EncodingFormat.DER, derTarget);
-                        ci.CrtDerFile = crtDerFile;
-
-                        cp.ExportCertificate(crt, EncodingFormat.PEM, pemTarget);
-                        ci.CrtPemFile = crtPemFile;
-                    }
-
-                    // Extract a few pieces of info from the issued
-                    // cert that we like to have quick access to
-                    var x509 = new X509Certificate2(ci.CertificateRequest.GetCertificateContent());
-                    ci.SerialNumber = x509.SerialNumber;
-                    ci.Thumbprint = x509.Thumbprint;
-                    ci.SignatureAlgorithm = x509.SignatureAlgorithm?.FriendlyName;
-                    ci.Signature = x509.GetCertHashString();
                 }
 
                 vp.SaveVault(v);

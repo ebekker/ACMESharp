@@ -100,22 +100,24 @@ namespace LetsEncrypt.ACME.POSH
                         if (crtPemAsset == null)
                             crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
 
-                        var cp = CertificateProvider.GetProvider();
-                        var bytes = ci.CertificateRequest.GetCertificateContent();
-
-                        using (Stream source = new MemoryStream(bytes),
-                                derTarget = vp.SaveAsset(crtDerAsset),
-                                pemTarget = vp.SaveAsset(crtPemAsset))
+                        using (var cp = CertificateProvider.GetProvider())
                         {
-                            var crt = cp.ImportCertificate(EncodingFormat.DER, source);
+                            var bytes = ci.CertificateRequest.GetCertificateContent();
 
-                            // We're saving the DER format cert "through"
-                            // the CP in order to validate its content
-                            cp.ExportCertificate(crt, EncodingFormat.DER, derTarget);
-                            ci.CrtDerFile = crtDerFile;
+                            using (Stream source = new MemoryStream(bytes),
+                                    derTarget = vp.SaveAsset(crtDerAsset),
+                                    pemTarget = vp.SaveAsset(crtPemAsset))
+                            {
+                                var crt = cp.ImportCertificate(EncodingFormat.DER, source);
 
-                            cp.ExportCertificate(crt, EncodingFormat.PEM, pemTarget);
-                            ci.CrtPemFile = crtPemFile;
+                                // We're saving the DER format cert "through"
+                                // the CP in order to validate its content
+                                cp.ExportCertificate(crt, EncodingFormat.DER, derTarget);
+                                ci.CrtDerFile = crtDerFile;
+
+                                cp.ExportCertificate(crt, EncodingFormat.PEM, pemTarget);
+                                ci.CrtPemFile = crtPemFile;
+                            }
                         }
 
                         var x509 = new X509Certificate2(ci.CertificateRequest.GetCertificateContent());
@@ -181,13 +183,15 @@ namespace LetsEncrypt.ACME.POSH
                                             if (issuerPemAsset == null)
                                                 issuerPemAsset = vp.CreateAsset(VaultAssetType.IssuerPem, cacertPemFile);
 
-                                            var cp = CertificateProvider.GetProvider();
-
-                                            using (Stream source = vp.LoadAsset(issuerDerAsset),
-                                                    target = vp.SaveAsset(issuerPemAsset))
+                                            using (var cp = CertificateProvider.GetProvider())
                                             {
-                                                var crt = cp.ImportCertificate(EncodingFormat.DER, source);
-                                                cp.ExportCertificate(crt, EncodingFormat.PEM, target);
+
+                                                using (Stream source = vp.LoadAsset(issuerDerAsset),
+                                                    target = vp.SaveAsset(issuerPemAsset))
+                                                {
+                                                    var crt = cp.ImportCertificate(EncodingFormat.DER, source);
+                                                    cp.ExportCertificate(crt, EncodingFormat.PEM, target);
+                                                }
                                             }
                                         }
 

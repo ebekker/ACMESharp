@@ -20,8 +20,23 @@ namespace LetsEncrypt.ACME.PKI
     /// as various supporting elements such as Private Keys and Certificate Signing Requests
     /// (CSR), in all their various incarnations.
     /// </remarks>
-    public abstract class CertificateProvider
+    public abstract class CertificateProvider : IDisposable
     {
+        private const string DEFAULT_PROVIDER_NAME = "";
+        private static readonly Type[] PROVIDER_CTOR_SIG = { typeof(IDictionary<string, string>) };
+
+        private static Dictionary<string, Type> _providers = new Dictionary<string, Type>
+        {
+            //{ DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslLibProvider) },
+            { DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslCliProvider) },
+        };
+
+        protected CertificateProvider(IDictionary<string, string> newParams)
+        { }
+
+        public virtual void Dispose()
+        { }
+
         public abstract PrivateKey GeneratePrivateKey(PrivateKeyParams pkp);
 
         /// <summary>
@@ -99,13 +114,35 @@ namespace LetsEncrypt.ACME.PKI
 
         public abstract void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target);
 
+        public static void RegisterProvider<CP>(string name = DEFAULT_PROVIDER_NAME) where CP : CertificateProvider
+        {
+            lock (_providers)
+            {
+                _providers[name] = typeof(CP);
+            }
+        }
+
         /// <summary>
         /// Returns the system default provider.
         /// </summary>
         /// <returns></returns>
-        public static CertificateProvider GetProvider()
+        public static CertificateProvider GetProvider(string name = DEFAULT_PROVIDER_NAME,
+                IDictionary<string, string> initParams = null)
         {
-            return new Providers.OpenSslLibProvider();
+            Type t;
+            lock (_providers)
+            {
+                t = _providers[name];
+            }
+
+            if (t == null)
+                throw new KeyNotFoundException("unknown or unregistered provider name");
+
+            if (initParams == null)
+                initParams = new Dictionary<string, string>();
+
+            return (CertificateProvider)t.GetConstructor(PROVIDER_CTOR_SIG)
+                    .Invoke(new[] { initParams });
         }
     }
 }

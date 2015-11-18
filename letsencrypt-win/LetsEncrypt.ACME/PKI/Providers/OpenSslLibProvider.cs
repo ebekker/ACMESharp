@@ -23,6 +23,10 @@ namespace LetsEncrypt.ACME.PKI.Providers
 
         public delegate int RsaKeyGeneratorCallback(int p, int n, object cbArg);
 
+        public OpenSslLibProvider(IDictionary<string, string> initParams)
+            : base(initParams)
+        { }
+
         public override PrivateKey GeneratePrivateKey(PrivateKeyParams pkp)
         {
             var rsaPkParams = pkp as RsaPrivateKeyParams;

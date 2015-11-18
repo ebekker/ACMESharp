@@ -15,18 +15,20 @@ namespace LetsEncrypt.ACME
         [TestMethod]
         public void TestGenerateRsaPrivateKey()
         {
-            var cp = CertificateProvider.GetProvider();
-            var pkp = new RsaPrivateKeyParams();
-            var pk = cp.GeneratePrivateKey(pkp);
+            using (var cp = CertificateProvider.GetProvider())
+            {
+                var pkp = new RsaPrivateKeyParams();
+                var pk = cp.GeneratePrivateKey(pkp);
 
-            Assert.IsInstanceOfType(pk, typeof(RsaPrivateKey));
+                Assert.IsInstanceOfType(pk, typeof(RsaPrivateKey));
 
-            var rsaPk = (RsaPrivateKey)pk;
+                var rsaPk = (RsaPrivateKey)pk;
 
-            // TODO:  verify the components of RSA PK?
-            //rsaPk.BigNumber
-            //rsaPk.Bits
-            //rsaPk.E
+                // TODO:  verify the components of RSA PK?
+                //rsaPk.BigNumber
+                //rsaPk.Bits
+                //rsaPk.E
+            }
         }
 
         [TestMethod]
@@ -35,34 +37,57 @@ namespace LetsEncrypt.ACME
             TestExportRsaPrivateKey(EncodingFormat.PEM);
         }
 
+        [TestMethod]
+        public void TestExportRsaPrivateKeyAsDer()
+        {
+            TestExportRsaPrivateKey(EncodingFormat.DER);
+        }
+
         private void TestExportRsaPrivateKey(EncodingFormat fmt)
         {
-            var cp = CertificateProvider.GetProvider();
-            var pkp = new RsaPrivateKeyParams();
-            var pk = cp.GeneratePrivateKey(pkp);
-
-            using (var target = new MemoryStream())
+            using (var cp = CertificateProvider.GetProvider())
             {
-                cp.ExportPrivateKey(pk, fmt, target);
+                var pkp = new RsaPrivateKeyParams();
+                var pk = cp.GeneratePrivateKey(pkp);
+
+                using (var target = new MemoryStream())
+                {
+                    cp.ExportPrivateKey(pk, fmt, target);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestImportRsaPrivatekey()
+        {
+            using (var cp = CertificateProvider.GetProvider())
+            {
+                using (var source = new FileStream(
+                    "CertificateProviderTests-PKey.pem", FileMode.Open))
+                {
+                    var pk = cp.ImportPrivateKey<RsaPrivateKey>(EncodingFormat.PEM, source);
+                }
             }
         }
 
         [TestMethod]
         public void TestGenerateRsaCsr()
         {
-            var cp = CertificateProvider.GetProvider();
-            var pkp = new RsaPrivateKeyParams();
-            var pk = cp.GeneratePrivateKey(pkp);
-
-            var crp = new CsrParams
+            using (var cp = CertificateProvider.GetProvider())
             {
-                Details = new CsrDetails
-                {
-                    CommonName = "TEST CERT",
-                }
-            };
+                var pkp = new RsaPrivateKeyParams();
+                var pk = cp.GeneratePrivateKey(pkp);
 
-            var csr = cp.GenerateCsr(crp, pk, Crt.MessageDigest.SHA256);
+                var crp = new CsrParams
+                {
+                    Details = new CsrDetails
+                    {
+                        CommonName = "TEST CERT",
+                    }
+                };
+
+                var csr = cp.GenerateCsr(crp, pk, Crt.MessageDigest.SHA256);
+            }
         }
 
         [TestMethod]
@@ -79,23 +104,25 @@ namespace LetsEncrypt.ACME
 
         private void TestExportRsaCsr(EncodingFormat fmt)
         {
-            var cp = CertificateProvider.GetProvider();
-            var pkp = new RsaPrivateKeyParams();
-            var pk = cp.GeneratePrivateKey(pkp);
-
-            var crp = new CsrParams
+            using (var cp = CertificateProvider.GetProvider())
             {
-                Details = new CsrDetails
+                var pkp = new RsaPrivateKeyParams();
+                var pk = cp.GeneratePrivateKey(pkp);
+
+                var crp = new CsrParams
                 {
-                    CommonName = "TEST CERT",
+                    Details = new CsrDetails
+                    {
+                        CommonName = "TEST CERT",
+                    }
+                };
+
+                var csr = cp.GenerateCsr(crp, pk, Crt.MessageDigest.SHA256);
+
+                using (var target = new MemoryStream())
+                {
+                    cp.ExportCsr(csr, fmt, target);
                 }
-            };
-
-            var csr = cp.GenerateCsr(crp, pk, Crt.MessageDigest.SHA256);
-
-            using (var target = new MemoryStream())
-            {
-                cp.ExportCsr(csr, fmt, target);
             }
         }
 
@@ -114,41 +141,43 @@ namespace LetsEncrypt.ACME
 
         private void TestImportRsaCsr(EncodingFormat fmt)
         {
-            var cp = CertificateProvider.GetProvider();
-            var pkp = new RsaPrivateKeyParams();
-            var pk = cp.GeneratePrivateKey(pkp);
-
-            var crp = new CsrParams
+            using (var cp = CertificateProvider.GetProvider())
             {
-                Details = new CsrDetails
+                var pkp = new RsaPrivateKeyParams();
+                var pk = cp.GeneratePrivateKey(pkp);
+
+                var crp = new CsrParams
                 {
-                    CommonName = "TEST CERT",
+                    Details = new CsrDetails
+                    {
+                        CommonName = "TEST CERT",
+                    }
+                };
+
+                var csr = cp.GenerateCsr(crp, pk, Crt.MessageDigest.SHA256);
+                byte[] bytes;
+                using (var target = new MemoryStream())
+                {
+                    cp.ExportCsr(csr, fmt, target);
+                    bytes = target.ToArray();
                 }
-            };
 
-            var csr = cp.GenerateCsr(crp, pk, Crt.MessageDigest.SHA256);
-            byte[] bytes;
-            using (var target = new MemoryStream())
-            {
-                cp.ExportCsr(csr, fmt, target);
-                bytes = target.ToArray();
-            }
+                var imp = csr;
+                using (var source = new MemoryStream(bytes))
+                {
+                    imp = cp.ImportCsr(fmt, source);
+                }
 
-            var imp = csr;
-            using (var source = new MemoryStream(bytes))
-            {
-                imp = cp.ImportCsr(fmt, source);
-            }
+                using (MemoryStream save1 = new MemoryStream(), save2 = new MemoryStream())
+                {
+                    cp.SaveCsr(csr, save1);
+                    cp.SaveCsr(imp, save2);
 
-            using (MemoryStream save1 = new MemoryStream(), save2 = new MemoryStream())
-            {
-                cp.SaveCsr(csr, save1);
-                cp.SaveCsr(imp, save2);
+                    var bytes1 = save1.ToArray();
+                    var bytes2 = save2.ToArray();
 
-                var bytes1 = save1.ToArray();
-                var bytes2 = save2.ToArray();
-
-                CollectionAssert.AreEqual(bytes1, bytes2);
+                    CollectionAssert.AreEqual(bytes1, bytes2);
+                }
             }
         }
 
@@ -168,23 +197,25 @@ namespace LetsEncrypt.ACME
 
         private void TestImportCertificate(EncodingFormat fmt, string filePath)
         {
-            var cp = CertificateProvider.GetProvider();
-
-            using (var source = new FileStream(filePath, FileMode.Open))
+            using (var cp = CertificateProvider.GetProvider())
             {
-                var crt = cp.ImportCertificate(fmt, source);
+
+                using (var source = new FileStream(filePath, FileMode.Open))
+                {
+                    var crt = cp.ImportCertificate(fmt, source);
+                }
             }
         }
 
         [TestMethod]
-        public void TestExportCertificateFromDer()
+        public void TestExportCertificateFromToDer()
         {
             TestExportCertificate(EncodingFormat.DER,
                     "CertificateProviderTests-Certificate.der");
         }
 
         [TestMethod]
-        public void TestExportCertificateFromPem()
+        public void TestExportCertificateFromToPem()
         {
             TestExportCertificate(EncodingFormat.PEM,
                     "CertificateProviderTests-Certificate.pem");
@@ -192,15 +223,17 @@ namespace LetsEncrypt.ACME
 
         private void TestExportCertificate(EncodingFormat fmt, string filePath)
         {
-            var cp = CertificateProvider.GetProvider();
-
-            using (var source = new FileStream(filePath, FileMode.Open))
+            using (var cp = CertificateProvider.GetProvider())
             {
-                var crt = cp.ImportCertificate(fmt, source);
 
-                using (var target = new MemoryStream())
+                using (var source = new FileStream(filePath, FileMode.Open))
                 {
-                    cp.ExportCertificate(crt, fmt, target);
+                    var crt = cp.ImportCertificate(fmt, source);
+
+                    using (var target = new MemoryStream())
+                    {
+                        cp.ExportCertificate(crt, fmt, target);
+                    }
                 }
             }
         }
@@ -208,56 +241,60 @@ namespace LetsEncrypt.ACME
         [TestMethod]
         public void TestLoadAndSavePrivateKey()
         {
-            var cp = CertificateProvider.GetProvider();
-
-            var testPk = "CertificateProviderTests.key.json";
-
-            PrivateKey pk;
-            using (var s = new FileStream(testPk, FileMode.Open))
+            using (var cp = CertificateProvider.GetProvider())
             {
-                pk = cp.LoadPrivateKey(s);
-            }
 
-            using (var s = new MemoryStream())
-            {
-                cp.SavePrivateKey(pk, s);
+                var testPk = "CertificateProviderTests.key.json";
 
-                var bytes = File.ReadAllBytes(testPk);
-                CollectionAssert.AreEqual(bytes, s.ToArray());
+                PrivateKey pk;
+                using (var s = new FileStream(testPk, FileMode.Open))
+                {
+                    pk = cp.LoadPrivateKey(s);
+                }
+
+                using (var s = new MemoryStream())
+                {
+                    cp.SavePrivateKey(pk, s);
+
+                    var bytes = File.ReadAllBytes(testPk);
+                    CollectionAssert.AreEqual(bytes, s.ToArray());
+                }
             }
         }
 
         [TestMethod]
         public void TestExportArchive()
         {
-            var cp = CertificateProvider.GetProvider();
-
-            var testPk = "CertificateProviderTests.key.json";
-            var testCert = "CertificateProviderTests-Certificate.pem";
-            var testIcaCert = "CertificateProviderTests-ICA-Certificate.pem";
-
-            PrivateKey pk;
-            using (var s = new FileStream(testPk, FileMode.Open))
+            using (var cp = CertificateProvider.GetProvider())
             {
-                pk = cp.LoadPrivateKey(s);
-            }
 
-            Crt cert;
-            using (var s = new FileStream(testCert, FileMode.Open))
-            {
-                cert = cp.ImportCertificate(EncodingFormat.PEM, s);
-            }
+                var testPk = "CertificateProviderTests.key.json";
+                var testCert = "CertificateProviderTests-Certificate.pem";
+                var testIcaCert = "CertificateProviderTests-ICA-Certificate.pem";
 
-            Crt icaCert;
-            using (var s = new FileStream(testIcaCert, FileMode.Open))
-            {
-                icaCert = cp.ImportCertificate(EncodingFormat.PEM, s);
-            }
+                PrivateKey pk;
+                using (var s = new FileStream(testPk, FileMode.Open))
+                {
+                    pk = cp.LoadPrivateKey(s);
+                }
 
-            using (var s = new MemoryStream())
-            {
-                var certs = new[] { cert, icaCert };
-                cp.ExportArchive(pk, certs, ArchiveFormat.PKCS12, s);
+                Crt cert;
+                using (var s = new FileStream(testCert, FileMode.Open))
+                {
+                    cert = cp.ImportCertificate(EncodingFormat.PEM, s);
+                }
+
+                Crt icaCert;
+                using (var s = new FileStream(testIcaCert, FileMode.Open))
+                {
+                    icaCert = cp.ImportCertificate(EncodingFormat.PEM, s);
+                }
+
+                using (var s = new MemoryStream())
+                {
+                    var certs = new[] { cert, icaCert };
+                    cp.ExportArchive(pk, certs, ArchiveFormat.PKCS12, s);
+                }
             }
         }
     }

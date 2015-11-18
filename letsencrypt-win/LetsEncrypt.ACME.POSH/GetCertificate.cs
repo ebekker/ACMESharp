@@ -128,20 +128,22 @@ namespace LetsEncrypt.ACME.POSH
                         var isuPemAsset = vp.GetAsset(VaultAssetType.IssuerPem,
                                 v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile);
 
-                        var cp = CertificateProvider.GetProvider();
+                        using (var cp = CertificateProvider.GetProvider())
+                        {
 
-                        using (Stream keyStream = vp.LoadAsset(keyPemAsset),
+                            using (Stream keyStream = vp.LoadAsset(keyPemAsset),
                                 crtStream = vp.LoadAsset(crtPemAsset),
                                 isuStream = vp.LoadAsset(isuPemAsset),
                                 fs = new FileStream(ExportPkcs12, mode))
-                        {
-                            var pk = cp.ImportPrivateKey<RsaPrivateKey>(EncodingFormat.PEM, keyStream);
-                            var crt = cp.ImportCertificate(EncodingFormat.PEM, crtStream);
-                            var isu = cp.ImportCertificate(EncodingFormat.PEM, isuStream);
+                            {
+                                var pk = cp.ImportPrivateKey<RsaPrivateKey>(EncodingFormat.PEM, keyStream);
+                                var crt = cp.ImportCertificate(EncodingFormat.PEM, crtStream);
+                                var isu = cp.ImportCertificate(EncodingFormat.PEM, isuStream);
 
-                            var certs = new[] { crt, isu };
+                                var certs = new[] { crt, isu };
 
-                            cp.ExportArchive(pk, certs, ArchiveFormat.PKCS12, fs);
+                                cp.ExportArchive(pk, certs, ArchiveFormat.PKCS12, fs);
+                            }
                         }
                     }
 

@@ -133,7 +133,7 @@
     <Content Include="libeay32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="PKI\Providers\OpenSslCliProvider_Config.txt" />
+    <EmbeddedResource Include="PKI\Providers\OpenSslCliProvider_Config.txt" />
     <Content Include="ssleay32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -1,4 +1,11 @@
-﻿
+#####################################################################
+## WARNING:  WHEN SAVING THIS FILE BE SURE TO SAVE IT WITHOUT THE
+##           UTF-8 BOM LEADING CHARACTERS.
+##           OPENSSL DOES NOT SUPPORT READING THE BOM AND YOU WILL
+##           ENCOUNTER THIS SOMEWHAT CRYPTIC ERROR:
+##                 DEF_LOAD_BIO:missing equal sign
+#####################################################################
+
 [ req ]
 
 ## If set to the value no this disables prompting of certificate fields and just takes values
@@ -14,10 +21,10 @@ distinguished_name = req_dn
 
 ## Sample:
 ## ------------
-## C                      = US
-## ST                     = Maryland
-## L                      = Crofton
-## O                      = Let's Encrypt
-## OU                     = Windows Technologies
-## CN                     = test1.acmetest.letsencrypt.org
-## emailAddress           = test@mailinator.com
+C                      = US
+ST                     = Maryland
+L                      = Crofton
+O                      = LetsEncrypt
+OU                     = Windows Technologies
+CN                     = test1.acmetest.letsencrypt.org
+emailAddress           = test@mailinator.com

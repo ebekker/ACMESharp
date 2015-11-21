@@ -86,12 +86,22 @@
     <Compile Include="DnsUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ACMESharp.PKI.Providers.CertEnroll\ACMESharp.PKI.Providers.CertEnroll.csproj">
+      <Project>{a37e92ee-f7ad-4858-8497-fa1af27fb14f}</Project>
+      <Name>ACMESharp.PKI.Providers.CertEnroll</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LetsEncrypt.ACME\LetsEncrypt.ACME.csproj">
       <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
       <Name>LetsEncrypt.ACME</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ce-key.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ce-key.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="CertificateProviderTests-Certificate.der">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -12,10 +12,17 @@ namespace LetsEncrypt.ACME
     [TestClass]
     public class CertificateProviderTests
     {
+        private static CertificateProvider GetCP()
+        {
+            CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.CertEnrollProvider>();
+
+            return CertificateProvider.GetProvider();
+        }
+
         [TestMethod]
         public void TestGenerateRsaPrivateKey()
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
                 var pkp = new RsaPrivateKeyParams();
                 var pk = cp.GeneratePrivateKey(pkp);
@@ -45,7 +52,7 @@ namespace LetsEncrypt.ACME
 
         private void TestExportRsaPrivateKey(EncodingFormat fmt)
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
                 var pkp = new RsaPrivateKeyParams();
                 var pk = cp.GeneratePrivateKey(pkp);
@@ -58,14 +65,27 @@ namespace LetsEncrypt.ACME
         }
 
         [TestMethod]
-        public void TestImportRsaPrivatekey()
+        public void TestImportRsaPrivatekeyFromPem()
         {
-            using (var cp = CertificateProvider.GetProvider())
+            TestImportRsaPrivatekey(EncodingFormat.PEM,
+                "ce-key.pem"); // "CertificateProviderTests-PKey.pem"); // 
+        }
+
+        [TestMethod]
+        [Ignore] // Not sure if this is even a necessary scenario
+        public void TestImportRsaPrivatekeyFromDer()
+        {
+            TestImportRsaPrivatekey(EncodingFormat.DER,
+                "ce-key.der"); // "CertificateProviderTests-PKey.pem"); // 
+        }
+
+        public void TestImportRsaPrivatekey(EncodingFormat fmt, string filePath)
+        {
+            using (var cp = GetCP())
             {
-                using (var source = new FileStream(
-                    "CertificateProviderTests-PKey.pem", FileMode.Open))
+                using (var source = new FileStream(filePath, FileMode.Open))
                 {
-                    var pk = cp.ImportPrivateKey<RsaPrivateKey>(EncodingFormat.PEM, source);
+                    var pk = cp.ImportPrivateKey<RsaPrivateKey>(fmt, source);
                 }
             }
         }
@@ -73,7 +93,7 @@ namespace LetsEncrypt.ACME
         [TestMethod]
         public void TestGenerateRsaCsr()
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
                 var pkp = new RsaPrivateKeyParams();
                 var pk = cp.GeneratePrivateKey(pkp);

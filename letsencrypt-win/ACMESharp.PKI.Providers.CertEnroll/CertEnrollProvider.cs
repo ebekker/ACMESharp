@@ -327,7 +327,15 @@ namespace ACMESharp.PKI.Providers
                     source.CopyTo(ms);
                     x509.Import(ms.ToArray());
                 }
+
+                var crt = new Crt
+                {
+                    Pem = Convert.ToBase64String(x509.RawData),
+                };
+                return crt;
             }
+
+            throw new NotSupportedException("unsupported encoding format");
         }
 
         public override void ExportCertificate(Crt cert, EncodingFormat fmt, Stream target)

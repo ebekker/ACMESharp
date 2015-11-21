@@ -1,6 +1,6 @@
-# letsencrypt-win
+# ACMESharp
 
-An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platform.
+An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .NET platform.
 
 >:bangbang: **NOTE:**  At present, due to a limitation a dependency on OpenSSL, you must use the **32-bit version of PowerShell** for any of the PS modules.
 
@@ -11,6 +11,10 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client for the Windows platf
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/7030/badge.svg"/>
 </a>
+
+---
+
+Please note, this project was formerly named **`letsencrypt-win`**.
 
 ---
 

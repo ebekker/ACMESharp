@@ -27,8 +27,7 @@ namespace LetsEncrypt.ACME.PKI
 
         private static Dictionary<string, Type> _providers = new Dictionary<string, Type>
         {
-            //{ DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslLibProvider) },
-            { DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslCliProvider) },
+            { DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslLibProvider) },
         };
 
         protected CertificateProvider(IDictionary<string, string> newParams)
@@ -119,6 +118,17 @@ namespace LetsEncrypt.ACME.PKI
             lock (_providers)
             {
                 _providers[name] = typeof(CP);
+            }
+        }
+
+        public static void RegisterProvider(Type cpType, string name = DEFAULT_PROVIDER_NAME)
+        {
+            if (!typeof(CertificateProvider).IsAssignableFrom(cpType))
+                throw new InvalidOperationException("type is not a subclass of certificate provider type");
+
+            lock (_providers)
+            {
+                _providers[name] = cpType;
             }
         }
 

@@ -1,0 +1,30 @@
+#####################################################################
+## WARNING:  WHEN SAVING THIS FILE BE SURE TO SAVE IT WITHOUT THE
+##           UTF-8 BOM LEADING CHARACTERS.
+##           OPENSSL DOES NOT SUPPORT READING THE BOM AND YOU WILL
+##           ENCOUNTER THIS SOMEWHAT CRYPTIC ERROR:
+##                 DEF_LOAD_BIO:missing equal sign
+#####################################################################
+
+[ req ]
+
+## If set to the value no this disables prompting of certificate fields and just takes values
+## from the config file directly. It also changes the expected format of the distinguished_name
+## and attributes sections.
+prompt = no
+
+## This specifies the section containing the distinguished name fields to prompt for when
+## generating a certificate or certificate request. The format is described in the next section.
+distinguished_name = req_dn
+
+[ req_dn ]
+
+## Sample:
+## ------------
+C                      = US
+ST                     = Maryland
+L                      = Crofton
+O                      = LetsEncrypt
+OU                     = Windows Technologies
+CN                     = test1.acmetest.letsencrypt.org
+emailAddress           = test@mailinator.com

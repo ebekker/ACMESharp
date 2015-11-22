@@ -68,9 +68,9 @@ namespace LetsEncrypt.ACME
             if (!Directory.Exists(DEFAULT_BASE_LOCAL_STORE))
                 Directory.CreateDirectory(DEFAULT_BASE_LOCAL_STORE);
 
-            _baseLocalStore = $"{DEFAULT_BASE_LOCAL_STORE}-{DateTime.Now.ToString("yyMMdd-HHmmss")}";
-            if (!Directory.Exists(_baseLocalStore))
-                Directory.CreateDirectory(_baseLocalStore);
+            //_baseLocalStore = $"{DEFAULT_BASE_LOCAL_STORE}-{DateTime.Now.ToString("yyMMdd-HHmmss")}";
+            //if (!Directory.Exists(_baseLocalStore))
+            //    Directory.CreateDirectory(_baseLocalStore);
 
             if (File.Exists(WEB_PROXY_CONFIG))
             {
@@ -1062,66 +1062,76 @@ namespace LetsEncrypt.ACME
         [TestCategory("skipCI")]
         public void Test0170_GenCsrAndRequestCertificate()
         {
-            var rsaKeys = CsrHelper.GenerateRsaPrivateKey();
-            _testGenCsr_RsaKeysFile = $"{_baseLocalStore}\\TestGenCsr-rsaKeys.txt";
-            using (var fs = new FileStream(_testGenCsr_RsaKeysFile, FileMode.Create))
+            using (var cp = CertificateProvider.GetProvider())
             {
-                rsaKeys.Save(fs);
-            }
 
-            var csrDetails = new CsrHelper.CsrDetails
-            {
-                CommonName = TEST_CN1
-            };
-            var csr = CsrHelper.GenerateCsr(csrDetails, rsaKeys);
-            _testGenCsr_CsrDetailsFile = $"{_baseLocalStore}\\TestGenCsr-csrDetails.txt";
-            using (var fs = new FileStream(_testGenCsr_CsrDetailsFile, FileMode.Create))
-            {
-                csrDetails.Save(fs);
-            }
-            _testGenCsr_CsrFile = $"{_baseLocalStore}\\TestGenCsr-csr.txt";
-            using (var fs = new FileStream(_testGenCsr_CsrFile, FileMode.Create))
-            {
-                csr.Save(fs);
-            }
+                var rsaKeyParams = new RsaPrivateKeyParams();
+                var rsaKey = cp.GeneratePrivateKey(rsaKeyParams);
 
-            using (var signer = new RS256Signer())
-            {
-                signer.Init();
-                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                _testGenCsr_RsaKeysFile = $"{_baseLocalStore}\\TestGenCsr-rsaKeys.txt";
+                using (var fs = new FileStream(_testGenCsr_RsaKeysFile, FileMode.Create))
                 {
-                    signer.Load(fs);
+                    cp.SavePrivateKey(rsaKey, fs);
                 }
 
-                AcmeRegistration reg;
-                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                var csrParams = new CsrParams
                 {
-                    reg = AcmeRegistration.Load(fs);
-                }
-
-                byte[] derRaw;
-                using (var bs = new MemoryStream())
-                {
-                    csr.ExportAsDer(bs);
-                    derRaw = bs.ToArray();
-                }
-                var derB64u = JwsHelper.Base64UrlEncode(derRaw);
-
-                using (var client = BuildClient(testTagHeader: nameof(Test0170_GenCsrAndRequestCertificate)))
-                {
-                    client.RootUrl = _rootUrl;
-                    client.Signer = signer;
-                    client.Registration = reg;
-                    client.Init();
-
-                    client.GetDirectory(true);
-
-                    var certRequ = client.RequestCertificate(derB64u);
-
-                    _testCertRequ_AcmeCertRequFile = $"{_baseLocalStore}\\TestCertRequ.acmeCertRequ";
-                    using (var fs = new FileStream(_testCertRequ_AcmeCertRequFile, FileMode.Create))
+                    Details = new CsrDetails
                     {
-                        certRequ.Save(fs);
+                        CommonName = TEST_CN1
+                    }
+                };
+
+                var csr = cp.GenerateCsr(csrParams, rsaKey, Crt.MessageDigest.SHA256);
+                _testGenCsr_CsrDetailsFile = $"{_baseLocalStore}\\TestGenCsr-csrDetails.txt";
+                using (var fs = new FileStream(_testGenCsr_CsrDetailsFile, FileMode.Create))
+                {
+                    cp.SaveCsrParams(csrParams, fs);
+                }
+                _testGenCsr_CsrFile = $"{_baseLocalStore}\\TestGenCsr-csr.txt";
+                using (var fs = new FileStream(_testGenCsr_CsrFile, FileMode.Create))
+                {
+                    cp.SaveCsr(csr, fs);
+                }
+
+                using (var signer = new RS256Signer())
+                {
+                    signer.Init();
+                    using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                    {
+                        signer.Load(fs);
+                    }
+
+                    AcmeRegistration reg;
+                    using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                    {
+                        reg = AcmeRegistration.Load(fs);
+                    }
+
+                    byte[] derRaw;
+                    using (var bs = new MemoryStream())
+                    {
+                        cp.ExportCsr(csr, EncodingFormat.DER, bs);
+                        derRaw = bs.ToArray();
+                    }
+                    var derB64u = JwsHelper.Base64UrlEncode(derRaw);
+
+                    using (var client = BuildClient(testTagHeader: nameof(Test0170_GenCsrAndRequestCertificate)))
+                    {
+                        client.RootUrl = _rootUrl;
+                        client.Signer = signer;
+                        client.Registration = reg;
+                        client.Init();
+
+                        client.GetDirectory(true);
+
+                        var certRequ = client.RequestCertificate(derB64u);
+
+                        _testCertRequ_AcmeCertRequFile = $"{_baseLocalStore}\\TestCertRequ.acmeCertRequ";
+                        using (var fs = new FileStream(_testCertRequ_AcmeCertRequFile, FileMode.Create))
+                        {
+                            certRequ.Save(fs);
+                        }
                     }
                 }
             }

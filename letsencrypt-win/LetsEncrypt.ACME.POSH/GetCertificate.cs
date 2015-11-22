@@ -10,39 +10,42 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.ACME.POSH
 {
-    [Cmdlet(VerbsCommon.Get, "Certificate")]
+    [Cmdlet(VerbsCommon.Get, "Certificate", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(CertificateInfo))]
     public class GetCertificate : Cmdlet
     {
-        [Parameter(Mandatory = true)]
+        public const string PSET_LIST = "List";
+        public const string PSET_GET = "Get";
+
+        [Parameter(ParameterSetName = PSET_GET)]
         public string Ref
         { get; set; }
 
-        [Parameter]
+        [Parameter(ParameterSetName = PSET_GET)]
         public string ExportKeyPEM
         { get; set; }
 
-        [Parameter]
+        [Parameter(ParameterSetName = PSET_GET)]
         public string ExportCsrPEM
         { get; set; }
 
-        [Parameter]
+        [Parameter(ParameterSetName = PSET_GET)]
         public string ExportCertificatePEM
         { get; set; }
 
-        [Parameter]
+        [Parameter(ParameterSetName = PSET_GET)]
         public string ExportCertificateDER
         { get; set; }
 
-        [Parameter]
+        [Parameter(ParameterSetName = PSET_GET)]
         public string ExportPkcs12
         { get; set; }
 
-        [Parameter]
+        [Parameter(ParameterSetName = PSET_GET)]
         public SwitchParameter Overwrite
         { get; set; }
 
-        [Parameter]
+        [Parameter(ParameterSetName = PSET_GET)]
         public string VaultProfile
         { get; set; }
 
@@ -59,67 +62,93 @@ namespace LetsEncrypt.ACME.POSH
                 var ri = v.Registrations[0];
                 var r = ri.Registration;
 
-                if (v.Certificates == null || v.Certificates.Count < 1)
-                    throw new InvalidOperationException("No certificates found");
-
-                var ci = v.Certificates.GetByRef(Ref);
-                if (ci == null)
-                    throw new ItemNotFoundException("Unable to find a Certificate for the given reference");
-
-                var mode = Overwrite ? FileMode.Create : FileMode.CreateNew;
-
-                if (!string.IsNullOrEmpty(ExportKeyPEM))
+                if (string.IsNullOrEmpty(Ref))
                 {
-                    if (string.IsNullOrEmpty(ci.KeyPemFile))
-                        throw new InvalidOperationException("Cannot export private key; it hasn't been imported or generated");
-                    CopyTo(vp, VaultAssetType.KeyPem, ci.KeyPemFile, ExportKeyPEM, mode);
-                }
-
-                if (!string.IsNullOrEmpty(ExportCsrPEM))
-                {
-                    if (string.IsNullOrEmpty(ci.CsrPemFile))
-                        throw new InvalidOperationException("Cannot export CSR; it hasn't been imported or generated");
-                    CopyTo(vp, VaultAssetType.CsrPem, ci.CsrPemFile, ExportCsrPEM, mode);
-                }
-
-                if (!string.IsNullOrEmpty(ExportCertificatePEM))
-                {
-                    if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtPemFile))
-                        throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                    CopyTo(vp, VaultAssetType.CrtPem, ci.CrtPemFile, ExportCertificatePEM, mode);
-                }
-
-                if (!string.IsNullOrEmpty(ExportCertificateDER))
-                {
-                    if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtDerFile))
-                        throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                    CopyTo(vp, VaultAssetType.CrtDer, ci.CrtDerFile, ExportCertificateDER, mode);
-                }
-
-                if (!string.IsNullOrEmpty(ExportPkcs12))
-                {
-                    if (string.IsNullOrEmpty(ci.KeyPemFile))
-                        throw new InvalidOperationException("Cannot export PKCS12; private hasn't been imported or generated");
-                    if (string.IsNullOrEmpty(ci.CrtPemFile))
-                        throw new InvalidOperationException("Cannot export PKCS12; CSR hasn't been submitted or CRT hasn't been retrieved");
-                    if (string.IsNullOrEmpty(ci.IssuerSerialNumber) || !v.IssuerCertificates.ContainsKey(ci.IssuerSerialNumber))
-                        throw new InvalidOperationException("Cannot export PKCS12; Issuer certificate hasn't been resolved");
-
-                    var keyPemAsset = vp.GetAsset(VaultAssetType.KeyPem, ci.KeyPemFile);
-                    var crtPemAsset = vp.GetAsset(VaultAssetType.CrtPem, ci.CrtPemFile);
-                    var isuPemAsset = vp.GetAsset(VaultAssetType.IssuerPem,
-                            v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile);
-
-                    using (Stream keyStream = vp.LoadAsset(keyPemAsset),
-                            crtStream = vp.LoadAsset(crtPemAsset),
-                            isuStream = vp.LoadAsset(isuPemAsset),
-                            fs = new FileStream(ExportPkcs12, mode))
+                    int seq = 0;
+                    WriteObject(v.Certificates.Values.Select(x => new
                     {
-                        CsrHelper.Crt.ConvertToPfx(keyStream, crtStream, isuStream, fs);
-                    }
+                        Seq = seq++,
+                        Certificate = x,
+                        //Id = x.Id,
+                        //Alias = x.Alias,
+                        //Label = x.Label,
+                        //StatusCode = x.CertificateRequest.StatusCode
+                    }), true);
                 }
+                else
+                {
+                    if (v.Certificates == null || v.Certificates.Count < 1)
+                        throw new InvalidOperationException("No certificates found");
 
-                WriteObject(ci);
+                    var ci = v.Certificates.GetByRef(Ref);
+                    if (ci == null)
+                        throw new ItemNotFoundException("Unable to find a Certificate for the given reference");
+
+                    var mode = Overwrite ? FileMode.Create : FileMode.CreateNew;
+
+                    if (!string.IsNullOrEmpty(ExportKeyPEM))
+                    {
+                        if (string.IsNullOrEmpty(ci.KeyPemFile))
+                            throw new InvalidOperationException("Cannot export private key; it hasn't been imported or generated");
+                        CopyTo(vp, VaultAssetType.KeyPem, ci.KeyPemFile, ExportKeyPEM, mode);
+                    }
+
+                    if (!string.IsNullOrEmpty(ExportCsrPEM))
+                    {
+                        if (string.IsNullOrEmpty(ci.CsrPemFile))
+                            throw new InvalidOperationException("Cannot export CSR; it hasn't been imported or generated");
+                        CopyTo(vp, VaultAssetType.CsrPem, ci.CsrPemFile, ExportCsrPEM, mode);
+                    }
+
+                    if (!string.IsNullOrEmpty(ExportCertificatePEM))
+                    {
+                        if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtPemFile))
+                            throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
+                        CopyTo(vp, VaultAssetType.CrtPem, ci.CrtPemFile, ExportCertificatePEM, mode);
+                    }
+
+                    if (!string.IsNullOrEmpty(ExportCertificateDER))
+                    {
+                        if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtDerFile))
+                            throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
+                        CopyTo(vp, VaultAssetType.CrtDer, ci.CrtDerFile, ExportCertificateDER, mode);
+                    }
+
+                    if (!string.IsNullOrEmpty(ExportPkcs12))
+                    {
+                        if (string.IsNullOrEmpty(ci.KeyPemFile))
+                            throw new InvalidOperationException("Cannot export PKCS12; private hasn't been imported or generated");
+                        if (string.IsNullOrEmpty(ci.CrtPemFile))
+                            throw new InvalidOperationException("Cannot export PKCS12; CSR hasn't been submitted or CRT hasn't been retrieved");
+                        if (string.IsNullOrEmpty(ci.IssuerSerialNumber) || !v.IssuerCertificates.ContainsKey(ci.IssuerSerialNumber))
+                            throw new InvalidOperationException("Cannot export PKCS12; Issuer certificate hasn't been resolved");
+
+                        var keyPemAsset = vp.GetAsset(VaultAssetType.KeyPem, ci.KeyPemFile);
+                        var crtPemAsset = vp.GetAsset(VaultAssetType.CrtPem, ci.CrtPemFile);
+                        var isuPemAsset = vp.GetAsset(VaultAssetType.IssuerPem,
+                                v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile);
+
+                        using (var cp = CertificateProvider.GetProvider())
+                        {
+
+                            using (Stream keyStream = vp.LoadAsset(keyPemAsset),
+                                crtStream = vp.LoadAsset(crtPemAsset),
+                                isuStream = vp.LoadAsset(isuPemAsset),
+                                fs = new FileStream(ExportPkcs12, mode))
+                            {
+                                var pk = cp.ImportPrivateKey<RsaPrivateKey>(EncodingFormat.PEM, keyStream);
+                                var crt = cp.ImportCertificate(EncodingFormat.PEM, crtStream);
+                                var isu = cp.ImportCertificate(EncodingFormat.PEM, isuStream);
+
+                                var certs = new[] { crt, isu };
+
+                                cp.ExportArchive(pk, certs, ArchiveFormat.PKCS12, fs);
+                            }
+                        }
+                    }
+
+                    WriteObject(ci);
+                }
             }
         }
 

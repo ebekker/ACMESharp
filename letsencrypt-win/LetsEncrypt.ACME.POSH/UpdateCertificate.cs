@@ -100,23 +100,31 @@ namespace LetsEncrypt.ACME.POSH
                         if (crtPemAsset == null)
                             crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
 
-                        using (var s = vp.SaveAsset(crtDerAsset))
+                        using (var cp = CertificateProvider.GetProvider())
                         {
-                            ci.CertificateRequest.SaveCertificate(s);
-                            ci.CrtDerFile = crtDerFile;
+                            var bytes = ci.CertificateRequest.GetCertificateContent();
+
+                            using (Stream source = new MemoryStream(bytes),
+                                    derTarget = vp.SaveAsset(crtDerAsset),
+                                    pemTarget = vp.SaveAsset(crtPemAsset))
+                            {
+                                var crt = cp.ImportCertificate(EncodingFormat.DER, source);
+
+                                // We're saving the DER format cert "through"
+                                // the CP in order to validate its content
+                                cp.ExportCertificate(crt, EncodingFormat.DER, derTarget);
+                                ci.CrtDerFile = crtDerFile;
+
+                                cp.ExportCertificate(crt, EncodingFormat.PEM, pemTarget);
+                                ci.CrtPemFile = crtPemFile;
+                            }
                         }
 
-                        using (Stream source = vp.LoadAsset(crtDerAsset), target = vp.SaveAsset(crtPemAsset))
-                        {
-                            CsrHelper.Crt.ConvertDerToPem(source, target);
-                            ci.CrtPemFile = crtPemFile;
-                        }
-
-                        var crt = new X509Certificate2(ci.CertificateRequest.GetCertificateContent());
-                        ci.SerialNumber = crt.SerialNumber;
-                        ci.Thumbprint = crt.Thumbprint;
-                        ci.SignatureAlgorithm = crt.SignatureAlgorithm?.FriendlyName;
-                        ci.Signature = crt.GetCertHashString();
+                        var x509 = new X509Certificate2(ci.CertificateRequest.GetCertificateContent());
+                        ci.SerialNumber = x509.SerialNumber;
+                        ci.Thumbprint = x509.Thumbprint;
+                        ci.SignatureAlgorithm = x509.SignatureAlgorithm?.FriendlyName;
+                        ci.Signature = x509.GetCertHashString();
                     }
 
                     if (Repeat || string.IsNullOrEmpty(ci.IssuerSerialNumber))
@@ -128,6 +136,9 @@ namespace LetsEncrypt.ACME.POSH
                             var upLink = links.GetFirstOrDefault("up");
                             if (upLink != null)
                             {
+                                // We need to save the ICA certificate to a local
+                                // temp file so that we can read it in and store
+                                // it properly as a vault asset through a stream
                                 var tmp = Path.GetTempFileName();
                                 try
                                 {
@@ -171,10 +182,16 @@ namespace LetsEncrypt.ACME.POSH
                                         {
                                             if (issuerPemAsset == null)
                                                 issuerPemAsset = vp.CreateAsset(VaultAssetType.IssuerPem, cacertPemFile);
-                                            using (Stream source = vp.LoadAsset(issuerDerAsset),
-                                                    target = vp.SaveAsset(issuerPemAsset))
+
+                                            using (var cp = CertificateProvider.GetProvider())
                                             {
-                                                CsrHelper.Crt.ConvertDerToPem(source, target);
+
+                                                using (Stream source = vp.LoadAsset(issuerDerAsset),
+                                                    target = vp.SaveAsset(issuerPemAsset))
+                                                {
+                                                    var crt = cp.ImportCertificate(EncodingFormat.DER, source);
+                                                    cp.ExportCertificate(crt, EncodingFormat.PEM, target);
+                                                }
                                             }
                                         }
 

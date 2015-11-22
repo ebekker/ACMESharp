@@ -105,7 +105,15 @@
     <Compile Include="Messages\UpdateRegRequest.cs" />
     <Compile Include="Messages\AnswerLegacyDnsChallengeRequest.cs" />
     <Compile Include="Messages\AnswerHttpChallengeRequest.cs" />
+    <Compile Include="PKI\Crt.cs" />
+    <Compile Include="PKI\Csr.cs" />
+    <Compile Include="PKI\CsrDetails.cs" />
     <Compile Include="PKI\CsrHelper.cs" />
+    <Compile Include="PKI\CertificateProvider.cs" />
+    <Compile Include="PKI\CsrParams.cs" />
+    <Compile Include="PKI\PkiFormats.cs" />
+    <Compile Include="PKI\PrivateKey.cs" />
+    <Compile Include="PKI\Providers\OpenSslLibProvider.cs" />
     <Compile Include="RequestMessage.cs" />
     <Compile Include="Messages\NewRegRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

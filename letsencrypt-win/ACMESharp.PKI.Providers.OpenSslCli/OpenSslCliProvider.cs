@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LetsEncrypt.ACME.PKI;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.ACME.PKI.Providers
+namespace ACMESharp.PKI.Providers
 {
     /// <summary>
     /// Implementation of a <see cref="CertificateProvider"/> that uses process calls
@@ -36,11 +37,13 @@ namespace LetsEncrypt.ACME.PKI.Providers
         public const string PARAM_CLI_PATH = nameof(CliPath);
         public const string PARAM_CLI_WAIT_TIMEOUT = nameof(CliWaitTimeout);
 
+        public const string THIS_ASM_DIR_SUBST = "%THIS_ASM_DIR%";
+
         /// <summary>
         /// The full path to the CLI binary executable.
         /// </summary>
         public string CliPath
-        { get; set; } = "C:\\Program Files\\OpenSSL\\bin\\openssl.exe";
+        { get; set; } = $"{THIS_ASM_DIR_SUBST}\\openssl-win32-bin\\openssl.exe";
 
         /// <summary>
         /// The amount of time (in ms) to wait for any invocation of the CLI before timing
@@ -458,7 +461,15 @@ namespace LetsEncrypt.ACME.PKI.Providers
 
         private void RunCli(string args)
         {
-            var psi = new ProcessStartInfo(CliPath, args);
+            var cliPath = CliPath;
+            if (cliPath.Contains(THIS_ASM_DIR_SUBST))
+            {
+                var asmPath = Assembly.GetExecutingAssembly().Location;
+                var asmDir = Path.GetDirectoryName(asmPath);
+                cliPath = cliPath.Replace(THIS_ASM_DIR_SUBST, asmDir);
+            }
+
+            var psi = new ProcessStartInfo(cliPath, args);
             psi.UseShellExecute = false;
             psi.RedirectStandardError = true;
             psi.RedirectStandardOutput = true;

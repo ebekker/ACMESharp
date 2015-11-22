@@ -14,7 +14,8 @@ namespace LetsEncrypt.ACME
     {
         private static CertificateProvider GetCP()
         {
-            CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.CertEnrollProvider>();
+            //CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.CertEnrollProvider>();
+            CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.OpenSslCliProvider>();
 
             return CertificateProvider.GetProvider();
         }
@@ -68,7 +69,7 @@ namespace LetsEncrypt.ACME
         public void TestImportRsaPrivatekeyFromPem()
         {
             TestImportRsaPrivatekey(EncodingFormat.PEM,
-                "ce-key.pem"); // "CertificateProviderTests-PKey.pem"); // 
+                "CertificateProviderTests-PKey.pem"); // "ce-key.pem"); // 
         }
 
         [TestMethod]
@@ -76,7 +77,7 @@ namespace LetsEncrypt.ACME
         public void TestImportRsaPrivatekeyFromDer()
         {
             TestImportRsaPrivatekey(EncodingFormat.DER,
-                "ce-key.der"); // "CertificateProviderTests-PKey.pem"); // 
+                "CertificateProviderTests-PKey.pem"); // "ce-key.der"); // 
         }
 
         public void TestImportRsaPrivatekey(EncodingFormat fmt, string filePath)

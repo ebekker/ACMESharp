@@ -104,7 +104,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0010_Init()
         {
             using (var signer = new RS256Signer())
@@ -120,7 +120,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0020_GetDirectory()
         {
             var boulderResMap = new Dictionary<string, string>
@@ -158,7 +158,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0030_Register()
         {
             using (var signer = new RS256Signer())
@@ -207,7 +207,7 @@ namespace ACMESharp
         /// spec 6.3</see>).
         /// </summary>
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0040_RegisterEmptyUpdate()
         {
             using (var signer = new RS256Signer())
@@ -249,7 +249,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0050_RegisterUpdateTosAgreement()
         {
             using (var signer = new RS256Signer())
@@ -290,7 +290,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0060_RegisterUpdateContacts()
         {
             using (var signer = new RS256Signer())
@@ -331,7 +331,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0070_RegisterDuplicate()
         {
             using (var signer = new RS256Signer())
@@ -370,7 +370,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0080_AuthorizeDnsBlacklisted()
         {
             using (var signer = new RS256Signer())
@@ -414,7 +414,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0090_AuthorizeIdentifier()
         {
             using (var signer = new RS256Signer())
@@ -472,7 +472,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0095_RefreshIdentifierAuthorization()
         {
             using (var signer = new RS256Signer())
@@ -516,7 +516,7 @@ namespace ACMESharp
         }
 
         //[TestMethod]
-        //[TestCategory("skipCI")]
+        //[TestCategory("acmeServerInteg")]
         //public void Test0100_RefreshAuthzDnsChallenge()
         //{
         //    using (var signer = new RS256Signer())
@@ -560,7 +560,7 @@ namespace ACMESharp
         //}
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         [Ignore]
         public void Test0110_RefreshAuthzLegacyHttpChallenge()
         {
@@ -605,7 +605,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0111_RefreshAuthzHttpChallenge()
         {
             using (var signer = new RS256Signer())
@@ -649,7 +649,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0120_GenerateChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -695,7 +695,7 @@ namespace ACMESharp
         }
 
         //[TestMethod]
-        //[TestCategory("skipCI")]
+        //[TestCategory("acmeServerInteg")]
         //[Timeout(120 * 1000)]
         //public void Test0130_HandleDnsChallenge()
         //{
@@ -748,7 +748,7 @@ namespace ACMESharp
         //}
 
         //[TestMethod]
-        //[TestCategory("skipCI")]
+        //[TestCategory("acmeServerInteg")]
         //public void Test0135_SubmitDnsChallengeAnswers()
         //{
         //    using (var signer = new RS256Signer())
@@ -793,14 +793,14 @@ namespace ACMESharp
         //}
 
         //[TestMethod]
-        //[TestCategory("skipCI")]
+        //[TestCategory("acmeServerInteg")]
         //public void Test0137_RefreshAuthzDnsChallenge()
         //{
         //    Test0100_RefreshAuthzDnsChallenge();
         //}
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         [Timeout(120 * 1000)]
         [Ignore]
         public void Test0140_HandleLegacyHttpChallenge()
@@ -857,7 +857,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         [Timeout(120 * 1000)]
         public void Test0141_HandleHttpChallenge()
         {
@@ -913,7 +913,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         [Ignore]
         public void Test0145_SubmitLegacyHttpChallengeAnswers()
         {
@@ -959,7 +959,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0146_SubmitHttpChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -1004,7 +1004,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         [Ignore]
         public void Test0147_RefreshAuthzLegacyHttpChallenge()
         {
@@ -1012,14 +1012,14 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0148_RefreshAuthzHttpChallenge()
         {
             Test0111_RefreshAuthzHttpChallenge();
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0160_RequestCertificateInvalidCsr()
         {
             using (var signer = new RS256Signer())
@@ -1061,7 +1061,7 @@ namespace ACMESharp
         }
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0170_GenCsrAndRequestCertificate()
         {
             using (var cp = CertificateProvider.GetProvider())
@@ -1141,7 +1141,7 @@ namespace ACMESharp
 
         /*
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0180_RequestCertificate()
         {
             using (var signer = new RS256Signer())
@@ -1183,7 +1183,7 @@ namespace ACMESharp
         */
 
         [TestMethod]
-        [TestCategory("skipCI")]
+        [TestCategory("acmeServerInteg")]
         public void Test0190_RefreshCertificateRequest()
         {
             using (var signer = new RS256Signer())

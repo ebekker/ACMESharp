@@ -13,7 +13,7 @@ build:
 test:
   categories:
     except:
-    - skipCI
+    - XXXskipCI
 artifacts:
 - path: letsencrypt-win\ACMESharp\bin
   name: ACME-lib

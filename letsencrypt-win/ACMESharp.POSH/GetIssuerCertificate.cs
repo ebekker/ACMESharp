@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LetsEncrypt.ACME.POSH
+namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsCommon.Get, "IssuerCertificate")]
     public class GetIssuerCertificate : Cmdlet

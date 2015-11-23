@@ -1,9 +1,9 @@
-﻿using LetsEncrypt.ACME.DNS;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using ACMESharp.DNS;
 
-namespace LetsEncrypt.ACME
+namespace ACMESharp
 {
     [TestClass]
     public class DnsUnitTests

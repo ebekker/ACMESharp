@@ -44,7 +44,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LetsEncrypt.ACME\LetsEncrypt.ACME.csproj">
+    <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
       <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
       <Name>LetsEncrypt.ACME</Name>
     </ProjectReference>

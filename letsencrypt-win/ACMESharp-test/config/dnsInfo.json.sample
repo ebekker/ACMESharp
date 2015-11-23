@@ -1,0 +1,10 @@
+﻿{
+    "DefaultDomain": "sample.com",
+    "Provider": {
+        "$type": "ACMESharp.DNS.AwsRoute53DnsProvider, ACMESharp",
+        "HostedZoneId": "Route53-Hosted-Zone-ID",
+        "AccessKeyId": "IAM-Account-AccessKey",
+        "SecretAccessKey": "IAM-Account-SecretKey",
+        "Region": "us-east-1"
+    }
+}

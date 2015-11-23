@@ -1,6 +1,6 @@
 ﻿
 #cd C:\prj\letsencrypt\solutions\letsencrypt-win\letsencrypt-win\LetsEncrypt.ACME.POSH
-#Add-Type -Path .\bin\Debug\LetsEncrypt.ACME.POSH.dll
+#Add-Type -Path .\bin\Debug\ACMESharp.POSH.dll
 
 <#
 Configure/install certs

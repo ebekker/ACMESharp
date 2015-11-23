@@ -1,0 +1,17 @@
+﻿{
+    "Provider": {
+        "$type": "ACMESharp.WebServer.AwsS3WebServerProvider, ACMESharp",
+        "BucketName": "acmetesting.sample.com",
+        "AccessKeyId": "IAM-Account-AccessKey",
+        "SecretAccessKey": "IAM-Account-SecretKey",
+        "Region": "us-east-1",
+        "DnsProvider": {
+            "$type": "ACMESharp.DNS.AwsRoute53DnsProvider, ACMESharp",
+            "HostedZoneId": "Route53-Hosted-Zone-ID",
+            "AccessKeyId": "IAM-Account-AccessKey",
+            "SecretAccessKey": "IAM-Account-SecretKey",
+            "Region": "us-east-1"
+        },
+        "DnsCnameTarget":  "star.acmetesting.sample.com"
+    }
+}

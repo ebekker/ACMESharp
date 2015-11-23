@@ -7,8 +7,8 @@
     <ProjectGuid>{2F8D5934-B5A7-4983-8051-1F25882C7C30}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LetsEncrypt.ACME.POSH</RootNamespace>
-    <AssemblyName>LetsEncrypt.ACME.POSH</AssemblyName>
+    <RootNamespace>ACMESharp.POSH</RootNamespace>
+    <AssemblyName>ACMESharp.POSH</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -98,7 +98,7 @@
     <Compile Include="Util\ClientHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LetsEncrypt.ACME\LetsEncrypt.ACME.csproj">
+    <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
       <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
       <Name>LetsEncrypt.ACME</Name>
     </ProjectReference>

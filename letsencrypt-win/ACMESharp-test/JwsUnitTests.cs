@@ -1,11 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
-using LetsEncrypt.ACME.JOSE;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
-namespace LetsEncrypt.ACME
+namespace ACMESharp
 {
 
     /// <summary>

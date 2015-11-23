@@ -1,16 +1,14 @@
-﻿using LetsEncrypt.ACME.DNS;
-using LetsEncrypt.ACME.POSH.Util;
-using LetsEncrypt.ACME.WebServer;
+﻿using ACMESharp.POSH.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using ACMESharp.DNS;
+using ACMESharp.WebServer;
 
-namespace LetsEncrypt.ACME.POSH
+namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsLifecycle.Complete, "Challenge")]
     public class CompleteChallenge : Cmdlet

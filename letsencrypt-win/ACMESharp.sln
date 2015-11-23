@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.ACME", "LetsEncrypt.ACME\LetsEncrypt.ACME.csproj", "{D551234B-0A8D-4DEE-8178-A81998DF0EDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp", "ACMESharp\ACMESharp.csproj", "{D551234B-0A8D-4DEE-8178-A81998DF0EDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.ACME-test", "LetsEncrypt.ACME-test\LetsEncrypt.ACME-test.csproj", "{6D7BE73B-B9E7-431A-93AA-C4956B7827C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp-test", "ACMESharp-test\ACMESharp-test.csproj", "{6D7BE73B-B9E7-431A-93AA-C4956B7827C3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{2D8381C9-5B29-400B-B86C-4669876052DB}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{2D8381
 		shared\SharedAssemblyVersionInfo.cs = shared\SharedAssemblyVersionInfo.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.ACME.POSH", "LetsEncrypt.ACME.POSH\LetsEncrypt.ACME.POSH.csproj", "{2F8D5934-B5A7-4983-8051-1F25882C7C30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.POSH", "ACMESharp.POSH\ACMESharp.POSH.csproj", "{2F8D5934-B5A7-4983-8051-1F25882C7C30}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.CertEnroll", "ACMESharp.PKI.Providers.CertEnroll\ACMESharp.PKI.Providers.CertEnroll.csproj", "{A37E92EE-F7AD-4858-8497-FA1AF27FB14F}"
 EndProject

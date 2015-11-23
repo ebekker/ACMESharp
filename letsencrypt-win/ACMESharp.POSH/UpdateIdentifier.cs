@@ -1,12 +1,8 @@
-﻿using LetsEncrypt.ACME.POSH.Util;
+﻿using ACMESharp.POSH.Util;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LetsEncrypt.ACME.POSH
+namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsData.Update, "Identifier", DefaultParameterSetName = PSET_DEFAULT)]
     public class UpdateIdentifier : Cmdlet

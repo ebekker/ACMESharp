@@ -6,6 +6,6 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyCompany("letsencrypt.org")]
-[assembly: AssemblyProduct("LetsEncrypt.ACME")]
+[assembly: AssemblyProduct("ACMESharp")]
 [assembly: AssemblyCopyright("Copyright © 2015 Eugene Bekker")]
 [assembly: AssemblyTrademark("")]

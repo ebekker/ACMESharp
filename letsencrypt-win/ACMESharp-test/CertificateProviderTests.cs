@@ -1,13 +1,8 @@
-﻿using LetsEncrypt.ACME.PKI;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ACMESharp.PKI;
 
-namespace LetsEncrypt.ACME
+namespace ACMESharp
 {
     [TestClass]
     public class CertificateProviderTests

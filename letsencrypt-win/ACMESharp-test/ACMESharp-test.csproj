@@ -6,8 +6,8 @@
     <ProjectGuid>{6D7BE73B-B9E7-431A-93AA-C4956B7827C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LetsEncrypt.ACME</RootNamespace>
-    <AssemblyName>LetsEncrypt.ACME-test</AssemblyName>
+    <RootNamespace>ACMESharp</RootNamespace>
+    <AssemblyName>ACMESharp-test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -86,6 +86,10 @@
     <Compile Include="DnsUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
+      <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
+      <Name>ACMESharp.ACME</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ACMESharp.PKI.Providers.CertEnroll\ACMESharp.PKI.Providers.CertEnroll.csproj">
       <Project>{a37e92ee-f7ad-4858-8497-fa1af27fb14f}</Project>
       <Name>ACMESharp.PKI.Providers.CertEnroll</Name>
@@ -93,10 +97,6 @@
     <ProjectReference Include="..\ACMESharp.PKI.Providers.OpenSslCli\ACMESharp.PKI.Providers.OpenSslCli.csproj">
       <Project>{5b454575-9688-4a54-bc2b-2d18a15e452b}</Project>
       <Name>ACMESharp.PKI.Providers.OpenSslCli</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LetsEncrypt.ACME\LetsEncrypt.ACME.csproj">
-      <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
-      <Name>LetsEncrypt.ACME</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -124,16 +124,16 @@
     <None Include="CertificateProviderTests.key.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="dnsInfo.json">
+    <None Include="config\dnsInfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="testProxyConfig.json">
+    <None Include="config\testProxyConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="webServerInfo.json">
+    <None Include="config\webServerInfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -141,6 +141,7 @@
     <Content Include="libeay32.dll" />
     <Content Include="ssleay32.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

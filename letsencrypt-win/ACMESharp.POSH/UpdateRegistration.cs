@@ -1,13 +1,8 @@
-﻿using LetsEncrypt.ACME.POSH.Util;
-using LetsEncrypt.ACME.POSH.Vault;
+﻿using ACMESharp.POSH.Util;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LetsEncrypt.ACME.POSH
+namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsData.Update, "Registration", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(AcmeRegistration))]

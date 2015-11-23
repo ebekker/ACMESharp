@@ -1,12 +1,9 @@
-﻿using System;
+﻿using ACMESharp.POSH.Vault;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LetsEncrypt.ACME.POSH.Vault;
 
-namespace LetsEncrypt.ACME.POSH.Util
+namespace ACMESharp.POSH.Util
 {
     public class EntityDictionary<TEntity> : IEnumerable<TEntity>,
         IReadOnlyDictionary<Guid, TEntity>,

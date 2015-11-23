@@ -1,23 +1,21 @@
-using LetsEncrypt.ACME.DNS;
-using LetsEncrypt.ACME.JOSE;
-using LetsEncrypt.ACME.PKI;
-using LetsEncrypt.ACME.WebServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
+using ACMESharp.JOSE;
+using ACMESharp.PKI;
+using ACMESharp.WebServer;
 
-namespace LetsEncrypt.ACME
+namespace ACMESharp
 {
     [TestClass]
     public class AcmeClientUnitTests
     {
         public const string DEFAULT_BASE_LOCAL_STORE = "..\\lostore";
-        public const string WEB_PROXY_CONFIG = "testProxyConfig.json";
+        public const string WEB_PROXY_CONFIG = "config\\testProxyConfig.json";
 
         // Running against a local (private) instance of Boulder CA
         //Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
@@ -563,6 +561,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
+        [Ignore]
         public void Test0110_RefreshAuthzLegacyHttpChallenge()
         {
             using (var signer = new RS256Signer())
@@ -638,7 +637,7 @@ namespace LetsEncrypt.ACME
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.RefreshAuthorizeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP, true);
+                    client.RefreshAuthorizeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
                     _testAuthzChallengeHttpRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-HttpChallengeRefreshed.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpRefresh_AcmeAuthzFile, FileMode.Create))
@@ -683,7 +682,7 @@ namespace LetsEncrypt.ACME
                     }
 
                     //client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
-                    client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP);
+                    //client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP);
                     client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
 
                     _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswers.acmeAuthz";
@@ -740,7 +739,7 @@ namespace LetsEncrypt.ACME
         //            var dnsValue = Regex.Replace(authzChallenge.ChallengeAnswer.Value, "\\s", "");
         //            var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
         //
-        //            var dnsInfo = DnsInfo.Load(File.ReadAllText("dnsInfo.json"));
+        //            var dnsInfo = DnsInfo.Load(File.ReadAllText("config\\dnsInfo.json"));
         //            dnsInfo.Provider.EditTxtRecord(dnsName, dnsValues);
         //        }
         //    }
@@ -803,6 +802,7 @@ namespace LetsEncrypt.ACME
         [TestMethod]
         [TestCategory("skipCI")]
         [Timeout(120 * 1000)]
+        [Ignore]
         public void Test0140_HandleLegacyHttpChallenge()
         {
             using (var signer = new RS256Signer())
@@ -844,7 +844,7 @@ namespace LetsEncrypt.ACME
                     var wsFilePath = authzChallenge.ChallengeAnswer.Key;
                     var wsFileBody = authzChallenge.ChallengeAnswer.Value;
 
-                    var wsInfo = WebServerInfo.Load(File.ReadAllText("webServerInfo.json"));
+                    var wsInfo = WebServerInfo.Load(File.ReadAllText("config\\webServerInfo.json"));
                     using (var s = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
                     {
                         var fileUrl = new Uri($"http://{authzState.Identifier}/{wsFilePath}");
@@ -900,7 +900,7 @@ namespace LetsEncrypt.ACME
                     var wsFilePath = authzChallenge.ChallengeAnswer.Key;
                     var wsFileBody = authzChallenge.ChallengeAnswer.Value;
 
-                    var wsInfo = WebServerInfo.Load(File.ReadAllText("webServerInfo.json"));
+                    var wsInfo = WebServerInfo.Load(File.ReadAllText("config\\webServerInfo.json"));
                     using (var s = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
                     {
                         var fileUrl = new Uri($"http://{authzState.Identifier}/{wsFilePath}");
@@ -914,6 +914,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
+        [Ignore]
         public void Test0145_SubmitLegacyHttpChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -1004,6 +1005,7 @@ namespace LetsEncrypt.ACME
 
         [TestMethod]
         [TestCategory("skipCI")]
+        [Ignore]
         public void Test0147_RefreshAuthzLegacyHttpChallenge()
         {
             Test0110_RefreshAuthzLegacyHttpChallenge();

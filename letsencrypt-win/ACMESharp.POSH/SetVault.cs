@@ -1,7 +1,7 @@
-﻿using LetsEncrypt.ACME.POSH.Util;
+﻿using ACMESharp.POSH.Util;
 using System.Management.Automation;
 
-namespace LetsEncrypt.ACME.POSH
+namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsCommon.Set, "Vault")]
     public class SetVault : Cmdlet

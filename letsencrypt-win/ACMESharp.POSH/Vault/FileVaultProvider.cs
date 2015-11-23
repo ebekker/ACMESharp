@@ -1,4 +1,4 @@
-﻿using LetsEncrypt.ACME.POSH.Util;
+﻿using ACMESharp.POSH.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 
-namespace LetsEncrypt.ACME.POSH.Vault
+namespace ACMESharp.POSH.Vault
 {
     public class FileVaultProvider : IVaultProvider
     {

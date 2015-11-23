@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LetsEncrypt.ACME.JOSE;
 using System.Text.RegularExpressions;
+using ACMESharp.JOSE;
 
-namespace LetsEncrypt.ACME
+namespace ACMESharp
 {
     [TestClass]
     public class JwsHelperUnitTests

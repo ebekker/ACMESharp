@@ -5,7 +5,7 @@
 ##    %SystemRoot%\syswow64\WindowsPowerShell\v1.0\powershell.exe
 
 @{
-	RootModule = 'LetsEncrypt.ACME.POSH.dll'
+	RootModule = 'ACMESharp.POSH.dll'
 	ModuleVersion = '1.0'
 	GUID = '244FAB9A-D367-4C0E-A088-FF3D34EDF713'
 	DefaultCommandPrefix = 'ACME'

@@ -1,14 +1,8 @@
-﻿using LetsEncrypt.ACME.POSH.Util;
-using LetsEncrypt.ACME.POSH.Vault;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System;
 using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LetsEncrypt.ACME.POSH
+namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsCommon.Get, "Identifier", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(AuthorizationState))]

@@ -1,15 +1,11 @@
-﻿using LetsEncrypt.ACME.HTTP;
-using LetsEncrypt.ACME.POSH.Vault;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ACMESharp.HTTP;
 
-namespace LetsEncrypt.ACME.POSH.Util
+namespace ACMESharp.POSH.Util
 {
     public static class JsonHelper
     {

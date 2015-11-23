@@ -1,13 +1,13 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using LetsEncrypt.ACME.JOSE;
 using System.Net;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
+using ACMESharp.JOSE;
 
-namespace LetsEncrypt.ACME
+namespace ACMESharp
 {
     /// <summary>
     /// Set of unit tests that test the ACME protocol and interoperability

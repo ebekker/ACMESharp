@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace LetsEncrypt.ACME.POSH.Vault
+namespace ACMESharp.POSH.Vault
 {
     public interface IVaultProvider : IDisposable
     {

@@ -1,16 +1,11 @@
-﻿using LetsEncrypt.ACME.POSH.Util;
-using LetsEncrypt.ACME.POSH.Vault;
+﻿using ACMESharp.POSH.Util;
+using ACMESharp.POSH.Vault;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Management.Automation;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LetsEncrypt.ACME.POSH
+namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsCommon.New, "ProviderConfig")]
     public class NewProviderConfig : Cmdlet
@@ -77,15 +72,13 @@ namespace LetsEncrypt.ACME.POSH
                 Stream s = null;
                 if (!string.IsNullOrEmpty(DnsProvider))
                 {
-                    s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
-                            "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
-                            + $"dnsInfo.json.sample-{DnsProvider}DnsProvider");
+                    s = ProviderConfigSamples.Loader.LoadDnsProviderConfig(
+                            DnsProvider);
                 }
                 if (!string.IsNullOrEmpty(WebServerProvider))
                 {
-                    s = typeof(ProviderConfig).Assembly.GetManifestResourceStream(
-                            "LetsEncrypt.ACME.POSH.ProviderConfigSamples."
-                            + $"webServerInfo.json.sample-{WebServerProvider}WebServerProvider");
+                    s = ProviderConfigSamples.Loader.LoadWebServerProviderConfig(
+                            WebServerProvider);
                 }
 
                 var temp = Path.GetTempFileName();

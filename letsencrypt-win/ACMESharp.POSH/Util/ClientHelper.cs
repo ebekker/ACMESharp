@@ -1,13 +1,9 @@
-﻿using LetsEncrypt.ACME.JOSE;
-using LetsEncrypt.ACME.POSH.Vault;
+﻿using ACMESharp.POSH.Vault;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ACMESharp.JOSE;
 
-namespace LetsEncrypt.ACME.POSH.Util
+namespace ACMESharp.POSH.Util
 {
     public static class ClientHelper
     {

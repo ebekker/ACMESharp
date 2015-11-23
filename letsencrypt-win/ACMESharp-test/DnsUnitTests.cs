@@ -11,7 +11,7 @@ namespace ACMESharp
         [TestMethod]
         public void TestUpdateDnsTxt()
         {
-            var dnsInfo = DnsInfo.Load(File.ReadAllText("dnsInfo.json"));
+            var dnsInfo = DnsInfo.Load(File.ReadAllText("config\\dnsInfo.json"));
 
             dnsInfo.Provider.EditTxtRecord(
                     $"_acme-challenge.foo1.{dnsInfo.DefaultDomain}",

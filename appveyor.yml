@@ -14,7 +14,7 @@ test:
   categories:
     except:
     - skipCI
-	- acmeServerIntegXXX
+    - acmeServerIntegXXX
 artifacts:
 - path: letsencrypt-win\ACMESharp\bin
   name: ACME-lib

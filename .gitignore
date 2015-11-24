@@ -194,9 +194,6 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
-letsencrypt-win/LetsEncrypt.ACME-test/dnsInfo.json
-letsencrypt-win/LetsEncrypt.ACME-test/webServerinfo.json
-letsencrypt-win/LetsEncrypt.ACME-test/testProxyConfig.json
-letsencrypt-win/ACMESharp-test/config/dnsInfo.json
-letsencrypt-win/ACMESharp-test/config/testProxyConfig.json
-letsencrypt-win/ACMESharp-test/config/webServerInfo.json
+ACMESharp/ACMESharp-test/config/dnsInfo.json
+ACMESharp/ACMESharp-test/config/testProxyConfig.json
+ACMESharp/ACMESharp-test/config/webServerInfo.json

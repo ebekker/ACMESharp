@@ -40,7 +40,7 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter]
-        public SwitchParameter UseBaseURI
+        public SwitchParameter UseBaseUri
         { get; set; }
 
         [Parameter]

@@ -17,7 +17,10 @@ namespace ACMESharp.POSH.Vault
         public string Memo
         { get; set; }
 
-        public string BaseURI
+        public string BaseService
+        { get; set; }
+
+        public string BaseUri
         { get; set; }
 
         public bool GetInitialDirectory

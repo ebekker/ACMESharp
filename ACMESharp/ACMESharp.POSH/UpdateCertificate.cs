@@ -23,7 +23,7 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_DEFAULT)]
-        public SwitchParameter UseBaseURI
+        public SwitchParameter UseBaseUri
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_DEFAULT)]
@@ -80,7 +80,7 @@ namespace ACMESharp.POSH
                         c.Init();
                         c.GetDirectory(true);
 
-                        c.RefreshCertificateRequest(ci.CertificateRequest, UseBaseURI);
+                        c.RefreshCertificateRequest(ci.CertificateRequest, UseBaseUri);
                     }
 
                     if ((Repeat || string.IsNullOrEmpty(ci.CrtPemFile))
@@ -144,7 +144,7 @@ namespace ACMESharp.POSH
                                         if (v.Proxy != null)
                                             web.Proxy = v.Proxy.GetWebProxy();
 
-                                        var uri = new Uri(new Uri(v.BaseURI), upLink.Uri);
+                                        var uri = new Uri(new Uri(v.BaseUri), upLink.Uri);
                                         web.DownloadFile(uri, tmp);
                                     }
 

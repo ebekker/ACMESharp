@@ -55,7 +55,7 @@ namespace ACMESharp.POSH
                     v.Proxy = new Vault.ProxyConfig
                     {
                         UseNoProxy = UseNoProxy,
-                        ProxyURI = UseProxy,
+                        ProxyUri = UseProxy,
                         UseDefCred = DefaultCredential,
                         Username = Credential?.UserName,
                         PasswordEncoded = Credential?.GetNetworkCredential()?.Password,

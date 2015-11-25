@@ -7,7 +7,7 @@ namespace ACMESharp.POSH
     public class SetVault : Cmdlet
     {
         public const string PSET_BASE_SERVICE = "BaseService";
-        public const string PSET_BASE_URI = "BaseURI";
+        public const string PSET_BASE_URI = "BaseUri";
 
         [Parameter(ParameterSetName = PSET_BASE_SERVICE)]
         [ValidateSet(
@@ -61,7 +61,8 @@ namespace ACMESharp.POSH
                 v.Alias = StringHelper.IfNullOrEmpty(Alias, v.Alias);
                 v.Label = StringHelper.IfNullOrEmpty(Label, v.Label);
                 v.Memo = StringHelper.IfNullOrEmpty(Memo, v.Memo);
-                v.BaseURI = StringHelper.IfNullOrEmpty(baseUri, v.BaseURI);
+                v.BaseService = StringHelper.IfNullOrEmpty(BaseService, v.BaseService);
+                v.BaseUri = StringHelper.IfNullOrEmpty(baseUri, v.BaseUri);
 
                 vp.SaveVault(v);
             }

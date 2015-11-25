@@ -27,7 +27,7 @@ namespace ACMESharp.POSH
 
         [Parameter(ParameterSetName = PSET_DEFAULT)]
         [Parameter(ParameterSetName = PSET_CHALLENGE)]
-        public SwitchParameter UseBaseURI
+        public SwitchParameter UseBaseUri
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_LOCAL_ONLY)]
@@ -81,12 +81,12 @@ namespace ACMESharp.POSH
 
                         if (string.IsNullOrEmpty(Challenge))
                         {
-                            authzState = c.RefreshIdentifierAuthorization(authzState, UseBaseURI);
+                            authzState = c.RefreshIdentifierAuthorization(authzState, UseBaseUri);
                             ii.AuthorizationUpdate = authzState;
                         }
                         else
                         {
-                            c.RefreshAuthorizeChallenge(authzState, Challenge, UseBaseURI);
+                            c.RefreshAuthorizeChallenge(authzState, Challenge, UseBaseUri);
                             ii.Authorization = authzState;
                         }
                     }

@@ -11,7 +11,7 @@ namespace ACMESharp.POSH
     public class InitializeVault : Cmdlet
     {
         public const string PSET_BASE_SERVICE = "BaseService";
-        public const string PSET_BASE_URI = "BaseURI";
+        public const string PSET_BASE_URI = "BaseUri";
 
         public const string WELL_KNOWN_LE = "LetsEncrypt";
         public const string WELL_KNOWN_LESTAGE = "LetsEncrypt-STAGING";
@@ -75,7 +75,8 @@ namespace ACMESharp.POSH
                     Alias = Alias,
                     Label = Label,
                     Memo = Memo,
-                    BaseURI = baseUri,
+                    BaseService = BaseService,
+                    BaseUri = baseUri,
                     ServerDirectory = new AcmeServerDirectory()
                 };
 

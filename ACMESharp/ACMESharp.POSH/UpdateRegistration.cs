@@ -12,7 +12,7 @@ namespace ACMESharp.POSH
         public const string PSET_LOCAL_ONLY = "LocalOnly";
 
         [Parameter(ParameterSetName = PSET_DEFAULT)]
-        public SwitchParameter UseBaseURI
+        public SwitchParameter UseBaseUri
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_LOCAL_ONLY)]
@@ -25,7 +25,7 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter(ParameterSetName = PSET_DEFAULT)]
-        public SwitchParameter AcceptTOS
+        public SwitchParameter AcceptTos
         { get; set; }
 
         [Parameter]
@@ -64,7 +64,7 @@ namespace ACMESharp.POSH
                         c.Init();
                         c.GetDirectory(true);
 
-                        r = c.UpdateRegistration(UseBaseURI, AcceptTOS, Contacts);
+                        r = c.UpdateRegistration(UseBaseURI, AcceptTos, Contacts);
                         ri.Registration = r;
                     }
 

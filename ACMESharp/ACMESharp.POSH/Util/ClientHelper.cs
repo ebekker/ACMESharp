@@ -12,7 +12,7 @@ namespace ACMESharp.POSH.Util
             var p = Config.Proxy;
             var _Client = new AcmeClient();
 
-            _Client.RootUrl = new Uri(Config.BaseURI);
+            _Client.RootUrl = new Uri(Config.BaseUri);
             _Client.Directory = Config.ServerDirectory;
 
             if (Config.Proxy != null)

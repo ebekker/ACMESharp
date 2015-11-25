@@ -22,7 +22,7 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter]
-        public SwitchParameter UseBaseURI
+        public SwitchParameter UseBaseUri
         { get; set; }
 
         [Parameter]
@@ -56,7 +56,7 @@ namespace ACMESharp.POSH
                     c.Init();
                     c.GetDirectory(true);
 
-                    var challenge = c.SubmitAuthorizeChallengeAnswer(authzState, Challenge, UseBaseURI);
+                    var challenge = c.SubmitAuthorizeChallengeAnswer(authzState, Challenge, UseBaseUri);
                     ii.Challenges[Challenge] = challenge;
                 }
 

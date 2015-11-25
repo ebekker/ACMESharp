@@ -10,7 +10,7 @@ namespace ACMESharp.POSH.Vault
         public bool UseNoProxy
         { get; set; }
 
-        public string ProxyURI
+        public string ProxyUri
         { get; set; }
 
         public bool UseDefCred
@@ -36,9 +36,9 @@ namespace ACMESharp.POSH.Vault
             {
                 wp = GlobalProxySelection.GetEmptyWebProxy();
             }
-            else if (!string.IsNullOrEmpty(ProxyURI))
+            else if (!string.IsNullOrEmpty(ProxyUri))
             {
-                var newwp = new WebProxy(ProxyURI);
+                var newwp = new WebProxy(ProxyUri);
                 if (UseDefCred)
                 {
                     newwp.UseDefaultCredentials = true;

@@ -1,15 +1,40 @@
-﻿using ACMESharp.POSH.Util;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using ACMESharp.POSH.Util;
 using ACMESharp.POSH.Vault;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsData.Initialize, "Vault")]
+    [Cmdlet(VerbsData.Initialize, "Vault", DefaultParameterSetName = PSET_BASE_SERVICE)]
     public class InitializeVault : Cmdlet
     {
-        [Parameter]
-        public string BaseURI
-        { get; set; } = "https://acme-staging.api.letsencrypt.org/";
+        public const string PSET_BASE_SERVICE = "BaseService";
+        public const string PSET_BASE_URI = "BaseURI";
+
+        public const string WELL_KNOWN_LE = "LetsEncrypt";
+        public const string WELL_KNOWN_LESTAGE = "LetsEncrypt-STAGING";
+
+        public static readonly IReadOnlyDictionary<string, string> WELL_KNOWN_BASE_SERVICES =
+                new ReadOnlyDictionary<string, string>(new IndexedDictionary<string, string>
+                {
+                    { WELL_KNOWN_LE, "https://acme-v01.api.letsencrypt.org/" },
+                    { WELL_KNOWN_LESTAGE, "https://acme-staging.api.letsencrypt.org/"},
+                });
+
+        [Parameter(ParameterSetName = PSET_BASE_SERVICE)]
+        [ValidateSet(
+                WELL_KNOWN_LE,
+                WELL_KNOWN_LESTAGE,
+                IgnoreCase = true)]
+        public string BaseService
+        { get; set; } = WELL_KNOWN_LE;
+
+        [Parameter(ParameterSetName = PSET_BASE_URI, Mandatory = true)]
+        [ValidateNotNullOrEmpty]
+        public string BaseUri
+        { get; set; }
 
         [Parameter]
         public bool Force
@@ -33,6 +58,14 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
+            var baseUri = BaseUri;
+            if (string.IsNullOrEmpty(baseUri))
+                if (!string.IsNullOrEmpty(BaseService)
+                        && WELL_KNOWN_BASE_SERVICES.ContainsKey(BaseService))
+                    baseUri = WELL_KNOWN_BASE_SERVICES[BaseService];
+                else
+                    throw new PSInvalidOperationException("either a base service or URI is required");
+
             using (var vp = GetVaultProvider(VaultProfile))
             {
                 vp.InitStorage(Force);
@@ -42,7 +75,7 @@ namespace ACMESharp.POSH
                     Alias = Alias,
                     Label = Label,
                     Memo = Memo,
-                    BaseURI = BaseURI,
+                    BaseURI = baseUri,
                     ServerDirectory = new AcmeServerDirectory()
                 };
 

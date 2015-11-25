@@ -64,7 +64,7 @@ namespace ACMESharp.POSH
                         c.Init();
                         c.GetDirectory(true);
 
-                        r = c.UpdateRegistration(UseBaseURI, AcceptTos, Contacts);
+                        r = c.UpdateRegistration(UseBaseUri, AcceptTos, Contacts);
                         ri.Registration = r;
                     }
 

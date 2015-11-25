@@ -16,7 +16,7 @@ namespace ACMESharp.POSH.ProviderConfigSamples
             var n = t.Namespace;
 
             return a.GetManifestResourceStream(n
-                    + $"dnsInfo.json.sample-{name}DnsProvider");
+                    + $".dnsInfo.json.sample-{name}DnsProvider");
         }
 
         public static Stream LoadWebServerProviderConfig(string name)
@@ -26,7 +26,7 @@ namespace ACMESharp.POSH.ProviderConfigSamples
             var n = t.Namespace;
 
             return a.GetManifestResourceStream(n
-                    + $"webServerInfo.json.sample-{name}WebServerProvider");
+                    + $".webServerInfo.json.sample-{name}WebServerProvider");
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿{
   "Provider": {
-    "$type": "LetsEncrypt.ACME.WebServer.IisSitePathProvider, LetsEncrypt.ACME",
+    "$type": "ACMESharp.WebServer.IisSitePathProvider, ACMESharp",
 
     // WebSiteRoot is the required path to the root directory of the target
     // IIS Web site where the content of the challenge response will be saved.

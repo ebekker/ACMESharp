@@ -18,7 +18,7 @@ namespace ACMESharp.POSH
         { get; set; } = "RS256";
 
         [Parameter]
-        public SwitchParameter AcceptTOS
+        public SwitchParameter AcceptTos
         { get; set; }
 
         [Parameter]
@@ -60,6 +60,9 @@ namespace ACMESharp.POSH
                     c.GetDirectory(true);
 
                     r = c.Register(Contacts);
+                    if (AcceptTos)
+                        r = c.UpdateRegistration(agreeToTos: true);
+
                     ri.Registration = r;
 
                     if (v.Registrations == null)

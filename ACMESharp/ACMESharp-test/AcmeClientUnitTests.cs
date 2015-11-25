@@ -25,7 +25,11 @@ namespace ACMESharp
         Uri _rootUrl = new Uri("https://acme-staging.api.letsencrypt.org/");
         string _dirUrlBase = "https://acme-staging.api.letsencrypt.org/";
 
-        public const string TEST_CN1 = "acme-win.acmetesting.zyborg.io";
+        // Running against the PROD (public) instance of Boulder CA
+        //Uri _rootUrl = new Uri("https://acme-v01.api.letsencrypt.org/");
+        //string _dirUrlBase = "https://acme-v01.api.letsencrypt.org/";
+
+        public const string TEST_CN1 = "acme-win.acmetesting.zyborg.io"; // "www.zyborg.io"; // 
         public const string TEST_EM1 = "mailto:letsencrypt@mailinator.com";
         public const string TEST_PH1 = "tel:+14109361212";
         public const string TEST_EM2 = "mailto:letsencrypt+update@mailinator.com";

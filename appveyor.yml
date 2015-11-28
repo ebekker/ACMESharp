@@ -10,6 +10,8 @@ install:
 - secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
 build:
   verbosity: minimal
+after_build:
+- cmd: .\ACMESharp\ACMESharp\mynuget.cmd
 test:
   categories:
     except:
@@ -22,6 +24,8 @@ artifacts:
 - path: ACMESharp\ACMESharp.POSH\bin
   name: ACME-posh
   type: zip
+- path: ACMESharp\ACMESharp\bin\nuget\*.nupkg
+  name: ACME-lib-nuget
 notifications:
 - provider: Webhook
   url: https://webhooks.gitter.im/e/dc0dd42c91579a605d09

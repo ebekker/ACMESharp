@@ -12,3 +12,7 @@
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.7.0.0")]
 [assembly: AssemblyFileVersion("0.7.0.0")]
+
+// This is used for the NuSpec version tag replacement
+// and is combined with nuget-specific rev and release
+[assembly: AssemblyInformationalVersion("0.7.0")]

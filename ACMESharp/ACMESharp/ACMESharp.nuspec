@@ -15,5 +15,10 @@
     <releaseNotes>Initial nuget package early-access release of nuget package.</releaseNotes>
     <copyright>Copyright &#169; 2015 Eugene Bekker</copyright>
     <tags>pki ssl tls security certificates letsencrypt</tags>
-  </metadata>
+
+    <dependencies>
+      <dependency id="ACMESharp.PKI.Providers.OpenSslLib32" version="$version$.$buildNum$$versionLabel$" />
+      <dependency id="ACMESharp.PKI.Providers.OpenSslLib64" version="$version$.$buildNum$$versionLabel$" />
+    </dependencies>
+   </metadata>
 </package>

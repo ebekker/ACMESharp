@@ -12,6 +12,8 @@ build:
   verbosity: minimal
 after_build:
 - cmd: .\ACMESharp\ACMESharp\mynuget.cmd
+- cmd: .\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib32\mynuget.cmd
+- cmd: .\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib64\mynuget.cmd
 test:
   categories:
     except:
@@ -24,7 +26,7 @@ artifacts:
 - path: ACMESharp\ACMESharp.POSH\bin
   name: ACME-posh
   type: zip
-- path: ACMESharp\ACMESharp\bin\nuget\*.nupkg
+- path: ACMESharp\dist\nuget\*.nupkg
   name: ACME-lib-nuget
 notifications:
 - provider: Webhook

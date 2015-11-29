@@ -61,9 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="x86\libeay32.dll">
+      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\libeay32.dll</HintPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="x86\ssleay32.dll">
+      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\ssleay32.dll</HintPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

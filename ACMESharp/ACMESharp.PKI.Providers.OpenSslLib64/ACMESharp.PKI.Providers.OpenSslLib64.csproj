@@ -54,21 +54,23 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
+      <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
+      <Name>ACMESharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="x64\libeay32.dll">
+      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x64\libeay32.dll</HintPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="x64\ssleay32.dll">
+      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x64\ssleay32.dll</HintPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
-      <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
-      <Name>ACMESharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

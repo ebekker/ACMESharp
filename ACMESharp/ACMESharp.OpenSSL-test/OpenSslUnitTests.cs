@@ -6,7 +6,7 @@ using System.Text;
 using System.IO;
 using OpenSSL.X509;
 
-namespace ACMESharp
+namespace ACMESharp.OpenSSL
 {
     [TestClass]
     public class OpenSslUnitTests

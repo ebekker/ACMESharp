@@ -82,7 +82,6 @@
     <Compile Include="JwsUnitTests.cs" />
     <Compile Include="JwsHelperUnitTests.cs" />
     <Compile Include="AcmeUnitTest.cs" />
-    <Compile Include="OpenSslUnitTests.cs" />
     <Compile Include="DnsUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>

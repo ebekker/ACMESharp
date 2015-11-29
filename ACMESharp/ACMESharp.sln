@@ -19,6 +19,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.Cer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.OpenSslCli", "ACMESharp.PKI.Providers.OpenSslCli\ACMESharp.PKI.Providers.OpenSslCli.csproj", "{5B454575-9688-4A54-BC2B-2D18A15E452B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.OpenSslLib32", "ACMESharp.PKI.Providers.OpenSslLib32\ACMESharp.PKI.Providers.OpenSslLib32.csproj", "{2CE2E059-F228-4F88-8440-0413C1AF2E4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.OpenSslLib64", "ACMESharp.PKI.Providers.OpenSslLib64\ACMESharp.PKI.Providers.OpenSslLib64.csproj", "{98B532B3-805B-4D81-918E-5A76CC66D40D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.OpenSSL-test", "ACMESharp.OpenSSL-test\ACMESharp.OpenSSL-test.csproj", "{7BC24D16-E849-406D-82E7-26C5E969C493}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +51,18 @@ Global
 		{5B454575-9688-4A54-BC2B-2D18A15E452B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B454575-9688-4A54-BC2B-2D18A15E452B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B454575-9688-4A54-BC2B-2D18A15E452B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CE2E059-F228-4F88-8440-0413C1AF2E4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CE2E059-F228-4F88-8440-0413C1AF2E4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CE2E059-F228-4F88-8440-0413C1AF2E4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CE2E059-F228-4F88-8440-0413C1AF2E4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98B532B3-805B-4D81-918E-5A76CC66D40D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98B532B3-805B-4D81-918E-5A76CC66D40D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98B532B3-805B-4D81-918E-5A76CC66D40D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98B532B3-805B-4D81-918E-5A76CC66D40D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BC24D16-E849-406D-82E7-26C5E969C493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BC24D16-E849-406D-82E7-26C5E969C493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BC24D16-E849-406D-82E7-26C5E969C493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BC24D16-E849-406D-82E7-26C5E969C493}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,16 +1,23 @@
-﻿using OpenSSL.Core;
-using OpenSSL.Crypto;
-using OpenSSL.X509;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace ACMESharp.PKI.Providers
 {
     public class OpenSslLibProvider : CertificateProvider
     {
+        private static Type _cpType;
+        private CertificateProvider _cp;
+
+        static OpenSslLibProvider()
+        {
+            if (System.Environment.Is64BitProcess)
+                _cpType = Type.GetType("ACMESharp.PKI.Providers.OpenSslLib64Provider, ACMESharp.PKI.Providers.OpenSslLib64");
+            else
+                _cpType = Type.GetType("ACMESharp.PKI.Providers.OpenSslLib32Provider, ACMESharp.PKI.Providers.OpenSslLib32");
+        }
+
+        /*
         public const int RSA_BITS_DEFAULT = 2048;
 
         public static readonly BigNumber RSA_E_3 = 3;
@@ -336,19 +343,19 @@ namespace ACMESharp.PKI.Providers
             // Translate from our external form to our OpenSSL internal form
             // Ref:  https://www.openssl.org/docs/manmaster/crypto/X509_NAME_new.html
             var xn = new X509Name();
-            if (!string.IsNullOrEmpty(csrDetails.CommonName         /**/)) xn.Common = csrDetails.CommonName;       // CN;
-            if (!string.IsNullOrEmpty(csrDetails.Country            /**/)) xn.Country = csrDetails.Country;          // C;
-            if (!string.IsNullOrEmpty(csrDetails.StateOrProvince    /**/)) xn.StateOrProvince = csrDetails.StateOrProvince;  // ST;
-            if (!string.IsNullOrEmpty(csrDetails.Locality           /**/)) xn.Locality = csrDetails.Locality;         // L;
-            if (!string.IsNullOrEmpty(csrDetails.Organization       /**/)) xn.Organization = csrDetails.Organization;     // O;
-            if (!string.IsNullOrEmpty(csrDetails.OrganizationUnit   /**/)) xn.OrganizationUnit = csrDetails.OrganizationUnit; // OU;
-            if (!string.IsNullOrEmpty(csrDetails.Description        /**/)) xn.Description = csrDetails.Description;      // D;
-            if (!string.IsNullOrEmpty(csrDetails.Surname            /**/)) xn.Surname = csrDetails.Surname;          // S;
-            if (!string.IsNullOrEmpty(csrDetails.GivenName          /**/)) xn.Given = csrDetails.GivenName;        // G;
-            if (!string.IsNullOrEmpty(csrDetails.Initials           /**/)) xn.Initials = csrDetails.Initials;         // I;
-            if (!string.IsNullOrEmpty(csrDetails.Title              /**/)) xn.Title = csrDetails.Title;            // T;
-            if (!string.IsNullOrEmpty(csrDetails.SerialNumber       /**/)) xn.SerialNumber = csrDetails.SerialNumber;     // SN;
-            if (!string.IsNullOrEmpty(csrDetails.UniqueIdentifier   /**/)) xn.UniqueIdentifier = csrDetails.UniqueIdentifier; // UID;
+            if (!string.IsNullOrEmpty(csrDetails.CommonName         /** /)) xn.Common = csrDetails.CommonName;       // CN;
+            if (!string.IsNullOrEmpty(csrDetails.Country            /** /)) xn.Country = csrDetails.Country;          // C;
+            if (!string.IsNullOrEmpty(csrDetails.StateOrProvince    /** /)) xn.StateOrProvince = csrDetails.StateOrProvince;  // ST;
+            if (!string.IsNullOrEmpty(csrDetails.Locality           /** /)) xn.Locality = csrDetails.Locality;         // L;
+            if (!string.IsNullOrEmpty(csrDetails.Organization       /** /)) xn.Organization = csrDetails.Organization;     // O;
+            if (!string.IsNullOrEmpty(csrDetails.OrganizationUnit   /** /)) xn.OrganizationUnit = csrDetails.OrganizationUnit; // OU;
+            if (!string.IsNullOrEmpty(csrDetails.Description        /** /)) xn.Description = csrDetails.Description;      // D;
+            if (!string.IsNullOrEmpty(csrDetails.Surname            /** /)) xn.Surname = csrDetails.Surname;          // S;
+            if (!string.IsNullOrEmpty(csrDetails.GivenName          /** /)) xn.Given = csrDetails.GivenName;        // G;
+            if (!string.IsNullOrEmpty(csrDetails.Initials           /** /)) xn.Initials = csrDetails.Initials;         // I;
+            if (!string.IsNullOrEmpty(csrDetails.Title              /** /)) xn.Title = csrDetails.Title;            // T;
+            if (!string.IsNullOrEmpty(csrDetails.SerialNumber       /** /)) xn.SerialNumber = csrDetails.SerialNumber;     // SN;
+            if (!string.IsNullOrEmpty(csrDetails.UniqueIdentifier   /** /)) xn.UniqueIdentifier = csrDetails.UniqueIdentifier; // UID;
 
             var xr = new X509Request(0, xn, rsaKeys);
             var md = MessageDigest.CreateByName(messageDigest);
@@ -431,6 +438,66 @@ namespace ACMESharp.PKI.Providers
             Console.TreatControlCAsInput = false;
 
             return sb.ToString();
+        }
+        */
+
+        public OpenSslLibProvider(IDictionary<string, string> newParams)
+            : base(newParams)
+        {
+            if (_cpType == null)
+                throw new InvalidOperationException("unresolved architecture-specific implementation");
+
+            var argTypes = new[] { typeof(IDictionary<string, string>) };
+            var cons = _cpType.GetConstructor(argTypes);
+            if (cons == null)
+                throw new InvalidOperationException("unresolved paramterized constructor");
+
+            _cp = (CertificateProvider)cons.Invoke(new object[] { newParams });
+        }
+
+        public override PrivateKey GeneratePrivateKey(PrivateKeyParams pkp)
+        {
+            return _cp.GeneratePrivateKey(pkp);
+        }
+
+        public override void ExportPrivateKey(PrivateKey pk, EncodingFormat fmt, Stream target)
+        {
+            _cp.ExportPrivateKey(pk, fmt, target);
+        }
+
+        public override PrivateKey ImportPrivateKey<PK>(EncodingFormat fmt, Stream source)
+        {
+            return _cp.ImportPrivateKey<PK>(fmt, source);
+        }
+
+        public override Csr GenerateCsr(CsrParams csrParams, PrivateKey pk, Crt.MessageDigest md)
+        {
+            return _cp.GenerateCsr(csrParams, pk, md);
+        }
+
+        public override Csr ImportCsr(EncodingFormat fmt, Stream source)
+        {
+            return _cp.ImportCsr(fmt, source);
+        }
+
+        public override void ExportCsr(Csr csr, EncodingFormat fmt, Stream target)
+        {
+            _cp.ExportCsr(csr, fmt, target);
+        }
+
+        public override Crt ImportCertificate(EncodingFormat fmt, Stream source)
+        {
+            return _cp.ImportCertificate(fmt, source);
+        }
+
+        public override void ExportCertificate(Crt cert, EncodingFormat fmt, Stream target)
+        {
+            _cp.ExportCertificate(cert, fmt, target);
+        }
+
+        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target)
+        {
+            _cp.ExportArchive(pk, certs, fmt, target);
         }
     }
 }

@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ManagedOpenSsl, Version=0.6.1.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\ManagedOpenSsl.0.6.1.0\lib\net20\ManagedOpenSsl.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -99,12 +95,6 @@
     <Compile Include="Util\ClientHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
-      <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
-      <Name>LetsEncrypt.ACME</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-ManualWebServerProvider" />
     <None Include="ACMEPowerShell-AWS\ACMEPowerShell-AWS.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -128,9 +118,13 @@
     <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-IisSitePathWebServerProvider" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="libeay32.dll" />
     <Content Include="README-TESTING.txt" />
-    <Content Include="ssleay32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
+      <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
+      <Name>ACMESharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

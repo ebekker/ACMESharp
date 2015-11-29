@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ACME client library")]
+[assembly: AssemblyTitle("ACMESharp client library")]
 [assembly: AssemblyDescription("ACME protocol client library for .NET.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCulture("")]

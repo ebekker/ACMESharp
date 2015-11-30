@@ -12,6 +12,7 @@ namespace ACMESharp.OpenSSL
     public class OpenSslUnitTests
     {
         [TestMethod]
+        [Ignore]
         public void TestGenRSA()
         {
             BigNumber e = null;
@@ -64,6 +65,7 @@ namespace ACMESharp.OpenSSL
         }
 
         [TestMethod]
+        [Ignore]
         public void TestGenCSR()
         {
             var pem = File.ReadAllText("openssl-rsagen-privatekey.txt");

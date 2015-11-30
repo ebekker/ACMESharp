@@ -12,6 +12,6 @@ else {
 
 nuget restore ACMESharp\ACMESharp.sln
 nuget install secure-file -ExcludeVersion
-secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\dnsInfo.json.enc
-secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\webServerInfo.json.enc
-secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
+secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\dnsInfo.json.enc
+secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\webServerInfo.json.enc
+secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc

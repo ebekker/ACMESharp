@@ -1,13 +1,12 @@
 version: 0.7.0.{build}
 pull_requests:
   do_not_increment_build_number: true
-init:
-- ps: .\ci\av-init.ps1
 environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
 install:
-- cmd: >-
+- ps: >-
+    .\ci\av-pre-install.ps1
     nuget restore ACMESharp\ACMESharp.sln
     nuget install secure-file -ExcludeVersion
     secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\dnsInfo.json.enc

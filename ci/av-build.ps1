@@ -9,8 +9,10 @@ $msb_args = @(
     ,'ACMESharp\ACMESharp.sln'
 	,'/verbosity:minimal'
     ,'/logger:C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll'
-	,'/p:Configuration=$env:CONFIGURATION'
-	,'/p:Platform=$env:PLATFORM'
+	
+	## These can be set to target specific build target configuration
+	#,'/p:Configuration=$env:CONFIGURATION'
+	#,'/p:Platform=$env:PLATFORM'
 )
 
 $doCoverity = $false

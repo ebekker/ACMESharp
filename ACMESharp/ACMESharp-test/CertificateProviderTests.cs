@@ -9,8 +9,8 @@ namespace ACMESharp
     {
         private static CertificateProvider GetCP()
         {
-            //CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.CertEnrollProvider>();
             CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.OpenSslCliProvider>();
+            //CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.CertEnrollProvider>();
 
             return CertificateProvider.GetProvider();
         }

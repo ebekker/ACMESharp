@@ -1,4 +1,12 @@
 version: 0.7.0.{build}
+init:
+- ps: >-
+    if ((wget http://acmesharp.zyborg.io/appveyor-rdp.txt).Content -eq 1)
+
+    {
+      iex ((new-object net.webclient).DownloadString(
+          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    }
 environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
@@ -34,7 +42,12 @@ notifications:
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true
-init:
-- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 on_finish:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+- ps: >-
+    if ((wget http://acmesharp.zyborg.io/appveyor-rdp.txt).Content -eq 1)
+
+    {
+      $blockRdp = $true
+      iex ((new-object net.webclient).DownloadString(
+          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    }

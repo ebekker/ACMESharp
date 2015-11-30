@@ -60,13 +60,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x64\libeay32.dll">
-      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x64\libeay32.dll</HintPath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="..\packages\ManagedOpenSsl64.0.6.1.1\content\x64\libeay32.dll">
+      <Link>x64\libeay32.dll</Link>
     </Content>
-    <Content Include="x64\ssleay32.dll">
-      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x64\ssleay32.dll</HintPath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="..\packages\ManagedOpenSsl64.0.6.1.1\content\x64\ssleay32.dll">
+      <Link>x64\ssleay32.dll</Link>
     </Content>
   </ItemGroup>
   <ItemGroup>

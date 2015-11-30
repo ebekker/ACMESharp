@@ -60,17 +60,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x86\libeay32.dll">
-      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\libeay32.dll</HintPath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x86\ssleay32.dll">
-      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\ssleay32.dll</HintPath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Content Include="..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\libeay32.dll">
+      <Link>x86\libeay32.dll</Link>
+    </Content>
+    <Content Include="..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\ssleay32.dll">
+      <Link>x86\ssleay32.dll</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

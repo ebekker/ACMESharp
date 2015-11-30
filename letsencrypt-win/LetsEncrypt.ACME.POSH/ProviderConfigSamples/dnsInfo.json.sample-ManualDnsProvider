@@ -1,5 +1,0 @@
-﻿{
-  "Provider": {
-    "$type": "LetsEncrypt.ACME.DNS.ManualDnsProvider, LetsEncrypt.ACME",
-  }
-}

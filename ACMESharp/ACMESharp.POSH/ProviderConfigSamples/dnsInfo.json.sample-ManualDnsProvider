@@ -1,0 +1,5 @@
+﻿{
+  "Provider": {
+    "$type": "ACMESharp.DNS.ManualDnsProvider, ACMESharp",
+  }
+}

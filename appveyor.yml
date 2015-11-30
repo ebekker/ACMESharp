@@ -1,29 +1,53 @@
-version: 0.5.0.{build}
+version: 0.7.0.{build}
+init:
+- ps: >-
+    if ((wget http://acmesharp.zyborg.io/appveyor-rdp.txt).Content -eq 1)
+
+    {
+      iex ((new-object net.webclient).DownloadString(
+          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    }
 environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
 install:
-- nuget restore letsencrypt-win\letsencrypt-win.sln
+- nuget restore ACMESharp\ACMESharp.sln
 - nuget install secure-file -ExcludeVersion
-- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt letsencrypt-win\LetsEncrypt.ACME-test\dnsInfo.json.enc
-- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt letsencrypt-win\LetsEncrypt.ACME-test\webServerInfo.json.enc
-- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt letsencrypt-win\LetsEncrypt.ACME-test\testProxyConfig.json.enc
+- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\dnsInfo.json.enc
+- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\webServerInfo.json.enc
+- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
 build:
   verbosity: minimal
+after_build:
+- cmd: .\ACMESharp\ACMESharp\mynuget.cmd
+- cmd: .\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib32\mynuget.cmd
+- cmd: .\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib64\mynuget.cmd
 test:
   categories:
     except:
     - skipCI
+    - acmeServerIntegXXX
 artifacts:
-- path: letsencrypt-win\LetsEncrypt.ACME\bin
+- path: ACMESharp\ACMESharp\bin
   name: ACME-lib
   type: zip
-- path: letsencrypt-win\LetsEncrypt.ACME.POSH\bin
+- path: ACMESharp\ACMESharp.POSH\bin
   name: ACME-posh
   type: zip
+- path: ACMESharp\dist\nuget\*.nupkg
+  name: ACME-lib-nuget
 notifications:
 - provider: Webhook
   url: https://webhooks.gitter.im/e/dc0dd42c91579a605d09
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true
+on_finish:
+- ps: >-
+    if ((wget http://acmesharp.zyborg.io/appveyor-rdp.txt).Content -eq 1)
+
+    {
+      $blockRdp = $true
+      iex ((new-object net.webclient).DownloadString(
+          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    }

@@ -135,6 +135,9 @@ function Install-CertificateToIIS {
 		}
 		$crtStore.Close()
 
+		## This is used later on for creating the SSL Binding
+		$crtPath = "Cert:\LocalMachine\My\$($CrtThumbprint)"
+
 		if (Test-Path $pfxTemp) {
 			del $pfxTemp
 		}
@@ -152,13 +155,13 @@ function Install-CertificateToIIS {
 			Write-Warning "Existing Web Binding found matching specified parameters; SKIPPING"
 		}
 		else {
-			$sslFlags = 0
+			$webBindingCreateArgs = @{}
 			if ($SNIRequired) {
-				$sslFlags = 1
+				$webBindingCreateArgs.SslFlags = 1
 			}
 
 			Write-Verbose "Creating Web Binding..."
-			New-WebBinding @webBindingArgs -SslFlags $sslFlags
+			New-WebBinding @webBindingArgs @webBindingCreateArgs
 			$newWebBinding = Get-WebBinding @webBindingArgs
 			if (-not $newWebBinding) {
 				throw "Failed to create new Web Binding"
@@ -168,7 +171,8 @@ function Install-CertificateToIIS {
 
 		## See if there is already a matching SSL Binding
 		Write-Verbose "Testing for existing SSL Binding"
-		$sslBindingPath = "IIS:\SslBindings\$($sslBinding.Host):$($sslBinding.Port)"
+		$sslBindingPath = "IIS:\SslBindings\$($sslBinding.Host)!$($sslBinding.Port)"
+		Write-Verbose "  ...testing for [$sslBindingPath]"
 		if (Test-Path -Path $sslBindingPath) {
 			if ($Replace) {
 				Write-Warning "Deleting existing SSL Binding";
@@ -179,6 +183,7 @@ function Install-CertificateToIIS {
 			}
 		}
 		Write-Verbose "Creating SSL Binding..."
+		Write-Verbose "  ...at path [$sslBindingPath]"
 		Get-Item $crtPath | New-Item $sslBindingPath
 		$newSslBinding = Get-Item $sslBindingPath
 		if (-not $newSslBinding) {

@@ -448,16 +448,10 @@ namespace ACMESharp
 
                     foreach (var c in authzState.Challenges)
                     {
-                        if (c.Type == AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS
-                                || c.Type == AcmeProtocol.CHALLENGE_TYPE_DNS)
+                        if (c.Type == AcmeProtocol.CHALLENGE_TYPE_DNS)
                         {
                             var dnsResponse = c.GenerateDnsChallengeAnswer(
                                     authzState.Identifier, signer);
-                        }
-                        else if (c.Type == AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP)
-                        {
-                            var httpResponse = c.GenerateLegacyHttpChallengeAnswer(
-                                authzState.Identifier, signer, false);
                         }
                         else if (c.Type == AcmeProtocol.CHALLENGE_TYPE_HTTP)
                         {
@@ -562,51 +556,6 @@ namespace ACMESharp
         //        }
         //    }
         //}
-
-        [TestMethod]
-        [TestCategory("acmeServerInteg")]
-        [Ignore]
-        public void Test0110_RefreshAuthzLegacyHttpChallenge()
-        {
-            using (var signer = new RS256Signer())
-            {
-                signer.Init();
-                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
-                {
-                    signer.Load(fs);
-                }
-
-                AcmeRegistration reg;
-                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
-                {
-                    reg = AcmeRegistration.Load(fs);
-                }
-
-                using (var client = BuildClient(testTagHeader: nameof(Test0110_RefreshAuthzLegacyHttpChallenge)))
-                {
-                    client.RootUrl = _rootUrl;
-                    client.Signer = signer;
-                    client.Registration = reg;
-                    client.Init();
-
-                    client.GetDirectory(true);
-
-                    AuthorizationState authzState;
-                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Open))
-                    {
-                        authzState = AuthorizationState.Load(fs);
-                    }
-
-                    client.RefreshAuthorizeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP, true);
-
-                    _testAuthzChallengeLegacyHttpRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-LegacyHttpChallengeRefreshed.acmeAuthz";
-                    using (var fs = new FileStream(_testAuthzChallengeLegacyHttpRefresh_AcmeAuthzFile, FileMode.Create))
-                    {
-                        authzState.Save(fs);
-                    }
-                }
-            }
-        }
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
@@ -806,63 +755,6 @@ namespace ACMESharp
         [TestMethod]
         [TestCategory("acmeServerInteg")]
         [Timeout(120 * 1000)]
-        [Ignore]
-        public void Test0140_HandleLegacyHttpChallenge()
-        {
-            using (var signer = new RS256Signer())
-            {
-                signer.Init();
-                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
-                {
-                    signer.Load(fs);
-                }
-
-                AcmeRegistration reg;
-                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
-                {
-                    reg = AcmeRegistration.Load(fs);
-                }
-
-                using (var client = BuildClient(testTagHeader: nameof(Test0140_HandleLegacyHttpChallenge)))
-                {
-                    client.RootUrl = _rootUrl;
-                    client.Signer = signer;
-                    client.Registration = reg;
-                    client.Init();
-
-                    client.GetDirectory(true);
-
-                    AuthorizationState authzState;
-                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Open))
-                    {
-                        authzState = AuthorizationState.Load(fs);
-                    }
-
-                    var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP);
-                    _testAuthzChallengeLegacyHttpHandled_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswersHandleLegacyHttp.acmeAuthz";
-                    using (var fs = new FileStream(_testAuthzChallengeLegacyHttpHandled_AcmeAuthzFile, FileMode.Create))
-                    {
-                        authzState.Save(fs);
-                    }
-
-                    var wsFilePath = authzChallenge.ChallengeAnswer.Key;
-                    var wsFileBody = authzChallenge.ChallengeAnswer.Value;
-
-                    var wsInfo = WebServerInfo.Load(File.ReadAllText("config\\webServerInfo.json"));
-                    using (var s = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
-                    {
-                        var fileUrl = new Uri($"http://{authzState.Identifier}/{wsFilePath}");
-                        wsInfo.Provider.UploadFile(fileUrl, s);
-                    }
-                }
-            }
-
-            Thread.Sleep(90 * 1000);
-        }
-
-        [TestMethod]
-        [TestCategory("acmeServerInteg")]
-        [Timeout(120 * 1000)]
         public void Test0141_HandleHttpChallenge()
         {
             using (var signer = new RS256Signer())
@@ -918,52 +810,6 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        [Ignore]
-        public void Test0145_SubmitLegacyHttpChallengeAnswers()
-        {
-            using (var signer = new RS256Signer())
-            {
-                signer.Init();
-                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
-                {
-                    signer.Load(fs);
-                }
-
-                AcmeRegistration reg;
-                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
-                {
-                    reg = AcmeRegistration.Load(fs);
-                }
-
-                using (var client = BuildClient(testTagHeader: nameof(Test0145_SubmitLegacyHttpChallengeAnswers)))
-                {
-                    client.RootUrl = _rootUrl;
-                    client.Signer = signer;
-                    client.Registration = reg;
-                    client.Init();
-
-                    client.GetDirectory(true);
-
-                    AuthorizationState authzState;
-                    using (var fs = new FileStream(_testAuthzChallengeLegacyHttpHandled_AcmeAuthzFile, FileMode.Open))
-                    {
-                        authzState = AuthorizationState.Load(fs);
-                    }
-
-                    client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP);
-                    client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP, true);
-
-                    _testAuthzChallengeLegacyHttpAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-LegacyHttpChallengeAnswered.acmeAuthz";
-                    using (var fs = new FileStream(_testAuthzChallengeLegacyHttpAnswered_AcmeAuthzFile, FileMode.Create))
-                    {
-                        authzState.Save(fs);
-                    }
-                }
-            }
-        }
-
-        [TestMethod]
-        [TestCategory("acmeServerInteg")]
         public void Test0146_SubmitHttpChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -1005,14 +851,6 @@ namespace ACMESharp
                     }
                 }
             }
-        }
-
-        [TestMethod]
-        [TestCategory("acmeServerInteg")]
-        [Ignore]
-        public void Test0147_RefreshAuthzLegacyHttpChallenge()
-        {
-            Test0110_RefreshAuthzLegacyHttpChallenge();
         }
 
         [TestMethod]

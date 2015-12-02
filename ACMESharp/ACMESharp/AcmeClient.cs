@@ -284,7 +284,6 @@ namespace ACMESharp
                     Status = x.Status,
                     Uri = x.Uri,
                     Token = x.Token,
-                    Tls = x.Tls,
                     ValidationRecord = x.ValidationRecord,
                 }),
             };
@@ -324,7 +323,6 @@ namespace ACMESharp
                     Status = x.Status,
                     Uri = x.Uri,
                     Token = x.Token,
-                    Tls = x.Tls,
                     ValidationRecord = x.ValidationRecord,
                 }),
             };
@@ -352,7 +350,6 @@ namespace ACMESharp
             c.Uri = cp.Uri;
             c.Token = cp.Token;
             c.Status = cp.Status;
-            c.Tls = cp.Tls;
         }
 
         public AuthorizeChallenge GenerateAuthorizeChallengeAnswer(AuthorizationState authzState, string type)
@@ -366,10 +363,9 @@ namespace ACMESharp
 
             switch (type)
             {
-                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS:
                 case AcmeProtocol.CHALLENGE_TYPE_DNS:
                     c.ChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
-                    c.ChallengeAnswerMessage = new AnswerLegacyDnsChallengeRequest
+                    c.ChallengeAnswerMessage = new AnswerDnsChallengeRequest
                     {
                         ClientPublicKey = Signer.ExportJwk(),
                         Validation = new
@@ -385,15 +381,6 @@ namespace ACMESharp
                     };
                     break;
 
-                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP:
-                    var tls = c.Tls.GetValueOrDefault(true);
-                    c.ChallengeAnswer = c.GenerateLegacyHttpChallengeAnswer(authzState.Identifier, Signer, tls);
-                    c.ChallengeAnswerMessage = new AnswerLegacyHttpChallengeRequest
-                    {
-                        Tls = tls
-                    };
-                    break;
-
                 case AcmeProtocol.CHALLENGE_TYPE_HTTP:
                     c.ChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer);
                     c.ChallengeAnswerMessage = new AnswerHttpChallengeRequest
@@ -402,8 +389,6 @@ namespace ACMESharp
                     };
                     break;
 
-                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_DVSNI:
-                case AcmeProtocol.CHALLENGE_TYPE_LEGACY_PRIORKEY:
                 case AcmeProtocol.CHALLENGE_TYPE_SNI:
                 case AcmeProtocol.CHALLENGE_TYPE_PRIORKEY:
                     throw new ArgumentException("unimplemented or unsupported challenge type", nameof(type));

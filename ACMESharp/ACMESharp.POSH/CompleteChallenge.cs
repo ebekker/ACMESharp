@@ -21,8 +21,6 @@ namespace ACMESharp.POSH
         [ValidateSet(
                 AcmeProtocol.CHALLENGE_TYPE_DNS,
                 AcmeProtocol.CHALLENGE_TYPE_HTTP,
-                AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS,
-                AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP,
                 IgnoreCase = true)]
         public string Challenge
         { get; set; }
@@ -108,8 +106,7 @@ namespace ACMESharp.POSH
                     // this needs to be refactored and extracted out to be
                     // more manageble and more reusable
 
-                    if (Challenge == AcmeProtocol.CHALLENGE_TYPE_DNS
-                            || Challenge == AcmeProtocol.CHALLENGE_TYPE_LEGACY_DNS)
+                    if (Challenge == AcmeProtocol.CHALLENGE_TYPE_DNS)
                     {
                         if (string.IsNullOrEmpty(pc.DnsProvider))
                             throw new InvalidOperationException("Referenced Provider Configuration does not support the selected Challenge");
@@ -125,8 +122,7 @@ namespace ACMESharp.POSH
                             ii.ChallengeCompleted[Challenge] = DateTime.Now;
                         }
                     }
-                    else if (Challenge == AcmeProtocol.CHALLENGE_TYPE_HTTP
-                            || Challenge == AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP)
+                    else if (Challenge == AcmeProtocol.CHALLENGE_TYPE_HTTP)
                     {
                         if (string.IsNullOrEmpty(pc.WebServerProvider))
                             throw new InvalidOperationException("Referenced Provider Configuration does not support the selected Challenge");

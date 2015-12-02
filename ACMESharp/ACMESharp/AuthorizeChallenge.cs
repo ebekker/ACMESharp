@@ -23,8 +23,8 @@ namespace ACMESharp
         public string Status
         { get; set; }
 
-        public bool? Tls
-        { get; set; }
+        //public bool? Tls
+        //{ get; set; }
 
         public KeyValuePair<string, string> ChallengeAnswer
         { get; set; }
@@ -69,40 +69,12 @@ namespace ACMESharp
         }
 
         /// <summary>
-        /// Returns a key-value pair that represents the Legacy HTTP resource path that
-        /// needs to be configured (the key) and the resource content that should be returned
-        /// for an HTTP request for this path on a server that the target DNS resolve to.
-        /// </summary>
-        /// <param name="dnsId"></param>
-        /// <param name="signer"></param>
-        /// <param name="tls">Only supported for Legacy HTTP (simpleHttp)</param>
-        /// <returns></returns>
-        public KeyValuePair<string, string> GenerateLegacyHttpChallengeAnswer(string dnsId, ISigner signer, bool tls)
-        {
-            var resp = new
-            {
-                type = AcmeProtocol.CHALLENGE_TYPE_HTTP,
-                token = Token,
-                tls = tls
-            };
-            var json = JsonConvert.SerializeObject(resp);
-            var hdrs = new { alg = signer.JwsAlg, jwk = signer.ExportJwk() };
-            var signed = JwsHelper.SignFlatJsonAsObject(
-                    signer.Sign, json, unprotectedHeaders: hdrs);
-
-            return new KeyValuePair<string, string>(
-                    $"{HTTP_CHALLENGE_PATHPREFIX}{Token}",
-                    JsonConvert.SerializeObject(signed, Formatting.Indented));
-        }
-
-        /// <summary>
         /// Returns a key-value pair that represents the HTTP resource path that
         /// needs to be configured (the key) and the resource content that should be returned
         /// for an HTTP request for this path on a server that the target DNS resolve to.
         /// </summary>
         /// <param name="dnsId"></param>
         /// <param name="signer"></param>
-        /// <param name="tls">Only supported for Legacy HTTP (simpleHttp)</param>
         /// <returns></returns>
         public KeyValuePair<string, string> GenerateHttpChallengeAnswer(string dnsId, ISigner signer)
         {

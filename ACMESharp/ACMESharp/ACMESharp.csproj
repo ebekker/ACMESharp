@@ -89,7 +89,6 @@
     <Compile Include="JOSE\RS256Signer.cs" />
     <Compile Include="JSON\AcmeJsonContractResolver.cs" />
     <Compile Include="Messages\AnswerDnsChallengeRequest.cs" />
-    <Compile Include="Messages\AnswerLegacyHttpChallengeRequest.cs" />
     <Compile Include="Messages\ChallengePart.cs" />
     <Compile Include="Messages\IdentifierPart.cs" />
     <Compile Include="Messages\NewAuthzRequest.cs" />
@@ -99,7 +98,6 @@
     <Compile Include="Messages\ProblemDetailResponse.cs" />
     <Compile Include="Messages\RegResponse.cs" />
     <Compile Include="Messages\UpdateRegRequest.cs" />
-    <Compile Include="Messages\AnswerLegacyDnsChallengeRequest.cs" />
     <Compile Include="Messages\AnswerHttpChallengeRequest.cs" />
     <Compile Include="PKI\Crt.cs" />
     <Compile Include="PKI\Csr.cs" />

@@ -20,8 +20,12 @@ namespace ACMESharp
     {
         Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
 
+        // TODO:  eval if we still need this test since we're going
+        //        against the LE STAGE endpoint on a regular basis
+
         [TestMethod]
         [TestCategory("skipCI")]
+        [Ignore] // *Normally*, we skip this test because it depends on a local Boulder setup to accessible
         public void TestNewRegRequest()
         {
             var requ = WebRequest.Create(_rootUrl);

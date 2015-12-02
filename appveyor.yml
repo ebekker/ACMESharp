@@ -1,27 +1,15 @@
 version: 0.7.0.{build}
-init:
-- ps: >-
-    if ((wget http://acmesharp.zyborg.io/appveyor-rdp.txt).Content -eq 1)
-
-    {
-      iex ((new-object net.webclient).DownloadString(
-          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-    }
+pull_requests:
+  do_not_increment_build_number: true
 environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
 install:
-- nuget restore ACMESharp\ACMESharp.sln
-- nuget install secure-file -ExcludeVersion
-- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\dnsInfo.json.enc
-- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\webServerInfo.json.enc
-- secure-file\tools\secure-file -secret %secureInfoPassword% -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
-build:
-  verbosity: minimal
-after_build:
-- cmd: .\ACMESharp\ACMESharp\mynuget.cmd
-- cmd: .\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib32\mynuget.cmd
-- cmd: .\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib64\mynuget.cmd
+- ps: .\ci\av-install.ps1
+nuget:
+  disable_publish_on_pr: true
+build_script:
+- ps: .\ci\av-build.ps1
 test:
   categories:
     except:
@@ -36,6 +24,9 @@ artifacts:
   type: zip
 - path: ACMESharp\dist\nuget\*.nupkg
   name: ACME-lib-nuget
+- path: cov-int
+  name: ACMESharp-coverity
+  type: zip
 notifications:
 - provider: Webhook
   url: https://webhooks.gitter.im/e/dc0dd42c91579a605d09
@@ -43,11 +34,4 @@ notifications:
   on_build_failure: true
   on_build_status_changed: true
 on_finish:
-- ps: >-
-    if ((wget http://acmesharp.zyborg.io/appveyor-rdp.txt).Content -eq 1)
-
-    {
-      $blockRdp = $true
-      iex ((new-object net.webclient).DownloadString(
-          'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-    }
+- ps: .\ci\av-onfinish.ps1

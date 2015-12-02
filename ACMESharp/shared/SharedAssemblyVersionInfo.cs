@@ -20,6 +20,8 @@
 // ReSharper disable once InconsistentNaming
 internal class ASMINFO
 {
+
+    // DON'T FORGET TO UPDATE APPVEYOR.YML
     // ReSharper disable once InconsistentNaming
     public const string VERSION = "0.7.1";
 }

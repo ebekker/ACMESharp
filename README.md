@@ -54,7 +54,7 @@ This ACME client implementation is broken up into layers that build upon each ot
   * AWS Installer
   * Future Installers...
 
-This ACME client is being developed against the [Boulder CA](https://github.com/letsencrypt/boulder) ACME server reference implementation.  See how to [quickly spin up your own instance](https://github.com/ebekker/letsencrypt-win/wiki/Setup-Boulder-CA-on-Amazon-Linux) in AWS on an **Amazon Linux AMI**.
+This ACME client is being developed against the [Boulder CA](https://github.com/letsencrypt/boulder) ACME server reference implementation.  See how to [quickly spin up your own instance](https://github.com/ebekker/ACMESharp/wiki/Setup-Boulder-CA-on-Amazon-Linux) in AWS on an **Amazon Linux AMI**.
 
 ## Current State
 
@@ -62,4 +62,4 @@ This client is now operable and can successfully interact with the Let's Encrypt
 
 ## Example Usage
 
-The example usage has been moved to its own [wiki](https://github.com/ebekker/letsencrypt-win/wiki/Example-Usage).
+The example usage has been moved to its own [wiki](https://github.com/ebekker/ACMESharp/wiki/Example-Usage).

@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
+using System.Text;
 
 namespace ACMESharp.POSH
 {
@@ -44,6 +45,10 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        [Parameter]
+        public string FilePath
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             var pc = new ProviderConfig
@@ -54,6 +59,7 @@ namespace ACMESharp.POSH
                 Memo = Memo,
                 DnsProvider = DnsProvider,
                 WebServerProvider = WebServerProvider,
+                FilePath = FilePath
             };
 
             using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
@@ -82,11 +88,27 @@ namespace ACMESharp.POSH
                 }
 
                 var temp = Path.GetTempFileName();
-                using (var fs = new FileStream(temp, FileMode.Create))
+                if (string.IsNullOrWhiteSpace(FilePath))
                 {
-                    s.CopyTo(fs);
+                    using (var fs = new FileStream(temp, FileMode.Create))
+                    {
+                        s.CopyTo(fs);
+                    }
+                    EditFile(temp, EditWith);
                 }
-                EditFile(temp, EditWith);
+                else
+                {
+                    using (var reader = new StreamReader(s))
+                    {
+                        var text = reader.ReadToEnd();
+                        text = text.Replace(@".\\path\\to\\web-content-file", FilePath);
+                        s = new MemoryStream(Encoding.UTF8.GetBytes(text));
+                        using (var fs = new FileStream(temp, FileMode.Create))
+                        {
+                            s.CopyTo(fs);
+                        }
+                    }
+                }
 
                 var pcAsset = vp.CreateAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
                 using (Stream fs = new FileStream(temp, FileMode.Open),

@@ -46,6 +46,10 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        [Parameter(ParameterSetName = PSET_GET)]
+        public string CertificatePassword
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
@@ -139,7 +143,11 @@ namespace ACMESharp.POSH
 
                                 var certs = new[] { crt, isu };
 
-                                cp.ExportArchive(pk, certs, ArchiveFormat.PKCS12, fs);
+                                var password = string.IsNullOrWhiteSpace(CertificatePassword)
+                                    ? string.Empty
+                                    : CertificatePassword;
+
+                                cp.ExportArchive(pk, certs, ArchiveFormat.PKCS12, fs, password);
                             }
                         }
                     }

@@ -340,7 +340,7 @@ namespace ACMESharp.PKI.Providers
             throw new NotImplementedException();
         }
 
-        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target)
+        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "")
         {
             throw new NotImplementedException();
         }

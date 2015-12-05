@@ -421,7 +421,7 @@ namespace ACMESharp.PKI.Providers
         }
 
         public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs,
-                ArchiveFormat fmt, Stream target)
+                ArchiveFormat fmt, Stream target, string password = "")
         {
             var rsaPk = pk as RsaPrivateKey;
             var certArr = certs.ToArray();
@@ -440,7 +440,7 @@ namespace ACMESharp.PKI.Providers
                     foreach (var c in certs)
                         File.AppendAllText(tempInpFile, c.Pem);
 
-                    RunCli($"pkcs12 -export -in {tempInpFile} -out {tempPfxFile} -nodes -passout pass:");
+                    RunCli($"pkcs12 -export -in {tempInpFile} -out {tempPfxFile} -nodes -passout pass:{password}");
 
                     var pfxBytes = File.ReadAllBytes(tempPfxFile);
                     target.Write(pfxBytes, 0, pfxBytes.Length);

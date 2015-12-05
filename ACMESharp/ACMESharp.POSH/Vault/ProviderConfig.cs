@@ -22,5 +22,8 @@ namespace ACMESharp.POSH.Vault
 
         public string WebServerProvider
         { get; set; }
+
+        public string FilePath
+        { get; set; }
     }
 }

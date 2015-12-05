@@ -105,7 +105,7 @@ namespace ACMESharp.PKI
 
         public abstract void ExportCertificate(Crt cert, EncodingFormat fmt, Stream target);
 
-        public abstract void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target);
+        public abstract void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "");
 
         public static void RegisterProvider<CP>(string name = DEFAULT_PROVIDER_NAME) where CP : CertificateProvider
         {

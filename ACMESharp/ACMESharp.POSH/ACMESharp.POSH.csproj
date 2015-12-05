@@ -62,6 +62,7 @@
     <Compile Include="NewCertificate.cs" />
     <Compile Include="NewIdentifier.cs" />
     <Compile Include="NewProviderConfig.cs" />
+    <Compile Include="ProviderConfigDto.cs" />
     <Compile Include="ProviderConfigSamples\Loader.cs" />
     <Compile Include="SetProxy.cs" />
     <Compile Include="SetServerDirectory.cs" />

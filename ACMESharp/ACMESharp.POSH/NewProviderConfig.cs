@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace ACMESharp.POSH
 {
@@ -98,15 +99,21 @@ namespace ACMESharp.POSH
                 }
                 else
                 {
-                    using (var reader = new StreamReader(s))
+                    var config = new ProviderConfigDto
                     {
-                        var text = reader.ReadToEnd();
-                        text = text.Replace(@".\\path\\to\\web-content-file", FilePath);
-                        s = new MemoryStream(Encoding.UTF8.GetBytes(text));
-                        using (var fs = new FileStream(temp, FileMode.Create))
+                        Provider = new Provider
                         {
-                            s.CopyTo(fs);
+                            Type = "ACMESharp.WebServer.ManualWebServerProvider, ACMESharp",
+                            FilePath = FilePath
                         }
+                    };
+
+                    var output = JsonConvert.SerializeObject(config);
+
+                    s = new MemoryStream(Encoding.UTF8.GetBytes(output));
+                    using (var fs = new FileStream(temp, FileMode.Create))
+                    {
+                        s.CopyTo(fs);
                     }
                 }
 

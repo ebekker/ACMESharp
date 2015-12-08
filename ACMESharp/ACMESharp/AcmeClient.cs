@@ -22,7 +22,7 @@ namespace ACMESharp
     {
         #region -- Fields --
 
-        JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
+        JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
             ContractResolver = new AcmeJsonContractResolver(),

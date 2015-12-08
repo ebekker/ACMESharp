@@ -6,11 +6,6 @@ namespace ACMESharp
 {
     public class AuthorizeChallenge
     {
-        public const string DNS_CHALLENGE_NAMEPREFIX = "_acme-challenge.";
-        public const string DNS_CHALLENGE_RECORDTYPE = "TXT";
-
-        public const string HTTP_CHALLENGE_PATHPREFIX = ".well-known/acme-challenge/";
-
         public string Type
         { get; set; }
 
@@ -64,7 +59,7 @@ namespace ACMESharp
             */
 
             return new KeyValuePair<string, string>(
-                    $"{DNS_CHALLENGE_NAMEPREFIX}{dnsId}",
+                    $"{AcmeProtocol.DNS_CHALLENGE_NAMEPREFIX}{dnsId}",
                     signed.signature); /*sigFormatted);*/
         }
 
@@ -81,7 +76,7 @@ namespace ACMESharp
             var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, Token);
             
             return new KeyValuePair<string, string>(
-                    $"{HTTP_CHALLENGE_PATHPREFIX}{Token}", keyAuthz);
+                    $"{AcmeProtocol.HTTP_CHALLENGE_PATHPREFIX}{Token}", keyAuthz);
         }
     }
 }

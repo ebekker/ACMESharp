@@ -88,6 +88,65 @@ namespace ACMESharp.Providers.AWS
             h.Handle(null);
         }
 
+        [TestMethod]
+        public void TestHandlerDefineAndCleanUpResourceRecord()
+        {
+            var r = new Random();
+            var bn = new byte[4];
+            var bv = new byte[10];
+            r.NextBytes(bn);
+            r.NextBytes(bv);
+            var rn = BitConverter.ToString(bn);
+            var rv = BitConverter.ToString(bv);
+
+            var c = new DnsChallenge
+            {
+                TypeKind = ChallengeTypeKind.DNS,
+                Type = AcmeProtocol.CHALLENGE_TYPE_DNS,
+                Token = "FOOBAR",
+                RecordName = $"{rn}.{_dnsConfig.DefaultDomain}",
+                RecordValue = rv,
+            };
+
+            var r53 = new Route53Helper
+            {
+                HostedZoneId = _dnsConfig.HostedZoneId,
+            };
+            r53.CommonParams.InitParams(_dnsConfig);
+
+            var p = GetProvider();
+            using (var h = p.GetHandler(c, _dnsConfig))
+            {
+                // Assert test record does *not* exist
+                var rr = r53.GetRecords(c.RecordName);
+                var rrFirst = rr.ResourceRecordSets.FirstOrDefault(x =>
+                    x.Name.ToLower().StartsWith(c.RecordName.ToLower()))?.Name;
+
+                Assert.IsNull(rrFirst);
+
+                // Create the record...
+                h.Handle(c);
+
+                // ...and assert it does exist
+                rr = r53.GetRecords(c.RecordName);
+                rrFirst = rr.ResourceRecordSets.FirstOrDefault(x =>
+                    x.Name.ToLower().StartsWith(c.RecordName.ToLower()))?.Name;
+
+                Assert.IsNotNull(rrFirst);
+                StringAssert.StartsWith(rrFirst.ToLower(), c.RecordName.ToLower());
+
+                // Clean up the record...
+                h.CleanUp(c);
+
+                // ...and assert it does not exist once more
+                rr = r53.GetRecords(c.RecordName);
+                rrFirst = rr.ResourceRecordSets.FirstOrDefault(x =>
+                    x.Name.ToLower().StartsWith(c.RecordName.ToLower()))?.Name;
+
+                Assert.IsNull(rrFirst);
+            }
+        }
+
         class FakeChallenge : Challenge
         { }
     }

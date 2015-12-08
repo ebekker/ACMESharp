@@ -132,7 +132,7 @@ namespace ACMESharp.Providers.AWS
             };
 
             if (ResourceRecordType == "TXT")
-                r53.EditTxtRecord(dnsName, dnsValues);
+                r53.EditTxtRecord(dnsName, dnsValues, delete);
             else
                 throw new NotImplementedException($"RR type of [{ResourceRecordType}] not implemented");
         }

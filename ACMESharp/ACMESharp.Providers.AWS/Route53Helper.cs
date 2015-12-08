@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.Route53.Model;
 
 namespace ACMESharp.Providers.AWS
 {
@@ -16,6 +17,31 @@ namespace ACMESharp.Providers.AWS
 
         public AwsCommonParams CommonParams
         { get; set; } = new AwsCommonParams();
+
+        /// <summary>
+        /// Returns all records up to 100 at a time, starting with the
+        /// one with the optional name and/or type, sorted in lexographical
+        /// order by name (with labels reversed) then by type.
+        /// </summary>
+        public ListResourceRecordSetsResponse GetRecords(
+                string startingDnsName, string startingDnsType = null)
+        {
+            using (var r53 = new Amazon.Route53.AmazonRoute53Client(
+                    CommonParams.AccessKeyId, CommonParams.SecretAccessKey,
+                    CommonParams.RegionEndpoint))
+            {
+                var rrRequ = new Amazon.Route53.Model.ListResourceRecordSetsRequest
+                {
+                    HostedZoneId = HostedZoneId,
+                    StartRecordName = startingDnsName,
+                    StartRecordType = startingDnsType,
+                };
+
+                var rrResp = r53.ListResourceRecordSets(rrRequ);
+
+                return rrResp;
+            }
+        }
 
         public void EditTxtRecord(string dnsName, IEnumerable<string> dnsValues, bool delete = false)
         {
@@ -32,7 +58,7 @@ namespace ACMESharp.Providers.AWS
                 }
             };
 
-            EditR53Record(rrset);
+            EditR53Record(rrset, delete);
         }
 
         public void EditARecord(string dnsName, string dnsValue, bool delete = false)

@@ -54,6 +54,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -73,6 +74,9 @@
     <Compile Include="AcmeException.cs" />
     <Compile Include="AcmeRegistration.cs" />
     <Compile Include="AcmeServerDirectory.cs" />
+    <Compile Include="ACME\Challenge.cs" />
+    <Compile Include="ACME\ChallengeHandlerExtManager.cs" />
+    <Compile Include="ACME\IChallengeHandler.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
     <Compile Include="CertificateRequest.cs" />
@@ -80,6 +84,9 @@
     <Compile Include="DNS\DnsInfo.cs" />
     <Compile Include="DNS\IDnsProvider.cs" />
     <Compile Include="DNS\ManualDnsProvider.cs" />
+    <Compile Include="Ext\ExtCommon.cs" />
+    <Compile Include="Ext\IExtDetail.cs" />
+    <Compile Include="Ext\ParameterDetail.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />
     <Compile Include="IChallengeHandlingProvider.cs" />

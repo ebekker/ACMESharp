@@ -120,6 +120,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AuthorizeChallenge.cs" />
     <Compile Include="Util\BaseManualProvider.cs" />
+    <Compile Include="Util\JsonHelper.cs" />
     <Compile Include="WebServer\AwsS3WebServerProvider.cs" />
     <Compile Include="WebServer\IWebServerProvider.cs" />
     <Compile Include="WebServer\ManualWebServerProvider.cs" />

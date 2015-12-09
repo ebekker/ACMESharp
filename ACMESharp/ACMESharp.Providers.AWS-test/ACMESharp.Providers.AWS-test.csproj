@@ -62,7 +62,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="config\HttpConfig.cs" />
     <Compile Include="config\DnsConfig.cs" />
+    <Compile Include="TestAwsS3Provider.cs" />
     <Compile Include="TestAwsRoute53Provider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -78,6 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="config\dnsConfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="config\httpConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

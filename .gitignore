@@ -198,3 +198,4 @@ ACMESharp/ACMESharp-test/config/dnsInfo.json
 ACMESharp/ACMESharp-test/config/testProxyConfig.json
 ACMESharp/ACMESharp-test/config/webServerInfo.json
 ACMESharp/ACMESharp.Providers.AWS-test/config/dnsConfig.json
+ACMESharp/ACMESharp.Providers.AWS-test/config/httpConfig.json

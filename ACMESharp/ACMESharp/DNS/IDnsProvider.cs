@@ -3,7 +3,7 @@
 namespace ACMESharp.DNS
 {
 
-    public interface IDnsProvider : IChallengeHandlingProvider
+    public interface IDnsProvider
     {
         void EditTxtRecord(string dnsName, IEnumerable<string> dnsValues);
 

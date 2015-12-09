@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="AwsCommonParams.cs" />
     <Compile Include="AwsRoute53ChallengeHandlerProvider.cs" />
+    <Compile Include="AwsS3ChallengeHandlerProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Route53Helper.cs" />
   </ItemGroup>

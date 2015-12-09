@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace ACMESharp.Ext
 {
+    /// <summary>
+    /// Defines meta data used to describe parameters that may be provided for
+    /// various stages and entry points in the extension mechanisms.
+    /// </summary>
     public class ParameterDetail
     {
         public ParameterDetail(string name, ParameterType type,
@@ -39,6 +43,10 @@ namespace ACMESharp.Ext
         { get; private set; }
     }
 
+    /// <summary>
+    /// Defines the different logical types that are supported
+    /// for parameters in the extension mechanisms.
+    /// </summary>
     public enum ParameterType
     {
         TEXT = 0x1,

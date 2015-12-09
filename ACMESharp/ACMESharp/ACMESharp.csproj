@@ -89,7 +89,6 @@
     <Compile Include="Ext\ParameterDetail.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />
-    <Compile Include="IChallengeHandlingProvider.cs" />
     <Compile Include="JOSE\ISigner.cs" />
     <Compile Include="JOSE\JwsHeaders.cs" />
     <Compile Include="JOSE\JwsHelper.cs" />

@@ -1,0 +1,8 @@
+﻿{
+	"BucketName": "acmetesting.sample.com",
+	"ContentType": "acmetesting.sample.com",
+	"CannedAcl": "acmetesting.sample.com",
+	"AccessKeyId": "IAM-Account-AccessKey",
+	"SecretAccessKey": "IAM-Account-SecretKey",
+	"Region": "us-east-1"
+}

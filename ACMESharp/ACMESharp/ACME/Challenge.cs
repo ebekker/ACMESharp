@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace ACMESharp.ACME
 {
+    [Flags]
     public enum ChallengeTypeKind
     {
+        UNSPECIFIED = 0,
         DNS = 1,
         HTTP = 2,
-        TLS_SNI = 3,
+        TLS_SNI = 4,
     }
 
     public abstract class Challenge

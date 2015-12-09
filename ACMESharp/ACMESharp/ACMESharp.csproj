@@ -77,6 +77,8 @@
     <Compile Include="ACME\Challenge.cs" />
     <Compile Include="ACME\ChallengeHandlerExtManager.cs" />
     <Compile Include="ACME\IChallengeHandler.cs" />
+    <Compile Include="ACME\Providers\ManualChallengeHandler.cs" />
+    <Compile Include="ACME\Providers\ManualChallengeHandlerProvider.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
     <Compile Include="CertificateRequest.cs" />
@@ -86,6 +88,7 @@
     <Compile Include="DNS\ManualDnsProvider.cs" />
     <Compile Include="Ext\ExtCommon.cs" />
     <Compile Include="Ext\IExtDetail.cs" />
+    <Compile Include="Ext\NamedInfo.cs" />
     <Compile Include="Ext\ParameterDetail.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />

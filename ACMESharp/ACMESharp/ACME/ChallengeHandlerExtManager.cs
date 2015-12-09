@@ -19,6 +19,9 @@ namespace ACMESharp.ACME
 
         string Description
         { get; }
+
+        ChallengeTypeKind SupportedTypes
+        { get; }
     }
 
     [MetadataAttribute]
@@ -32,26 +35,32 @@ namespace ACMESharp.ACME
         }
 
         public string Name
-        { get; set; }
+        { get; private set; }
 
         public string Label
         { get; set; }
 
         public string Description
         { get; set; }
+
+        public ChallengeTypeKind SupportedTypes
+        { get; set; }
     }
 
-    public class ChallengeHandlerExtManager
+    public static class ChallengeHandlerExtManager
     {
         private static Config _config;
 
-        public IEnumerable<Tuple<string, IChallengeHandlerProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IChallengeHandlerProviderInfo>> GetProviders()
         {
-            return null;
+            AssertInit();
+            foreach (var pi in _config)
+                yield return new NamedInfo<IChallengeHandlerProviderInfo>(
+                        pi.Key, pi.Value.Metadata);
         }
 
         public static IChallengeHandlerProvider GetProvider(string name,
-            IDictionary<string, object> initParams = null)
+            IDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
             return _config[name]?.Value;

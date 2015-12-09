@@ -35,9 +35,10 @@ namespace ACMESharp.Ext
             var thisAsm = Assembly.GetExecutingAssembly();
             aggCat.Catalogs.Add(new AssemblyCatalog(thisAsm));
 
-            // Add the local extension folder
+            // Add the local extension folder if it exists
             var thisExt = ExtCommon.GetExtPath();
-            aggCat.Catalogs.Add(new DirectoryCatalog(thisExt));
+            if (Directory.Exists(thisExt))
+                aggCat.Catalogs.Add(new DirectoryCatalog(thisExt));
 
             // Other possible folders to include:
             //    * Application CWD

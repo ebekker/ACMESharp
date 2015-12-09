@@ -65,11 +65,11 @@ namespace ACMESharp.Vault
             }
         }
 
-        public static IEnumerable<Tuple<string, IVaultProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IVaultProviderInfo>> GetProviders()
         {
             AssertInit();
             foreach (var pi in _config)
-                yield return new Tuple<string, IVaultProviderInfo>(pi.Key, pi.Value.Metadata);
+                yield return new NamedInfo<IVaultProviderInfo>(pi.Key, pi.Value.Metadata);
         } 
 
         /// <remarks>
@@ -81,7 +81,7 @@ namespace ACMESharp.Vault
         /// produces.
         /// </remarks>
         public static IVaultProvider GetProvider(string name = null,
-            IDictionary<string, object> initParams = null)
+            IDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
             if (name == null)

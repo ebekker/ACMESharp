@@ -495,9 +495,9 @@ namespace ACMESharp.PKI.Providers
             _cp.ExportCertificate(cert, fmt, target);
         }
 
-        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target)
+        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "")
         {
-            _cp.ExportArchive(pk, certs, fmt, target);
+            _cp.ExportArchive(pk, certs, fmt, target, password);
         }
     }
 }

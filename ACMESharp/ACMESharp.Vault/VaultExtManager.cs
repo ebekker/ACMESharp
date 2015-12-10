@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using ACMESharp.Ext;
 using ACMESharp.Vault.Providers;
-using AppDomain.FooArea;
 
 namespace ACMESharp.Vault
 {

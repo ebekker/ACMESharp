@@ -12,7 +12,7 @@ namespace ACMESharp.WebServer
                     TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
                 };
 
-        public IWebServerProvider Provider
+        public XXXIWebServerProvider Provider
         { get; set; }
 
         public void Save(System.IO.Stream s)

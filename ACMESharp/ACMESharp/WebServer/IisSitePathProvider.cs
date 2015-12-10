@@ -22,7 +22,7 @@ namespace ACMESharp.WebServer
     /// IIS will not serve up a file without an extension in this scenario.
     /// </para>
     /// </remarks>
-    public class IisSitePathProvider : IWebServerProvider
+    public class IisSitePathProvider : XXXIWebServerProvider
     {
         /// <summary>
         /// Path to the root directory of the target Web site.

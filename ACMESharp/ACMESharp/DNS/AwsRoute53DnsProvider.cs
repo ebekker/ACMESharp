@@ -2,7 +2,7 @@
 
 namespace ACMESharp.DNS
 {
-    public class AwsRoute53DnsProvider : IDnsProvider
+    public class AwsRoute53DnsProvider : XXXIDnsProvider
     {
         public string HostedZoneId
         { get; set; }

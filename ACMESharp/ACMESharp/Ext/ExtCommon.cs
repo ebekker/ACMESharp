@@ -35,6 +35,9 @@ namespace ACMESharp.Ext
             var thisAsm = Assembly.GetExecutingAssembly();
             aggCat.Catalogs.Add(new AssemblyCatalog(thisAsm));
 
+            // Add assemblies in the current apps path and runtime
+            aggCat.Catalogs.Add(new ApplicationCatalog());
+
             // Add the local extension folder if it exists
             var thisExt = ExtCommon.GetExtPath();
             if (Directory.Exists(thisExt))

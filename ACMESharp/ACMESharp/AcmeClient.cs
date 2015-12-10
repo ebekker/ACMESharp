@@ -1,16 +1,19 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using ACMESharp.ACME;
 using ACMESharp.HTTP;
 using ACMESharp.JOSE;
 using ACMESharp.JSON;
 using ACMESharp.Messages;
+using ACMESharp.Util;
 
 namespace ACMESharp
 {
@@ -270,6 +273,7 @@ namespace ACMESharp
 
             var authzState = new AuthorizationState
             {
+                IdentifierPart = respMsg.Identifier,
                 IdentifierType = respMsg.Identifier.Type,
                 Identifier = respMsg.Identifier.Value,
                 Uri = uri,
@@ -280,11 +284,11 @@ namespace ACMESharp
                 // Simple copy/conversion from one form to another
                 Challenges = respMsg.Challenges.Select(x => new AuthorizeChallenge
                 {
+                    ChallengePart = x,
                     Type = x.Type,
                     Status = x.Status,
                     Uri = x.Uri,
                     Token = x.Token,
-                    ValidationRecord = x.ValidationRecord,
                 }),
             };
 
@@ -312,6 +316,7 @@ namespace ACMESharp
 
             var authzStatusState = new AuthorizationState
             {
+                IdentifierPart = respMsg.Identifier,
                 IdentifierType = respMsg.Identifier.Type,
                 Identifier = respMsg.Identifier.Value,
                 Status = respMsg.Status,
@@ -319,11 +324,11 @@ namespace ACMESharp
 
                 Challenges = respMsg.Challenges.Select(x => new AuthorizeChallenge
                 {
+                    ChallengePart = x,
                     Type = x.Type,
                     Status = x.Status,
                     Uri = x.Uri,
                     Token = x.Token,
-                    ValidationRecord = x.ValidationRecord,
                 }),
             };
 
@@ -359,7 +364,8 @@ namespace ACMESharp
 
             var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
             if (c == null)
-                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+                throw new ArgumentOutOfRangeException(nameof(type),
+                        "no challenge found matching requested type");
 
             switch (type)
             {
@@ -398,6 +404,61 @@ namespace ACMESharp
             }
 
             return c;
+        }
+
+        public AuthorizeChallenge ParseChallenge(AuthorizationState authzState, string challengeType)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var c = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
+            if (c == null)
+                throw new ArgumentOutOfRangeException(nameof(challengeType),
+                        "no challenge found matching requested type")
+                        .With("challengeType", challengeType);
+
+            var provider = ChallengeParserExtManager.GetProvider(challengeType);
+            if (provider == null)
+                throw new NotSupportedException("no provider exists for requested challenge type")
+                        .With("challengeType", challengeType);
+
+            using (var parser = provider.GetParser(authzState.IdentifierPart, c.ChallengePart))
+            {
+                c.Challenge = parser.Parse(authzState.IdentifierPart, c.ChallengePart, Signer);
+                if (c.Challenge == null)
+                    throw new InvalidDataException("challenge parser produced no output");
+            }
+
+            return c;
+        }
+
+        public AuthorizeChallenge HandleChallenge(AuthorizationState authzState,
+                AuthorizeChallenge authzChallenge,
+                string handlerName, IDictionary<string, object> handlerParams)
+        {
+            var provider = ChallengeHandlerExtManager.GetProvider(handlerName);
+            if (provider == null)
+                throw new InvalidOperationException("unable to resolve Challenge Handler provider")
+                        .With("handlerName", handlerName);
+
+            if (!provider.IsSupported(authzChallenge.Challenge))
+                throw new InvalidOperationException("Challenge Handler does not support given Challenge")
+                        .With("handlerName", handlerName)
+                        .With("challengeType", authzChallenge.Challenge.Type);
+
+            var handler = provider.GetHandler(authzChallenge.Challenge, handlerParams);
+            if (handler == null)
+                throw new InvalidOperationException("no Challenge Handler provided for given Challenge")
+                        .With("handlerName", handlerName)
+                        .With("challengeType", authzChallenge.Challenge.Type);
+
+            authzChallenge.HandlerName = handlerName;
+
+            handler.Handle(authzChallenge.Challenge);
+            handler.Dispose();
+            authzChallenge.HandlerHandleDate = DateTime.Now;
+
+            return authzChallenge;
         }
 
         public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState,

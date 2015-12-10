@@ -4,11 +4,6 @@ using ACMESharp.ACME;
 
 namespace ACMESharp.Providers.AWS
 {
-    [ChallengeHandlerProvider("awsRoute53",
-        Label = "AWS Route 53",
-        Description = "Provider for handling Challenges that manages" +
-                      " DNS entries hosted in an AWS Route 53 zone.",
-        SupportedTypes = ChallengeTypeKind.DNS)]
     public class AwsRoute53ChallengeHandler : IChallengeHandler
     {
         #region -- Properties --

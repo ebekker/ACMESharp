@@ -7,14 +7,13 @@ using ACMESharp.Ext;
 
 namespace ACMESharp.Providers.AWS
 {
-    [ChallengeHandlerProvider("awsS3",
+    [ChallengeHandlerProvider("awsS3", ChallengeTypeKind.HTTP,
         Label = "AWS S3",
         Description = "Provider for handling Challenges that manages" +
                       " file entries hosted in an AWS S3 bucket.  The" +
                       " handler depends on an appropriate DNS mapping" +
                       " to be configured externally that resolves to" +
-                      " the target bucket.",
-        SupportedTypes = ChallengeTypeKind.HTTP)]
+                      " the target bucket.")]
     public class AwsS3ChallengeHandlerProvider : IChallengeHandlerProvider
     {
         public static readonly ParameterDetail BUCKET_NAME = new ParameterDetail(

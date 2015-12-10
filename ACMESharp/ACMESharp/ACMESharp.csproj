@@ -76,7 +76,13 @@
     <Compile Include="AcmeServerDirectory.cs" />
     <Compile Include="ACME\Challenge.cs" />
     <Compile Include="ACME\ChallengeHandlerExtManager.cs" />
+    <Compile Include="ACME\ChallengeParserExtManager.cs" />
+    <Compile Include="ACME\Providers\DnsChallengeParser.cs" />
     <Compile Include="ACME\IChallengeHandler.cs" />
+    <Compile Include="ACME\IChallengeParser.cs" />
+    <Compile Include="ACME\Providers\DnsChallengeParserProvider.cs" />
+    <Compile Include="ACME\Providers\HttpChallengeParser.cs" />
+    <Compile Include="ACME\Providers\HttpChallengeParserProvider.cs" />
     <Compile Include="ACME\Providers\ManualChallengeHandler.cs" />
     <Compile Include="ACME\Providers\ManualChallengeHandlerProvider.cs" />
     <Compile Include="Certificate.cs" />
@@ -122,6 +128,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AuthorizeChallenge.cs" />
     <Compile Include="Util\BaseManualProvider.cs" />
+    <Compile Include="Util\ExceptionExtensions.cs" />
     <Compile Include="Util\JsonHelper.cs" />
     <Compile Include="WebServer\AwsS3WebServerProvider.cs" />
     <Compile Include="WebServer\IWebServerProvider.cs" />

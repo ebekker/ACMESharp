@@ -8,7 +8,8 @@ using ACMESharp.Ext;
 namespace ACMESharp.ACME.Providers
 {
     /// <summary>
-    /// 
+    /// Provider for a Challenge Handler that outputs the manual steps
+    /// needed to be completed by the operator.
     /// </summary>
     /// <remarks>
     /// When the output resolves to a file and that file already exists,
@@ -16,14 +17,14 @@ namespace ACMESharp.ACME.Providers
     /// as true, an exception will be raised.
     /// </remarks>
     [ChallengeHandlerProvider("manual",
+        ChallengeTypeKind.DNS | ChallengeTypeKind.HTTP,
         Label = "Manual Provider",
         Description = "A manual provider for handling Challenges." +
                       " This provider supports the DNS and HTTP" +
                       " Challenge types and computes all the necessary" +
                       " response values. It will provide instructions" +
                       " to the user on what to do with the values but" +
-                      " actual steps must be implemented manually.",
-        SupportedTypes = ChallengeTypeKind.DNS | ChallengeTypeKind.HTTP)]
+                      " actual steps must be implemented manually.")]
     public class ManualChallengeHandlerProvider : IChallengeHandlerProvider
     {
         public static readonly ParameterDetail WRITE_OUT_PATH = new ParameterDetail(

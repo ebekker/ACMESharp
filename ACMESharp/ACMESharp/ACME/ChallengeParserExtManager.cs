@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ACMESharp.Ext;
-using System.ComponentModel.Composition.Hosting;
 
 namespace ACMESharp.ACME
 {
-    public interface IChallengeHandlerProviderInfo
+    public interface IChallengeParserProviderInfo
     {
-        string Name
+        string Type
         { get; }
 
-        ChallengeTypeKind SupportedTypes
+        ChallengeTypeKind SupportedType
         { get; }
 
         string Label
@@ -26,19 +26,19 @@ namespace ACMESharp.ACME
 
     [MetadataAttribute]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ChallengeHandlerProviderAttribute : ExportAttribute
+    public class ChallengeParserProviderAttribute : ExportAttribute
     {
-        public ChallengeHandlerProviderAttribute(string name,
-                ChallengeTypeKind supportedTypes) : base(typeof(IChallengeHandlerProvider))
+        public ChallengeParserProviderAttribute(string type,
+                ChallengeTypeKind supportedType) : base(typeof(IChallengeParserProvider))
         {
-            Name = name;
-            SupportedTypes = supportedTypes;
+            Type = type;
+            SupportedType = supportedType;
         }
 
-        public string Name
+        public ChallengeTypeKind SupportedType
         { get; private set; }
 
-        public ChallengeTypeKind SupportedTypes
+        public string Type
         { get; private set; }
 
         public string Label
@@ -48,23 +48,23 @@ namespace ACMESharp.ACME
         { get; set; }
     }
 
-    public static class ChallengeHandlerExtManager
+    public static class ChallengeParserExtManager
     {
         private static Config _config;
 
-        public static IEnumerable<NamedInfo<IChallengeHandlerProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IChallengeParserProviderInfo>> GetProviders()
         {
             AssertInit();
             foreach (var pi in _config)
-                yield return new NamedInfo<IChallengeHandlerProviderInfo>(
+                yield return new NamedInfo<IChallengeParserProviderInfo>(
                         pi.Key, pi.Value.Metadata);
         }
 
-        public static IChallengeHandlerProvider GetProvider(string name,
+        public static IChallengeParserProvider GetProvider(string type,
             IDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
-            return _config[name]?.Value;
+            return _config[type]?.Value;
         }
 
         static void AssertInit()
@@ -88,18 +88,18 @@ namespace ACMESharp.ACME
             _config = ExtCommon.InitExtConfig<Config>();
         }
 
-        class Config : Dictionary<string, Lazy<IChallengeHandlerProvider,
-                IChallengeHandlerProviderInfo>>, IExtDetail
+        class Config : Dictionary<string, Lazy<IChallengeParserProvider,
+                IChallengeParserProviderInfo>>, IExtDetail
         {
-            private IEnumerable<Lazy<IChallengeHandlerProvider,
-                    IChallengeHandlerProviderInfo>> _Providers;
+            private IEnumerable<Lazy<IChallengeParserProvider,
+                    IChallengeParserProviderInfo>> _Providers;
 
             public CompositionContainer CompositionContainer
             { get; set; }
 
             [ImportMany]
-            public IEnumerable<Lazy<IChallengeHandlerProvider,
-                    IChallengeHandlerProviderInfo>> Providers
+            public IEnumerable<Lazy<IChallengeParserProvider,
+                    IChallengeParserProviderInfo>> Providers
             {
                 get
                 {
@@ -116,11 +116,11 @@ namespace ACMESharp.ACME
 
                         // We can register the provider to the suggested name...
 
-                        // ...if the name is not missing...
-                        if (!string.IsNullOrEmpty(m?.Name))
+                        // ...if the type is not missing...
+                        if (!string.IsNullOrEmpty(m?.Type))
                             // ...and the name is not already taken
-                            if (!this.ContainsKey(m.Name))
-                                this[m.Name] = x;
+                            if (!this.ContainsKey(m.Type))
+                                this[m.Type] = x;
                     }
                 }
             }

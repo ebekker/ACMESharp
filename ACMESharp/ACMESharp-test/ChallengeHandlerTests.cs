@@ -38,7 +38,7 @@ namespace ACMESharp
             Assert.IsNotNull(provsEnum);
 
             var provsArr = provsEnum.ToArray();
-            Assert.IsTrue(provsArr.Length == 1);
+            Assert.IsTrue(provsArr.Length > 0);
         }
 
         [TestMethod]

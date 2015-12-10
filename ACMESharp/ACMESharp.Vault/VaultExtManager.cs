@@ -18,10 +18,10 @@ namespace ACMESharp.Vault
         { get; }
 
         string Label
-        { get; set; }
+        { get; }
 
         string Description
-        { get; set; }
+        { get; }
     }
 
     [MetadataAttribute]
@@ -35,7 +35,7 @@ namespace ACMESharp.Vault
         }
 
         public string Name 
-        { get; set; }
+        { get; private set; }
 
         public string Label
         { get; set; }

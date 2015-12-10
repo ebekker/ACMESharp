@@ -1,11 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using ACMESharp.ACME;
 using ACMESharp.JOSE;
+using ACMESharp.Messages;
 
 namespace ACMESharp
 {
     public class AuthorizeChallenge
     {
+        public ChallengePart ChallengePart
+        { get; set; }
+
+        public Challenge Challenge
+        { get; set; }
+
         public string Type
         { get; set; }
 
@@ -18,17 +27,23 @@ namespace ACMESharp
         public string Status
         { get; set; }
 
-        //public bool? Tls
-        //{ get; set; }
-
         public KeyValuePair<string, string> ChallengeAnswer
         { get; set; }
 
         public object ChallengeAnswerMessage
         { get; set; }
 
-        public object ValidationRecord
+        public string HandlerName
         { get; set; }
+
+        public DateTime? HandlerHandleDate
+        { get; set; }
+
+        public DateTime? HandlerCleanUpDate
+        { get; set; }
+
+        //public object ValidationRecord
+        //{ get; set; }
 
         /// <summary>
         /// Returns a key-value pair that represents the DNS domain name that needs

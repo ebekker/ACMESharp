@@ -13,7 +13,7 @@ namespace ACMESharp.POSH.Util
                 new Newtonsoft.Json.JsonSerializerSettings
                 {
                     Formatting = Newtonsoft.Json.Formatting.Indented,
-                  //TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
+                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>
                     {
                         AcmeEntitySerializer.INSTANCE

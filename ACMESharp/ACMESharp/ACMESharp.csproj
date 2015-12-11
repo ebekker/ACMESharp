@@ -108,6 +108,7 @@
     <Compile Include="JOSE\RS256Signer.cs" />
     <Compile Include="JSON\AcmeJsonContractResolver.cs" />
     <Compile Include="Messages\AnswerDnsChallengeRequest.cs" />
+    <Compile Include="Messages\ChallengeAnswerRequest.cs" />
     <Compile Include="Messages\ChallengePart.cs" />
     <Compile Include="Messages\IdentifierPart.cs" />
     <Compile Include="Messages\NewAuthzRequest.cs" />

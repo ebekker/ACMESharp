@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 
 namespace ACMESharp.ACME.Providers
 {
-    public class DnsChallengeParser : IChallengeParser
+    public class DnsChallengeDecoder : IChallengeDecoder
     {
         public bool IsDisposed
         { get; private set; }
 
-        public Challenge Parse(IdentifierPart ip, ChallengePart cp, ISigner signer)
+        public Challenge Decode(IdentifierPart ip, ChallengePart cp, ISigner signer)
         {
             if (cp.Type != AcmeProtocol.CHALLENGE_TYPE_DNS)
                 throw new InvalidDataException("unsupported Challenge type")

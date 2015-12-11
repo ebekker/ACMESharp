@@ -5,12 +5,12 @@ using ACMESharp.Util;
 
 namespace ACMESharp.ACME.Providers
 {
-    public class HttpChallengeParser : IChallengeParser
+    public class HttpChallengeDecoder : IChallengeDecoder
     {
         public bool IsDisposed
         { get; private set; }
 
-        public Challenge Parse(IdentifierPart ip, ChallengePart cp, ISigner signer)
+        public Challenge Decode(IdentifierPart ip, ChallengePart cp, ISigner signer)
         {
             if (cp.Type != AcmeProtocol.CHALLENGE_TYPE_HTTP)
                 throw new InvalidDataException("unsupported Challenge type")

@@ -647,7 +647,7 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        public void Test0121_ParseHttpChallenge()
+        public void Test0121_DecodeHttpChallenge()
         {
             using (var signer = new RS256Signer())
             {
@@ -678,7 +678,7 @@ namespace ACMESharp
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.ParseChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+                    client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
 
                     _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\120-TestAuthz-ChallengeAnswers.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeAnswers_AcmeAuthzFile, FileMode.Create))

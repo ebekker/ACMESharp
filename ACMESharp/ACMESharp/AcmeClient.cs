@@ -396,7 +396,7 @@ namespace ACMESharp
             return c;
         }
 
-        public AuthorizeChallenge ParseChallenge(AuthorizationState authzState, string challengeType)
+        public AuthorizeChallenge DecodeChallenge(AuthorizationState authzState, string challengeType)
         {
             AssertInit();
             AssertRegistration();
@@ -407,17 +407,17 @@ namespace ACMESharp
                         "no challenge found matching requested type")
                         .With("challengeType", challengeType);
 
-            var provider = ChallengeParserExtManager.GetProvider(challengeType);
+            var provider = ChallengeDecoderExtManager.GetProvider(challengeType);
             if (provider == null)
                 throw new NotSupportedException("no provider exists for requested challenge type")
                         .With("challengeType", challengeType);
 
-            using (var parser = provider.GetParser(authzState.IdentifierPart, c.ChallengePart))
+            using (var decoder = provider.GetDecoder(authzState.IdentifierPart, c.ChallengePart))
             {
-                c.Challenge = parser.Parse(authzState.IdentifierPart, c.ChallengePart, Signer);
+                c.Challenge = decoder.Decode(authzState.IdentifierPart, c.ChallengePart, Signer);
 
                 if (c.Challenge == null)
-                    throw new InvalidDataException("challenge parser produced no output");
+                    throw new InvalidDataException("challenge decoder produced no output");
             }
 
             return c;

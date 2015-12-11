@@ -9,7 +9,7 @@ using ACMESharp.Ext;
 
 namespace ACMESharp.ACME
 {
-    public interface IChallengeParserProviderInfo
+    public interface IChallengeDecoderProviderInfo
     {
         string Type
         { get; }
@@ -26,10 +26,10 @@ namespace ACMESharp.ACME
 
     [MetadataAttribute]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ChallengeParserProviderAttribute : ExportAttribute
+    public class ChallengeDecoderProviderAttribute : ExportAttribute
     {
-        public ChallengeParserProviderAttribute(string type,
-                ChallengeTypeKind supportedType) : base(typeof(IChallengeParserProvider))
+        public ChallengeDecoderProviderAttribute(string type,
+                ChallengeTypeKind supportedType) : base(typeof(IChallengeDecoderProvider))
         {
             Type = type;
             SupportedType = supportedType;
@@ -48,19 +48,19 @@ namespace ACMESharp.ACME
         { get; set; }
     }
 
-    public static class ChallengeParserExtManager
+    public static class ChallengeDecoderExtManager
     {
         private static Config _config;
 
-        public static IEnumerable<NamedInfo<IChallengeParserProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IChallengeDecoderProviderInfo>> GetProviders()
         {
             AssertInit();
             foreach (var pi in _config)
-                yield return new NamedInfo<IChallengeParserProviderInfo>(
+                yield return new NamedInfo<IChallengeDecoderProviderInfo>(
                         pi.Key, pi.Value.Metadata);
         }
 
-        public static IChallengeParserProvider GetProvider(string type,
+        public static IChallengeDecoderProvider GetProvider(string type,
             IDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
@@ -88,18 +88,18 @@ namespace ACMESharp.ACME
             _config = ExtCommon.InitExtConfig<Config>();
         }
 
-        class Config : Dictionary<string, Lazy<IChallengeParserProvider,
-                IChallengeParserProviderInfo>>, IExtDetail
+        class Config : Dictionary<string, Lazy<IChallengeDecoderProvider,
+                IChallengeDecoderProviderInfo>>, IExtDetail
         {
-            private IEnumerable<Lazy<IChallengeParserProvider,
-                    IChallengeParserProviderInfo>> _Providers;
+            private IEnumerable<Lazy<IChallengeDecoderProvider,
+                    IChallengeDecoderProviderInfo>> _Providers;
 
             public CompositionContainer CompositionContainer
             { get; set; }
 
             [ImportMany]
-            public IEnumerable<Lazy<IChallengeParserProvider,
-                    IChallengeParserProviderInfo>> Providers
+            public IEnumerable<Lazy<IChallengeDecoderProvider,
+                    IChallengeDecoderProviderInfo>> Providers
             {
                 get
                 {

@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System.Net;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
+using ACMESharp.ACME;
 using ACMESharp.JOSE;
+using ACMESharp.Messages;
+using ACMESharp.POSH.Util;
 
 namespace ACMESharp
 {
@@ -110,6 +115,22 @@ namespace ACMESharp
             //        </PublicKey>
             //      </ECDHKeyValue>
             var pubKeyXml = ecdh.PublicKey.ToXmlString();
+        }
+
+        [TestMethod]
+        public void TestChallengAnswerRequest()
+        {
+            var ansr = new DnsChallengeAnswer
+            {
+                KeyAuthorization = "TestKeyAuthz",
+            };
+            var requ = ChallengeAnswerRequest.CreateRequest(ansr);
+            var json = JsonConvert.SerializeObject(requ, Formatting.None);
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+            Assert.AreEqual(requ.Resource, dict[nameof(requ.Resource)]);
+
+            Assert.AreEqual(ansr.KeyAuthorization, dict[nameof(ansr.KeyAuthorization)]);
         }
     }
 }

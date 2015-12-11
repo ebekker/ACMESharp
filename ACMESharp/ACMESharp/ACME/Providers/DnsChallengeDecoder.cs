@@ -53,9 +53,8 @@ namespace ACMESharp.ACME.Providers
                 KeyAuthorization = keyAuthz,
             };
 
-            var c = new DnsChallenge(ca)
+            var c = new DnsChallenge(cp.Type, ca)
             {
-                Type = cp.Type,
                 Token = token,
                 RecordName = $"{AcmeProtocol.DNS_CHALLENGE_NAMEPREFIX}{ip.Value}",
                 RecordValue = signed.signature,

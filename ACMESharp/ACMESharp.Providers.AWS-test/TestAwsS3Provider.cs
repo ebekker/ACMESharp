@@ -99,9 +99,8 @@ namespace ACMESharp.Providers.AWS
             var rn = BitConverter.ToString(bn);
             var rv = BitConverter.ToString(bv);
 
-            var c = new HttpChallenge(new HttpChallengeAnswer())
+            var c = new HttpChallenge(AcmeProtocol.CHALLENGE_TYPE_HTTP, new HttpChallengeAnswer())
             {
-                Type = AcmeProtocol.CHALLENGE_TYPE_HTTP,
                 Token = "FOOBAR",
                 FileUrl = $"http://foobar.acmetesting.zyborg.io/utest/{rn}",
                 FilePath = $"/utest/{rn}",

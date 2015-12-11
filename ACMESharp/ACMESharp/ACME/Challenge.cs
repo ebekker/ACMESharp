@@ -21,29 +21,30 @@ namespace ACMESharp.ACME
 
     public abstract class Challenge
     {
-        protected Challenge(ChallengeTypeKind typeKind, ChallengeAnswer answer)
+        protected Challenge(ChallengeTypeKind typeKind, string type, ChallengeAnswer answer)
         {
             if (answer == null)
                 throw new ArgumentNullException(nameof(answer), "challenge answer must is required");
 
             TypeKind = typeKind;
+            Type = type;
             Answer = answer;
         }
 
         public ChallengeTypeKind TypeKind
         { get; private set; }
 
-        public ChallengeAnswer Answer
+        public string Type
         { get; private set; }
 
-        public string Type
-        { get; set; }
+        public ChallengeAnswer Answer
+        { get; private set; }
     }
 
     public class DnsChallenge : Challenge
     {
-        public DnsChallenge(ChallengeAnswer answer)
-            : base(ChallengeTypeKind.DNS, answer)
+        public DnsChallenge(string type, ChallengeAnswer answer)
+            : base(ChallengeTypeKind.DNS, type, answer)
         { }
 
         public string Token
@@ -58,8 +59,8 @@ namespace ACMESharp.ACME
 
     public class HttpChallenge : Challenge
     {
-        public HttpChallenge(ChallengeAnswer answer)
-            : base(ChallengeTypeKind.HTTP, answer)
+        public HttpChallenge(string type, ChallengeAnswer answer)
+            : base(ChallengeTypeKind.HTTP, type, answer)
         { }
 
         public string Token
@@ -77,8 +78,8 @@ namespace ACMESharp.ACME
 
     public class TlsSniChallenge : Challenge
     {
-        public TlsSniChallenge(ChallengeAnswer answer)
-            : base(ChallengeTypeKind.TLS_SNI, answer)
+        public TlsSniChallenge(string type, ChallengeAnswer answer)
+            : base(ChallengeTypeKind.TLS_SNI, type, answer)
         { }
 
         public string Token

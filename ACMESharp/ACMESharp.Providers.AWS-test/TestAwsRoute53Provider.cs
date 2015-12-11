@@ -99,9 +99,8 @@ namespace ACMESharp.Providers.AWS
             var rn = BitConverter.ToString(bn);
             var rv = BitConverter.ToString(bv);
 
-            var c = new DnsChallenge(new DnsChallengeAnswer())
+            var c = new DnsChallenge(AcmeProtocol.CHALLENGE_TYPE_DNS, new DnsChallengeAnswer())
             {
-                Type = AcmeProtocol.CHALLENGE_TYPE_DNS,
                 Token = "FOOBAR",
                 RecordName = $"{rn}.{_dnsConfig.DefaultDomain}",
                 RecordValue = rv,

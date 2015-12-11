@@ -10,18 +10,18 @@ namespace ACMESharp.ACME
     {
         private readonly Dictionary<string, object> _fieldValues = new Dictionary<string, object>();
 
-        protected object this[string field]
+        public object this[string field]
         {
             get { return _fieldValues[field]; }
-            set { _fieldValues[field] = value; }
+            protected set { _fieldValues[field] = value; }
         }
 
-        public IReadOnlyDictionary<string, object> ToResponseMessage()
-        {
-            return _fieldValues;
-        }
+        //public IReadOnlyDictionary<string, object> ToResponseMessage()
+        //{
+        //    return _fieldValues;
+        //}
 
-        protected IEnumerable<string> GetFields()
+        public IEnumerable<string> GetFields()
         {
             return _fieldValues.Keys;
         }

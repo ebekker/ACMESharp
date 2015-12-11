@@ -33,9 +33,8 @@ namespace ACMESharp.ACME.Providers
                 KeyAuthorization = keyAuthz,
             };
 
-            var c = new HttpChallenge(ca)
+            var c = new HttpChallenge(cp.Type, ca)
             {
-                Type = cp.Type,
                 Token = token,
                 FileUrl = url,
                 FilePath = path,

@@ -28,7 +28,8 @@ namespace ACMESharp.Vault.Util
         public IEnumerable<TEntity> Values
                 => _dictById.Values;
 
-        public int Count => _dictById.Count;
+        public int Count
+                => _dictById.Count;
 
         IEnumerable<int> IReadOnlyDictionary<int, TEntity>.Keys
         {

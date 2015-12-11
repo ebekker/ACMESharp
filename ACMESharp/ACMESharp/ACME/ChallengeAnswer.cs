@@ -8,7 +8,7 @@ namespace ACMESharp.ACME
 {
     public abstract class ChallengeAnswer
     {
-        private Dictionary<string, object> _fieldValues = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _fieldValues = new Dictionary<string, object>();
 
         protected object this[string field]
         {

@@ -245,7 +245,9 @@ namespace ACMESharp.POSH.Util
         public class IndexedDictionaryEnumerator : IDictionaryEnumerator
         {
             private Dictionary<TKey, TValue>.Enumerator _baseEnum;
+#pragma warning disable RECS0092 // Convert field to readonly
             private DictionaryEntry _Entry;
+#pragma warning restore RECS0092 // Convert field to readonly
 
             public IndexedDictionaryEnumerator(Dictionary<TKey, TValue>.Enumerator baseEnum)
             {

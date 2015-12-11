@@ -11,8 +11,8 @@ namespace ACMESharp.POSH.Util
         IReadOnlyDictionary<string, TEntity>
         where TEntity : IIdentifiable
     {
-        private IndexedDictionary<Guid, TEntity> _dictById = new IndexedDictionary<Guid, TEntity>();
-        private Dictionary<string, TEntity> _dictByAlias = new Dictionary<string, TEntity>();
+        private readonly IndexedDictionary<Guid, TEntity> _dictById = new IndexedDictionary<Guid, TEntity>();
+        private readonly Dictionary<string, TEntity> _dictByAlias = new Dictionary<string, TEntity>();
 
         public EntityDictionary()
         { }

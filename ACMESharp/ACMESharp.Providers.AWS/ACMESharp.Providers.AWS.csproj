@@ -53,6 +53,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="AwsCommonParams.cs" />
     <Compile Include="AwsRoute53ChallengeHandler.cs" />
     <Compile Include="AwsRoute53ChallengeHandlerProvider.cs" />

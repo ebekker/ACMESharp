@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ACMESharp.POSH.ProviderConfigSamples
 {
-    public class Loader
+    public static class Loader
     {
         public static Stream LoadDnsProviderConfig(string name)
         {

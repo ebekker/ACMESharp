@@ -32,11 +32,11 @@ namespace ACMESharp.POSH
                     WriteObject(v.Identifiers.Values.Select(x => new
                     {
                         Seq = seq++,
-                        Id = x.Id,
-                        Alias = x.Alias,
-                        Label = x.Label,
-                        Dns = x.Dns,
-                        Status = x.Authorization.Status
+                        x.Id,
+                        x.Alias,
+                        x.Label,
+                        x.Dns,
+                        x.Authorization.Status
                     }), true);
                 }
                 else

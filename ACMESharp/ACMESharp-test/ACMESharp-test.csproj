@@ -69,6 +69,9 @@
     <Compile Include="..\shared\SharedAssemblyVersionInfo.cs">
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="AcmeClientUnitTests.cs" />
     <Compile Include="CertificateProviderTests.cs" />
     <Compile Include="ChallengeHandlerTests.cs" />

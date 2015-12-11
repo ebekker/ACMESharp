@@ -62,6 +62,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="config\HttpConfig.cs" />
     <Compile Include="config\DnsConfig.cs" />
     <Compile Include="TestAwsS3Provider.cs" />

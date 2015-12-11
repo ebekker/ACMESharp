@@ -21,7 +21,7 @@ namespace ACMESharp.ACME
 
     public abstract class Challenge
     {
-        public Challenge(ChallengeTypeKind typeKind, ChallengeAnswer answer)
+        protected Challenge(ChallengeTypeKind typeKind, ChallengeAnswer answer)
         {
             if (answer == null)
                 throw new ArgumentNullException(nameof(answer), "challenge answer must is required");

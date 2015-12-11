@@ -66,7 +66,7 @@ namespace ACMESharp
         public class Foo
         {
             [JsonExtensionData]
-            private IDictionary<string, JToken> _expando;
+            private readonly IDictionary<string, JToken> _expando = new Dictionary<string, JToken>();
              
             public JToken this[string name]
             {

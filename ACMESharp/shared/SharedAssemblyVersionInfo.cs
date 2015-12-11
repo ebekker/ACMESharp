@@ -18,7 +18,7 @@
 [assembly: AssemblyInformationalVersion(ASMINFO.VERSION)]
 
 // ReSharper disable once InconsistentNaming
-internal class ASMINFO
+internal static class ASMINFO
 {
 
     // DON'T FORGET TO UPDATE APPVEYOR.YML

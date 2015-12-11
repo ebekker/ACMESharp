@@ -19,7 +19,7 @@ namespace ACMESharp.PKI
         private const string DEFAULT_PROVIDER_NAME = "";
         private static readonly Type[] PROVIDER_CTOR_SIG = { typeof(IDictionary<string, string>) };
 
-        private static Dictionary<string, Type> _providers = new Dictionary<string, Type>
+        private static readonly Dictionary<string, Type> _providers = new Dictionary<string, Type>
         {
             { DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslLibProvider) },
         };

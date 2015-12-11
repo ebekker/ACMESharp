@@ -48,33 +48,35 @@ namespace ACMESharp.ACME.Providers
             var priorS = _stream;
             var priorW = _writer;
 
-            if (STD_OUT == path)
+            switch (path)
             {
-                _writer = Console.Out;
-                _stream = null;
-            }
-            else if (STD_ERR == path)
-            {
-                _writer = Console.Error;
-                _stream = null;
-            }
-            else if (STD_DBG == path)
-            {
-                _writer = DEBUG_WRITER;
-                _stream = null;
-            }
-            else
-            {
-                _writer = null;
+                case STD_OUT:
+                    _writer = Console.Out;
+                    _stream = null;
+                    break;
 
-                if (append)
-                    _stream = new FileStream(path, FileMode.Append);
-                else if (overwrite)
-                    _stream = new FileStream(path, FileMode.Create);
-                else
-                    _stream = new FileStream(path, FileMode.CreateNew);
+                case STD_ERR:
+                    _writer = Console.Error;
+                    _stream = null;
+                    break;
 
-                _writer = new StreamWriter(_stream);
+                case STD_DBG:
+                    _writer = DEBUG_WRITER;
+                    _stream = null;
+                    break;
+
+                default:
+                    _writer = null;
+
+                    if (append)
+                        _stream = new FileStream(path, FileMode.Append);
+                    else if (overwrite)
+                        _stream = new FileStream(path, FileMode.Create);
+                    else
+                        _stream = new FileStream(path, FileMode.CreateNew);
+
+                    _writer = new StreamWriter(_stream);
+                    break;
             }
 
             if (priorS != null)

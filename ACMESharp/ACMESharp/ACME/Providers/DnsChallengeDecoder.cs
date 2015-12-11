@@ -28,11 +28,12 @@ namespace ACMESharp.ACME.Providers
             var keyAuthzDig = JwsHelper.ComputeKeyAuthorizationDigest(signer, token);
 
 
-                var resp = new
-                {
-                    type = AcmeProtocol.CHALLENGE_TYPE_DNS,
-                    token = token,
-                };
+            var resp = new
+            {
+                type = AcmeProtocol.CHALLENGE_TYPE_DNS,
+                token,
+            };
+
             var json = JsonConvert.SerializeObject(resp);
             var hdrs = new { alg = signer.JwsAlg, jwk = signer.ExportJwk() };
             var signed = JwsHelper.SignFlatJsonAsObject(

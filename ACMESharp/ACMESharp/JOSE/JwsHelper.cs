@@ -14,7 +14,7 @@ namespace ACMESharp.JOSE
     /// JWS JSON Serialization</see> format, and so this helper class' scope and
     /// implelmentation of JWS is limited to those features required for ACME.
     /// </remarks>
-    public class JwsHelper
+    public static class JwsHelper
     {
         /*
          *  In the JWS JSON Serialization, a JWS is represented as a JSON object

@@ -342,7 +342,8 @@ namespace ACMESharp
 
             var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
             if (c == null)
-                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+                throw new ArgumentOutOfRangeException(nameof(type), "no challenge found matching requested type")
+                        .With(nameof(type), type);
 
             var requUri = new Uri(c.Uri);
             if (useRootUrl)

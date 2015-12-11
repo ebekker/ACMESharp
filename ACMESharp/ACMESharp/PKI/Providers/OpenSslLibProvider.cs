@@ -7,7 +7,7 @@ namespace ACMESharp.PKI.Providers
     public class OpenSslLibProvider : CertificateProvider
     {
         private static Type _cpType;
-        private CertificateProvider _cp;
+        private readonly CertificateProvider _cp;
 
         static OpenSslLibProvider()
         {

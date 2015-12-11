@@ -8,7 +8,7 @@ namespace ACMESharp.POSH.Util
         IReadOnlyDictionary<string, TValue>,
         IReadOnlyDictionary<int, TValue>
     {
-        private IndexedDictionary<string, TValue> _dict = new IndexedDictionary<string, TValue>();
+        private readonly IndexedDictionary<string, TValue> _dict = new IndexedDictionary<string, TValue>();
 
         public OrderedNameMap()
         { }

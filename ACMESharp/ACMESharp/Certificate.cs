@@ -8,7 +8,7 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace ACMESharp
 {
-    internal class Certificate
+    internal static class Certificate
     {
         public static byte[] CreateSelfSignCertificatePfx(
             string x500,
@@ -79,13 +79,13 @@ namespace ACMESharp
             SystemTime endSystemTime = ToSystemTime(endTime);
             string containerName = Guid.NewGuid().ToString();
 
-            GCHandle dataHandle = new GCHandle();
-            IntPtr providerContext = IntPtr.Zero;
-            IntPtr cryptKey = IntPtr.Zero;
-            IntPtr certContext = IntPtr.Zero;
-            IntPtr certStore = IntPtr.Zero;
-            IntPtr storeCertContext = IntPtr.Zero;
-            IntPtr passwordPtr = IntPtr.Zero;
+            var dataHandle = new GCHandle();
+            var providerContext = IntPtr.Zero;
+            var cryptKey = IntPtr.Zero;
+            var certContext = IntPtr.Zero;
+            var certStore = IntPtr.Zero;
+            var storeCertContext = IntPtr.Zero;
+            var passwordPtr = IntPtr.Zero;
             RuntimeHelpers.PrepareConstrainedRegions();
             try
             {
@@ -142,11 +142,11 @@ namespace ACMESharp
                 dataHandle.Free();
 
                 dataHandle = GCHandle.Alloc(nameData, GCHandleType.Pinned);
-                CryptoApiBlob nameBlob = new CryptoApiBlob(
+                var nameBlob = new CryptoApiBlob(
                     nameData.Length,
                     dataHandle.AddrOfPinnedObject());
 
-                CryptKeyProviderInformation kpi = new CryptKeyProviderInformation();
+                var kpi = new CryptKeyProviderInformation();
                 kpi.ContainerName = containerName;
                 kpi.ProviderType = 1; // PROV_RSA_FULL
                 kpi.KeySpec = 1; // AT_KEYEXCHANGE
@@ -188,7 +188,7 @@ namespace ACMESharp
                     passwordPtr = Marshal.SecureStringToCoTaskMemUnicode(password);
                 }
 
-                CryptoApiBlob pfxBlob = new CryptoApiBlob();
+                var pfxBlob = new CryptoApiBlob();
                 Check(NativeMethods.PFXExportCertStoreEx(
                     certStore,
                     ref pfxBlob,

@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="Model\CertificateInfo.cs" />
     <Compile Include="Model\IdentifierInfo.cs" />

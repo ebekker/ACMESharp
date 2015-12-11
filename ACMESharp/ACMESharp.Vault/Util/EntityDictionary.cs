@@ -10,8 +10,8 @@ namespace ACMESharp.Vault.Util
         IReadOnlyDictionary<string, TEntity>
         where TEntity : IIdentifiable
     {
-        private IndexedDictionary<Guid, TEntity> _dictById = new IndexedDictionary<Guid, TEntity>();
-        private Dictionary<string, TEntity> _dictByAlias = new Dictionary<string, TEntity>();
+        private readonly IndexedDictionary<Guid, TEntity> _dictById = new IndexedDictionary<Guid, TEntity>();
+        private readonly Dictionary<string, TEntity> _dictByAlias = new Dictionary<string, TEntity>();
 
         public EntityDictionary()
         { }
@@ -23,69 +23,33 @@ namespace ACMESharp.Vault.Util
         }
 
         public IEnumerable<Guid> Keys
-        {
-            get
-            {
-                return _dictById.Keys;
-            }
-        }
+                => _dictById.Keys;
 
         public IEnumerable<TEntity> Values
-        {
-            get
-            {
-                return _dictById.Values;
-            }
-        }
+                => _dictById.Values;
 
-        public int Count
-        {
-            get
-            {
-                return _dictById.Count;
-            }
-        }
+        public int Count => _dictById.Count;
 
         IEnumerable<int> IReadOnlyDictionary<int, TEntity>.Keys
         {
             get
             {
-                for (int i = 0; i < _dictById.Count; ++i)
+                for (var i = 0; i < _dictById.Count; ++i)
                     yield return i;
             }
         }
 
         IEnumerable<string> IReadOnlyDictionary<string, TEntity>.Keys
-        {
-            get
-            {
-                return _dictByAlias.Keys;
-            }
-        }
+                => _dictByAlias.Keys;
 
         public TEntity this[string key]
-        {
-            get
-            {
-                return _dictByAlias[key];
-            }
-        }
+                => _dictByAlias[key];
 
         public TEntity this[int key]
-        {
-            get
-            {
-                return (TEntity)_dictById[key];
-            }
-        }
+                => (TEntity)_dictById[key];
 
         public TEntity this[Guid key]
-        {
-            get
-            {
-                return _dictById[key];
-            }
-        }
+                => _dictById[key];
 
         public void Add(TEntity item)
         {

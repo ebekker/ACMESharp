@@ -370,28 +370,18 @@ namespace ACMESharp
             switch (type)
             {
                 case AcmeProtocol.CHALLENGE_TYPE_DNS:
-                    c.ChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
+                    c.OldChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
                     c.ChallengeAnswerMessage = new AnswerDnsChallengeRequest
                     {
-                        ClientPublicKey = Signer.ExportJwk(),
-                        Validation = new
-                        {
-                            header = new { alg = Signer.JwsAlg },
-                            payload = JwsHelper.Base64UrlEncode(JsonConvert.SerializeObject(new
-                            {
-                                type = type,
-                                token = c.Token
-                            })),
-                            signature = c.ChallengeAnswer.Value,
-                        }
+                        KeyAuthorization = c.OldChallengeAnswer.Value,
                     };
                     break;
 
                 case AcmeProtocol.CHALLENGE_TYPE_HTTP:
-                    c.ChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer);
+                    c.OldChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer);
                     c.ChallengeAnswerMessage = new AnswerHttpChallengeRequest
                     {
-                        KeyAuthorization = c.ChallengeAnswer.Value,
+                        KeyAuthorization = c.OldChallengeAnswer.Value,
                     };
                     break;
 
@@ -425,6 +415,7 @@ namespace ACMESharp
             using (var parser = provider.GetParser(authzState.IdentifierPart, c.ChallengePart))
             {
                 c.Challenge = parser.Parse(authzState.IdentifierPart, c.ChallengePart, Signer);
+
                 if (c.Challenge == null)
                     throw new InvalidDataException("challenge parser produced no output");
             }
@@ -471,7 +462,7 @@ namespace ACMESharp
             if (c == null)
                 throw new ArgumentException("no challenge found matching requested type");
 
-            if (c.ChallengeAnswer.Key == null || c.ChallengeAnswer.Value == null || c.ChallengeAnswerMessage == null)
+            if (c.OldChallengeAnswer.Key == null || c.OldChallengeAnswer.Value == null || c.ChallengeAnswerMessage == null)
                 throw new InvalidOperationException("challenge answer has not been generated");
 
             var requUri = new Uri(c.Uri);

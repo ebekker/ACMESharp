@@ -27,7 +27,7 @@ namespace ACMESharp
         public string Status
         { get; set; }
 
-        public KeyValuePair<string, string> ChallengeAnswer
+        public KeyValuePair<string, string> OldChallengeAnswer
         { get; set; }
 
         public object ChallengeAnswerMessage

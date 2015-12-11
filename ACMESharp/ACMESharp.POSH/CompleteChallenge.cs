@@ -111,8 +111,8 @@ namespace ACMESharp.POSH
                         if (string.IsNullOrEmpty(pc.DnsProvider))
                             throw new InvalidOperationException("Referenced Provider Configuration does not support the selected Challenge");
 
-                        var dnsName = challenge.ChallengeAnswer.Key;
-                        var dnsValue = Regex.Replace(challenge.ChallengeAnswer.Value, "\\s", "");
+                        var dnsName = challenge.OldChallengeAnswer.Key;
+                        var dnsValue = Regex.Replace(challenge.OldChallengeAnswer.Value, "\\s", "");
                         var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
 
                         using (var s = vp.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
@@ -127,8 +127,8 @@ namespace ACMESharp.POSH
                         if (string.IsNullOrEmpty(pc.WebServerProvider))
                             throw new InvalidOperationException("Referenced Provider Configuration does not support the selected Challenge");
 
-                        var wsFilePath = challenge.ChallengeAnswer.Key;
-                        var wsFileBody = challenge.ChallengeAnswer.Value;
+                        var wsFilePath = challenge.OldChallengeAnswer.Key;
+                        var wsFileBody = challenge.OldChallengeAnswer.Value;
                         var wsFileUrl = new Uri($"http://{authzState.Identifier}/{wsFilePath}");
 
 

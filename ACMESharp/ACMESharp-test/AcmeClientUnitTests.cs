@@ -730,8 +730,8 @@ namespace ACMESharp
         //                authzState.Save(fs);
         //            }
         //
-        //            var dnsName = authzChallenge.ChallengeAnswer.Key;
-        //            var dnsValue = Regex.Replace(authzChallenge.ChallengeAnswer.Value, "\\s", "");
+        //            var dnsName = authzChallenge.OldChallengeAnswer.Key;
+        //            var dnsValue = Regex.Replace(authzChallenge.OldChallengeAnswer.Value, "\\s", "");
         //            var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
         //
         //            var dnsInfo = DnsInfo.Load(File.ReadAllText("config\\dnsInfo.json"));
@@ -836,8 +836,8 @@ namespace ACMESharp
                         authzState.Save(fs);
                     }
 
-                    var wsFilePath = authzChallenge.ChallengeAnswer.Key;
-                    var wsFileBody = authzChallenge.ChallengeAnswer.Value;
+                    var wsFilePath = authzChallenge.OldChallengeAnswer.Key;
+                    var wsFileBody = authzChallenge.OldChallengeAnswer.Value;
 
                     var wsInfo = WebServerInfo.Load(File.ReadAllText("config\\webServerInfo.json"));
                     using (var s = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))

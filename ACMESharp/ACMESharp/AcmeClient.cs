@@ -163,7 +163,7 @@ namespace ACMESharp
                             "Conflict due to previously registered public key", resp);
                 else if (resp.IsError)
                     throw new AcmeWebException(resp.Error as WebException,
-                            "Unexpected error", resp);
+                            "Unexpected error"/* + resp.StatusCode + ", " + resp.ToString()*/, resp);
             }
 
             var regUri = resp.Headers[AcmeProtocol.HEADER_LOCATION];
@@ -731,6 +731,17 @@ namespace ACMESharp
 
             public AcmeHttpResponse Response
             { get; private set; }
+
+            public override string Message
+            {
+                get
+                {
+                    if (Response != null)
+                        return base.Message + "\n +Response from server:\n\t+ Code: " + Response.StatusCode.ToString() + "\n\t+ Content: " + Response.ContentAsString;
+                    else
+                        return base.Message + "\n +No response from server";
+                }
+            }
         }
 
         public class AcmeProtocolException : AcmeException
@@ -746,6 +757,17 @@ namespace ACMESharp
 
             public AcmeHttpResponse Response
             { get; private set; }
+
+            public override string Message
+            {
+                get
+                {
+                    if (Response != null)
+                        return base.Message + "\n +Response from server:\n\t+ Code: " + Response.StatusCode.ToString() + "\n\t+ Content: " + Response.ContentAsString;
+                    else
+                        return base.Message + "\n +No response from server";
+                }
+            }
         }
 
 

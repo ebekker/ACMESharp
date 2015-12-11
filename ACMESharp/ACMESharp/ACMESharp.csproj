@@ -77,6 +77,7 @@
     <Compile Include="ACME\Challenge.cs" />
     <Compile Include="ACME\ChallengeHandlerExtManager.cs" />
     <Compile Include="ACME\ChallengeParserExtManager.cs" />
+    <Compile Include="ACME\ChallengeAnswer.cs" />
     <Compile Include="ACME\Providers\DnsChallengeParser.cs" />
     <Compile Include="ACME\IChallengeHandler.cs" />
     <Compile Include="ACME\IChallengeParser.cs" />

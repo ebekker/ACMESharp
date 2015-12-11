@@ -48,10 +48,10 @@ namespace ACMESharp.Providers.AWS
         {
             var p = GetProvider();
 
-            Assert.IsTrue(p.IsSupported(new HttpChallenge()));
-            Assert.IsFalse(p.IsSupported(new DnsChallenge()));
-            Assert.IsFalse(p.IsSupported(new TlsSniChallenge()));
-            Assert.IsFalse(p.IsSupported(new FakeChallenge()));
+            Assert.IsTrue(p.IsSupported(TestCommon.HTTP_CHALLENGE));
+            Assert.IsFalse(p.IsSupported(TestCommon.DNS_CHALLENGE));
+            Assert.IsFalse(p.IsSupported(TestCommon.TLS_SNI_CHALLENGE));
+            Assert.IsFalse(p.IsSupported(TestCommon.FAKE_CHALLENGE));
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace ACMESharp.Providers.AWS
         public void TestRequiredParams()
         {
             var p = GetProvider();
-            var c = new HttpChallenge();
+            var c = TestCommon.HTTP_CHALLENGE;
             var h = p.GetHandler(c, new Dictionary<string, object>());
         }
 
@@ -67,7 +67,7 @@ namespace ACMESharp.Providers.AWS
         public void TestHandlerLifetime()
         {
             var p = GetProvider();
-            var c = new HttpChallenge();
+            var c = TestCommon.HTTP_CHALLENGE;
             var h = p.GetHandler(c, _httpConfig);
 
             Assert.IsNotNull(h);
@@ -81,7 +81,7 @@ namespace ACMESharp.Providers.AWS
         public void TestHandlerDisposedAccess()
         {
             var p = GetProvider();
-            var c = new HttpChallenge();
+            var c = TestCommon.HTTP_CHALLENGE;
             var h = p.GetHandler(c, _httpConfig);
 
             h.Dispose();
@@ -99,9 +99,8 @@ namespace ACMESharp.Providers.AWS
             var rn = BitConverter.ToString(bn);
             var rv = BitConverter.ToString(bv);
 
-            var c = new HttpChallenge
+            var c = new HttpChallenge(new HttpChallengeAnswer())
             {
-                TypeKind = ChallengeTypeKind.HTTP,
                 Type = AcmeProtocol.CHALLENGE_TYPE_HTTP,
                 Token = "FOOBAR",
                 FileUrl = $"http://foobar.acmetesting.zyborg.io/utest/{rn}",
@@ -146,8 +145,5 @@ namespace ACMESharp.Providers.AWS
                 Assert.IsNull(s3Obj);
             }
         }
-
-        class FakeChallenge : Challenge
-        { }
     }
 }

@@ -67,6 +67,7 @@
     <Compile Include="TestAwsS3Provider.cs" />
     <Compile Include="TestAwsRoute53Provider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCommon.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACMESharp.Providers.AWS\ACMESharp.Providers.AWS.csproj">

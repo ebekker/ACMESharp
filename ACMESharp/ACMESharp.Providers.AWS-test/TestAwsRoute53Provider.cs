@@ -48,10 +48,10 @@ namespace ACMESharp.Providers.AWS
         {
             var p = GetProvider();
 
-            Assert.IsTrue(p.IsSupported(new DnsChallenge()));
-            Assert.IsFalse(p.IsSupported(new HttpChallenge()));
-            Assert.IsFalse(p.IsSupported(new TlsSniChallenge()));
-            Assert.IsFalse(p.IsSupported(new FakeChallenge()));
+            Assert.IsTrue(p.IsSupported(TestCommon.DNS_CHALLENGE));
+            Assert.IsFalse(p.IsSupported(TestCommon.HTTP_CHALLENGE));
+            Assert.IsFalse(p.IsSupported(TestCommon.TLS_SNI_CHALLENGE));
+            Assert.IsFalse(p.IsSupported(TestCommon.FAKE_CHALLENGE));
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace ACMESharp.Providers.AWS
         public void TestRequiredParams()
         {
             var p = GetProvider();
-            var c = new DnsChallenge();
+            var c = TestCommon.DNS_CHALLENGE;
             var h = p.GetHandler(c, new Dictionary<string, object>());
         }
 
@@ -67,7 +67,7 @@ namespace ACMESharp.Providers.AWS
         public void TestHandlerLifetime()
         {
             var p = GetProvider();
-            var c = new DnsChallenge();
+            var c = TestCommon.DNS_CHALLENGE;
             var h = p.GetHandler(c, _dnsConfig);
 
             Assert.IsNotNull(h);
@@ -81,7 +81,7 @@ namespace ACMESharp.Providers.AWS
         public void TestHandlerDisposedAccess()
         {
             var p = GetProvider();
-            var c = new DnsChallenge();
+            var c = TestCommon.DNS_CHALLENGE;
             var h = p.GetHandler(c, _dnsConfig);
 
             h.Dispose();
@@ -99,9 +99,8 @@ namespace ACMESharp.Providers.AWS
             var rn = BitConverter.ToString(bn);
             var rv = BitConverter.ToString(bv);
 
-            var c = new DnsChallenge
+            var c = new DnsChallenge(new DnsChallengeAnswer())
             {
-                TypeKind = ChallengeTypeKind.DNS,
                 Type = AcmeProtocol.CHALLENGE_TYPE_DNS,
                 Token = "FOOBAR",
                 RecordName = $"{rn}.{_dnsConfig.DefaultDomain}",
@@ -146,8 +145,5 @@ namespace ACMESharp.Providers.AWS
                 Assert.IsNull(rrFirst);
             }
         }
-
-        class FakeChallenge : Challenge
-        { }
     }
 }

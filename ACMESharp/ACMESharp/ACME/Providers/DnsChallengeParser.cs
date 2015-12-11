@@ -21,11 +21,18 @@ namespace ACMESharp.ACME.Providers
             //var token = (string)cp["token"];
             var token = cp.Token;
 
-            var resp = new
-            {
-                type = AcmeProtocol.CHALLENGE_TYPE_DNS,
-                token = token,
-            };
+            // This response calculation is described in:
+            //    https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.5
+
+            var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, token);
+            var keyAuthzDig = JwsHelper.ComputeKeyAuthorizationDigest(signer, token);
+
+
+                var resp = new
+                {
+                    type = AcmeProtocol.CHALLENGE_TYPE_DNS,
+                    token = token,
+                };
             var json = JsonConvert.SerializeObject(resp);
             var hdrs = new { alg = signer.JwsAlg, jwk = signer.ExportJwk() };
             var signed = JwsHelper.SignFlatJsonAsObject(
@@ -40,9 +47,13 @@ namespace ACMESharp.ACME.Providers
                     "(.{100,100})", "$1\r\n");
             */
 
-            var c = new DnsChallenge
+            var ca = new DnsChallengeAnswer
             {
-                TypeKind = ChallengeTypeKind.DNS,
+                KeyAuthorization = keyAuthz,
+            };
+
+            var c = new DnsChallenge(ca)
+            {
                 Type = cp.Type,
                 Token = token,
                 RecordName = $"{AcmeProtocol.DNS_CHALLENGE_NAMEPREFIX}{ip.Value}",

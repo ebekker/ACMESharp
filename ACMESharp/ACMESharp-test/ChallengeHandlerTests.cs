@@ -11,18 +11,18 @@ namespace ACMESharp
     [TestClass]
     public class ChallengeHandlerTests
     {
-        private static readonly Challenge DNS_CHALLENGE = new DnsChallenge
+        private static readonly Challenge DNS_CHALLENGE = new DnsChallenge(
+                new DnsChallengeAnswer())
         {
-            TypeKind = ChallengeTypeKind.DNS,
             Type = AcmeProtocol.CHALLENGE_TYPE_DNS,
             Token = "FOOBAR",
             RecordName = "acmetest.example.com",
             RecordValue = "0123456789+123456789+123456789+123456789+123456789"
         };
 
-        private static readonly Challenge HTTP_CHALLENGE = new HttpChallenge
+        private static readonly Challenge HTTP_CHALLENGE = new HttpChallenge(
+                new HttpChallengeAnswer())
         {
-            TypeKind = ChallengeTypeKind.HTTP,
             Type = AcmeProtocol.CHALLENGE_TYPE_HTTP,
             Token = "FOOBAR",
             FileUrl = "http://acmetest.example.com/utest/ABCDEF",

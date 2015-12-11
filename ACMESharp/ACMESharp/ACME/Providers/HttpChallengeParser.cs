@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using ACMESharp.JOSE;
 using ACMESharp.Messages;
 using ACMESharp.Util;
@@ -25,13 +20,21 @@ namespace ACMESharp.ACME.Providers
             //var token = (string)cp["token"];
             var token = cp.Token;
 
+            // This response calculation is described in:
+            //    https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.2
+
             var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, token);
             var path = $"{AcmeProtocol.HTTP_CHALLENGE_PATHPREFIX}{token}";
             var url = $"http://{ip.Value}/{path}";
 
-            var c = new HttpChallenge
+
+            var ca = new HttpChallengeAnswer
             {
-                TypeKind = ChallengeTypeKind.HTTP,
+                KeyAuthorization = keyAuthz,
+            };
+
+            var c = new HttpChallenge(ca)
+            {
                 Type = cp.Type,
                 Token = token,
                 FileUrl = url,

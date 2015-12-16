@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Management.Automation;
+using ACMESharp.Util;
 
 namespace ACMESharp.POSH
 {
@@ -51,20 +52,22 @@ namespace ACMESharp.POSH
 
                     // Copy out the asset to a temp file for editing
                     var pcAsset = vp.GetAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
-                    var temp = Path.GetTempFileName();
-                    using (var s = vp.LoadAsset(pcAsset))
+                    using (var temp = new TemporaryFile())
                     {
-                        using (var fs = new FileStream(temp, FileMode.Create))
+                        using (var s = vp.LoadAsset(pcAsset))
                         {
-                            s.CopyTo(fs);
+                            using (var fs = new FileStream(temp.FileName, FileMode.Create))
+                            {
+                                s.CopyTo(fs);
+                            }
                         }
-                    }
-                    NewProviderConfig.EditFile(temp, EditWith);
+                        NewProviderConfig.EditFile(temp.FileName, EditWith);
 
-                    using (Stream fs = new FileStream(temp, FileMode.Open),
+                        using (Stream fs = new FileStream(temp.FileName, FileMode.Open),
                             assetStream = vp.SaveAsset(pcAsset))
-                    {
-                        fs.CopyTo(assetStream);
+                        {
+                            fs.CopyTo(assetStream);
+                        }
                     }
                 }
             }

@@ -402,8 +402,8 @@ namespace ACMESharp
             AssertInit();
             AssertRegistration();
 
-            var c = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
-            if (c == null)
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
+            if (authzChallenge == null)
                 throw new ArgumentOutOfRangeException(nameof(challengeType),
                         "no challenge found matching requested type")
                         .With("challengeType", challengeType);
@@ -413,25 +413,32 @@ namespace ACMESharp
                 throw new NotSupportedException("no provider exists for requested challenge type")
                         .With("challengeType", challengeType);
 
-            using (var decoder = provider.GetDecoder(authzState.IdentifierPart, c.ChallengePart))
+            using (var decoder = provider.GetDecoder(authzState.IdentifierPart, authzChallenge.ChallengePart))
             {
-                c.Challenge = decoder.Decode(authzState.IdentifierPart, c.ChallengePart, Signer);
+                authzChallenge.Challenge = decoder.Decode(authzState.IdentifierPart, authzChallenge.ChallengePart, Signer);
 
-                if (c.Challenge == null)
+                if (authzChallenge.Challenge == null)
                     throw new InvalidDataException("challenge decoder produced no output");
             }
 
-            return c;
+            return authzChallenge;
         }
 
         public AuthorizeChallenge HandleChallenge(AuthorizationState authzState,
-                AuthorizeChallenge authzChallenge,
-                string handlerName, IDictionary<string, object> handlerParams)
+                string challengeType,
+                string handlerName, IDictionary<string, object> handlerParams,
+                bool cleanUp = false)
         {
             var provider = ChallengeHandlerExtManager.GetProvider(handlerName);
             if (provider == null)
                 throw new InvalidOperationException("unable to resolve Challenge Handler provider")
                         .With("handlerName", handlerName);
+
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
+            if (authzChallenge == null)
+                throw new ArgumentOutOfRangeException(nameof(challengeType),
+                        "no challenge found matching requested type")
+                        .With("challengeType", challengeType);
 
             if (!provider.IsSupported(authzChallenge.Challenge))
                 throw new InvalidOperationException("Challenge Handler does not support given Challenge")
@@ -446,31 +453,43 @@ namespace ACMESharp
 
             authzChallenge.HandlerName = handlerName;
 
-            handler.Handle(authzChallenge.Challenge);
+            if (cleanUp)
+            {
+                handler.CleanUp(authzChallenge.Challenge);
+                authzChallenge.HandlerCleanUpDate = DateTime.Now;
+            }
+            else
+            {
+                handler.Handle(authzChallenge.Challenge);
+                authzChallenge.HandlerHandleDate = DateTime.Now;
+            }
+
             handler.Dispose();
-            authzChallenge.HandlerHandleDate = DateTime.Now;
 
             return authzChallenge;
         }
 
-        public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState,
+        public AuthorizeChallenge SubmitChallengeAnswer(AuthorizationState authzState,
                 string type, bool useRootUrl = false)
         {
             AssertInit();
             AssertRegistration();
 
-            var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
-            if (c == null)
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == type);
+            if (authzChallenge == null)
                 throw new ArgumentException("no challenge found matching requested type");
 
-            if (c.OldChallengeAnswer.Key == null || c.OldChallengeAnswer.Value == null || c.ChallengeAnswerMessage == null)
+            if (authzChallenge.Challenge == null)
+                throw new InvalidOperationException("challenge has not been decoded");
+            if (authzChallenge.Challenge.Answer == null)
                 throw new InvalidOperationException("challenge answer has not been generated");
 
-            var requUri = new Uri(c.Uri);
+            var requUri = new Uri(authzChallenge.Uri);
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var resp = RequestHttpPost(requUri, c.ChallengeAnswerMessage);
+            var requ = ChallengeAnswerRequest.CreateRequest(authzChallenge.Challenge.Answer);
+            var resp = RequestHttpPost(requUri, requ);
 
             if (resp.IsError)
             {
@@ -478,7 +497,42 @@ namespace ACMESharp
                         "Unexpected error", resp);
             }
 
-            return c;
+            authzChallenge.SubmitResponse = resp;
+            authzChallenge.SubmitDate = DateTime.Now;
+
+            return authzChallenge;
+        }
+
+        public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState,
+                string challengeType, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
+            if (authzChallenge == null)
+                throw new ArgumentException("no challenge found matching requested type");
+
+            if (authzChallenge.OldChallengeAnswer.Key == null
+                    || authzChallenge.OldChallengeAnswer.Value == null
+                    || authzChallenge.ChallengeAnswerMessage == null)
+                throw new InvalidOperationException("challenge answer has not been generated");
+
+            var requUri = new Uri(authzChallenge.Uri);
+            if (useRootUrl)
+                requUri = new Uri(RootUrl, requUri.PathAndQuery);
+
+            var resp = RequestHttpPost(requUri, authzChallenge.ChallengeAnswerMessage);
+
+            if (resp.IsError)
+            {
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+            }
+
+            authzChallenge.HandlerHandleDate = DateTime.Now;
+
+            return authzChallenge;
         }
 
         public CertificateRequest RequestCertificate(string csrContent)

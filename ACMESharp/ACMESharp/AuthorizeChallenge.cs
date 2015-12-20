@@ -42,6 +42,12 @@ namespace ACMESharp
         public DateTime? HandlerCleanUpDate
         { get; set; }
 
+        public DateTime? SubmitDate
+        { get; set; }
+
+        public object SubmitResponse
+        { get; set; }
+
         //public object ValidationRecord
         //{ get; set; }
 

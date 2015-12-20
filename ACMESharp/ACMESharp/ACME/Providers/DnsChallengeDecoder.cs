@@ -27,27 +27,6 @@ namespace ACMESharp.ACME.Providers
             var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, token);
             var keyAuthzDig = JwsHelper.ComputeKeyAuthorizationDigest(signer, token);
 
-
-            var resp = new
-            {
-                type = AcmeProtocol.CHALLENGE_TYPE_DNS,
-                token,
-            };
-
-            var json = JsonConvert.SerializeObject(resp);
-            var hdrs = new { alg = signer.JwsAlg, jwk = signer.ExportJwk() };
-            var signed = JwsHelper.SignFlatJsonAsObject(
-                signer.Sign, json, unprotectedHeaders: hdrs);
-
-            /*
-            // NO LONGER DO THIS BY DEFAULT!
-            // We format it as a set of lines broken on 100-character boundaries to make it
-            // easier to copy and put into a DNS TXT RR which normally have a 255-char limit
-            // so this result may need to be broken up into multiple smaller TXT RR entries
-            var sigFormatted = Regex.Replace(signed.signature,
-                    "(.{100,100})", "$1\r\n");
-            */
-
             var ca = new DnsChallengeAnswer
             {
                 KeyAuthorization = keyAuthz,
@@ -57,7 +36,7 @@ namespace ACMESharp.ACME.Providers
             {
                 Token = token,
                 RecordName = $"{AcmeProtocol.DNS_CHALLENGE_NAMEPREFIX}{ip.Value}",
-                RecordValue = signed.signature,
+                RecordValue = keyAuthzDig,
             };
 
             return c;

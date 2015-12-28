@@ -16,3 +16,4 @@ secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\webServerInfo.json.enc
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp.Providers.AWS-test\config\dnsConfig.json.enc
+secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp.Providers.AWS-test\config\httpConfig.json.enc

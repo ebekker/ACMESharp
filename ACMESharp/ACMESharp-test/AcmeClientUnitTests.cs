@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using ACMESharp.ACME;
+using ACMESharp.DNS;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
 using ACMESharp.Providers.AWS;
@@ -51,6 +52,8 @@ namespace ACMESharp
         private static string _testAuthzChallengeDnsRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\110-TestAuthz-DnsChallengeRefreshed.acmeAuthz";
         private static string _testAuthzChallengeHttpRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\111-TestAuthz-HttpChallengeRefreshed.acmeAuthz";
         private static string _testAuthzChallengeAnswers_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\120-TestAuthz-ChallengeAnswers.acmeAuthz";
+        private static string _testAuthzChallengeDnsAnswers_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\121-TestAuthz-DnsChallengeAnswers.acmeAuthz";
+        private static string _testAuthzChallengeHttpAnswers_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\122-TestAuthz-HttpChallengeAnswers.acmeAuthz";
         private static string _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\130-TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
         private static string _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\131-TestAuthz-DnsChallengeAnswered.acmeAuthz";
         private static string _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\140-TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
@@ -603,6 +606,7 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
+        [Ignore]
         public void Test0120_GenerateChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -636,7 +640,7 @@ namespace ACMESharp
 
                     client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
 
-                    _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\120-TestAuthz-ChallengeAnswers.acmeAuthz";
+                    _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\121-TestAuthz-ChallengeAnswers.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeAnswers_AcmeAuthzFile, FileMode.Create))
                     {
                         authzState.Save(fs);
@@ -647,7 +651,97 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        public void Test0121_DecodeHttpChallenge()
+        public void Test0121_DecodeDnsChallenge()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0121_DecodeDnsChallenge)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+
+                    _testAuthzChallengeDnsAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\121-TestAuthz-DnsChallengeAnswers.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeDnsAnswers_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        public void Test0122_DecodeHttpChallenge()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0122_DecodeHttpChallenge)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+
+                    _testAuthzChallengeHttpAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\122-TestAuthz-HttpChallengeAnswers.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeHttpAnswers_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        [Timeout(120 * 1000)]
+        public void Test0132_HandleDnsChallenge()
         {
             using (var signer = new RS256Signer())
             {
@@ -673,15 +767,75 @@ namespace ACMESharp
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Open))
+                    using (var fs = new FileStream(_testAuthzChallengeDnsAnswers_AcmeAuthzFile, FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+                    var dnsInfo = DnsInfo.Load(File.ReadAllText("config\\dnsInfo.json"));
+                    Assert.IsNotNull(dnsInfo);
+                    var handlerConfig = dnsInfo.Provider as AwsRoute53DnsProvider;
+                    Assert.IsNotNull(handlerConfig);
 
-                    _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\120-TestAuthz-ChallengeAnswers.acmeAuthz";
-                    using (var fs = new FileStream(_testAuthzChallengeAnswers_AcmeAuthzFile, FileMode.Create))
+                    var handlerParams = new Dictionary<string, object>
+                    {
+                        [nameof(handlerConfig.AccessKeyId)]     /**/ = handlerConfig.AccessKeyId,
+                        [nameof(handlerConfig.SecretAccessKey)] /**/ = handlerConfig.SecretAccessKey,
+                        [nameof(handlerConfig.Region)]          /**/ = handlerConfig.Region,
+                        [nameof(handlerConfig.HostedZoneId)]    /**/ = handlerConfig.HostedZoneId,
+                    };
+
+                    var authzChallenge = client.HandleChallenge(authzState,
+                            AcmeProtocol.CHALLENGE_TYPE_DNS,
+                            "awsRoute53", handlerParams);
+
+                    _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{_baseLocalStore}\\130-TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        [Ignore] // Waiting till dns-01 has been implemented in Boulder STAGE https://github.com/letsencrypt/boulder/issues/1242
+        public void Test0136_SubmitDnsChallengeAnswer()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0136_SubmitDnsChallengeAnswer)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+
+                    _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\131-TestAuthz-DnsChallengeAnswered.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeDnsAnswered_AcmeAuthzFile, FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -742,61 +896,62 @@ namespace ACMESharp
         //    Thread.Sleep(90 * 1000);
         //}
 
-                    //[TestMethod]
-                    //[TestCategory("acmeServerInteg")]
-                    //public void Test0135_SubmitDnsChallengeAnswers()
-                    //{
-                    //    using (var signer = new RS256Signer())
-                    //    {
-                    //        signer.Init();
-                    //        using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
-                    //        {
-                    //            signer.Load(fs);
-                    //        }
-                    //
-                    //        AcmeRegistration reg;
-                    //        using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
-                    //        {
-                    //            reg = AcmeRegistration.Load(fs);
-                    //        }
-                    //
-                    //        using (var client = BuildClient(testTagHeader: nameof(Test0135_SubmitDnsChallengeAnswers)))
-                    //        {
-                    //            client.RootUrl = _rootUrl;
-                    //            client.Signer = signer;
-                    //            client.Registration = reg;
-                    //            client.Init();
-                    //
-                    //            client.GetDirectory(true);
-                    //
-                    //            AuthorizationState authzState;
-                    //            using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Open))
-                    //            {
-                    //                authzState = AuthorizationState.Load(fs);
-                    //            }
-                    //
-                    //            client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
-                    //            client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
-                    //
-                    //            _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\131-TestAuthz-DnsChallengeAnswered.acmeAuthz";
-                    //            using (var fs = new FileStream(_testAuthzChallengeDnsAnswered_AcmeAuthzFile, FileMode.Create))
-                    //            {
-                    //                authzState.Save(fs);
-                    //            }
-                    //        }
-                    //    }
-                    //}
+        //[TestMethod]
+        //[TestCategory("acmeServerInteg")]
+        //public void Test0135_SubmitDnsChallengeAnswers()
+        //{
+        //    using (var signer = new RS256Signer())
+        //    {
+        //        signer.Init();
+        //        using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+        //        {
+        //            signer.Load(fs);
+        //        }
+        //
+        //        AcmeRegistration reg;
+        //        using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+        //        {
+        //            reg = AcmeRegistration.Load(fs);
+        //        }
+        //
+        //        using (var client = BuildClient(testTagHeader: nameof(Test0135_SubmitDnsChallengeAnswers)))
+        //        {
+        //            client.RootUrl = _rootUrl;
+        //            client.Signer = signer;
+        //            client.Registration = reg;
+        //            client.Init();
+        //
+        //            client.GetDirectory(true);
+        //
+        //            AuthorizationState authzState;
+        //            using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Open))
+        //            {
+        //                authzState = AuthorizationState.Load(fs);
+        //            }
+        //
+        //            client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+        //            client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
+        //
+        //            _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\131-TestAuthz-DnsChallengeAnswered.acmeAuthz";
+        //            using (var fs = new FileStream(_testAuthzChallengeDnsAnswered_AcmeAuthzFile, FileMode.Create))
+        //            {
+        //                authzState.Save(fs);
+        //            }
+        //        }
+        //    }
+        //}
 
-                    //[TestMethod]
-                    //[TestCategory("acmeServerInteg")]
-                    //public void Test0137_RefreshAuthzDnsChallenge()
-                    //{
-                    //    Test0100_RefreshAuthzDnsChallenge();
-                    //}
+        //[TestMethod]
+        //[TestCategory("acmeServerInteg")]
+        //public void Test0137_RefreshAuthzDnsChallenge()
+        //{
+        //    Test0100_RefreshAuthzDnsChallenge();
+        //}
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
         [Timeout(120 * 1000)]
+        [Ignore]
         public void Test0141_HandleHttpChallenge()
         {
             using (var signer = new RS256Signer())
@@ -880,12 +1035,11 @@ namespace ACMESharp
                     client.GetDirectory(true);
 
                     AuthorizationState authzState;
-                    using (var fs = new FileStream(_testAuthzChallengeAnswers_AcmeAuthzFile, FileMode.Open))
+                    using (var fs = new FileStream(_testAuthzChallengeHttpAnswers_AcmeAuthzFile, FileMode.Open))
                     {
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    var authzChallenge = authzState.Challenges.First(x => x.Type == AcmeProtocol.CHALLENGE_TYPE_HTTP);
                     var wsInfo = WebServerInfo.Load(File.ReadAllText("config\\webServerInfo.json"));
                     Assert.IsNotNull(wsInfo);
                     var handlerConfig = wsInfo.Provider as AwsS3WebServerProvider;
@@ -899,7 +1053,8 @@ namespace ACMESharp
                         [nameof(handlerConfig.BucketName)]      /**/ = handlerConfig.BucketName,
                     };
 
-                    authzChallenge = client.HandleChallenge(authzState, authzChallenge,
+                    var authzChallenge = client.HandleChallenge(authzState,
+                            AcmeProtocol.CHALLENGE_TYPE_HTTP,
                             "awsS3", handlerParams);
 
                     _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{_baseLocalStore}\\140-TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
@@ -913,7 +1068,7 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        public void Test0146_SubmitHttpChallengeAnswers()
+        public void Test0146_SubmitHttpChallengeAnswer()
         {
             using (var signer = new RS256Signer())
             {
@@ -929,7 +1084,7 @@ namespace ACMESharp
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient(testTagHeader: nameof(Test0146_SubmitHttpChallengeAnswers)))
+                using (var client = BuildClient(testTagHeader: nameof(Test0146_SubmitHttpChallengeAnswer)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -944,8 +1099,7 @@ namespace ACMESharp
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-                    client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
+                    client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
 
                     _testAuthzChallengeHttpAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\141-TestAuthz-HttpChallengeAnswered.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpAnswered_AcmeAuthzFile, FileMode.Create))

@@ -47,10 +47,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
@@ -100,7 +100,7 @@ namespace ACMESharp.POSH
                 if (Repeat || challengCompleted == null)
                 {
                     var pcFilePath = $"{pc.Id}.json";
-                    var pcAsset = vp.GetAsset(Vault.VaultAssetType.ProviderConfigInfo, pcFilePath);
+                    var pcAsset = vlt.GetAsset(Vault.VaultAssetType.ProviderConfigInfo, pcFilePath);
 
                     // TODO:  There's *way* too much logic buried in here
                     // this needs to be refactored and extracted out to be
@@ -115,7 +115,7 @@ namespace ACMESharp.POSH
                         var dnsValue = Regex.Replace(challenge.OldChallengeAnswer.Value, "\\s", "");
                         var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
 
-                        using (var s = vp.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
+                        using (var s = vlt.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
                         {
                             var dnsInfo = DnsInfo.Load(s);
                             dnsInfo.Provider.EditTxtRecord(dnsName, dnsValues);
@@ -133,7 +133,7 @@ namespace ACMESharp.POSH
 
 
 
-                        using (var s = vp.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
+                        using (var s = vlt.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
                         {
                             var webServerInfo = WebServerInfo.Load(s);
                             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
@@ -145,7 +145,7 @@ namespace ACMESharp.POSH
                     }
                 }
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 WriteObject(authzState);
             }

@@ -1,11 +1,13 @@
 ﻿using ACMESharp.POSH.Util;
-using ACMESharp.POSH.Vault;
+using ACMESharp.Vault;
+using ACMESharp.Vault.Model;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
 using System.Text;
 using Newtonsoft.Json;
+using ACMESharp.Vault.Util;
 
 namespace ACMESharp.POSH
 {
@@ -60,19 +62,18 @@ namespace ACMESharp.POSH
                 Memo = Memo,
                 DnsProvider = DnsProvider,
                 WebServerProvider = WebServerProvider,
-                FilePath = FilePath
             };
 
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.ProviderConfigs == null)
                     v.ProviderConfigs = new EntityDictionary<ProviderConfig>();
                 v.ProviderConfigs.Add(pc);
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 // TODO: this is *so* hardcoded, clean
                 // up this provider resolution mechanism
@@ -117,9 +118,9 @@ namespace ACMESharp.POSH
                     }
                 }
 
-                var pcAsset = vp.CreateAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
+                var pcAsset = vlt.CreateAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
                 using (Stream fs = new FileStream(temp, FileMode.Open),
-                        assetStream = vp.SaveAsset(pcAsset))
+                        assetStream = vlt.SaveAsset(pcAsset))
                 {
                     fs.CopyTo(assetStream);
                 }

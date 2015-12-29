@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ACMESharp.POSH.Util
+namespace ACMESharp.Vault.Util
 {
     public static class EntityHelper
     {
@@ -8,7 +8,5 @@ namespace ACMESharp.POSH.Util
         {
             return Guid.NewGuid();
         }
-
-
     }
 }

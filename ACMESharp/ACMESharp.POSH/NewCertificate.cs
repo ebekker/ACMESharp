@@ -1,9 +1,12 @@
 ﻿using ACMESharp.POSH.Util;
-using ACMESharp.POSH.Vault;
+using ACMESharp.Vault;
+using ACMESharp.Vault.Model;
 using System;
 using System.IO;
 using System.Management.Automation;
 using ACMESharp.PKI;
+using ACMESharp.Vault.Util;
+using ACMESharp.Util;
 
 namespace ACMESharp.POSH
 {
@@ -48,10 +51,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
@@ -83,8 +86,8 @@ namespace ACMESharp.POSH
                     };
 
                     ci.GenerateDetailsFile = $"{ci.Id}-gen.json";
-                    var asset = vp.CreateAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
-                    using (var s = vp.SaveAsset(asset))
+                    var asset = vlt.CreateAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
+                    using (var s = vlt.SaveAsset(asset))
                     {
                         JsonHelper.Save(s, csrDetails);
                     }
@@ -99,16 +102,16 @@ namespace ACMESharp.POSH
                     var keyPemFile = $"{ci.Id}-key.pem";
                     var csrPemFile = $"{ci.Id}-csr.pem";
 
-                    var keyAsset = vp.CreateAsset(VaultAssetType.KeyPem, keyPemFile, true);
-                    var csrAsset = vp.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
+                    var keyAsset = vlt.CreateAsset(VaultAssetType.KeyPem, keyPemFile, true);
+                    var csrAsset = vlt.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
 
                     using (Stream fs = new FileStream(KeyPemFile, FileMode.Open),
-                            s = vp.SaveAsset(keyAsset))
+                            s = vlt.SaveAsset(keyAsset))
                     {
                         fs.CopyTo(s);
                     }
                     using (Stream fs = new FileStream(KeyPemFile, FileMode.Open),
-                            s = vp.SaveAsset(csrAsset))
+                            s = vlt.SaveAsset(csrAsset))
                     {
                         fs.CopyTo(s);
                     }
@@ -122,7 +125,7 @@ namespace ACMESharp.POSH
 
                 v.Certificates.Add(ci);
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 WriteObject(ci);
             }

@@ -12,12 +12,23 @@ namespace ACMESharp.Vault.Profile
 {
     public class VaultProfile : ISerializable
     {
+        public VaultProfile(string name, string providerName)
+            : this(name, providerName, null, null)
+        { }
+
         public VaultProfile(string name, string providerName,
-                IReadOnlyDictionary<string, object> providerParams = null)
+                IReadOnlyDictionary<string, object> vaultParams)
+            : this(name, providerName, null, vaultParams)
+        { }
+
+        public VaultProfile(string name, string providerName,
+                IReadOnlyDictionary<string, object> providerParams = null,
+                IReadOnlyDictionary<string, object> vaultParams = null)
         {
             Name = name;
             ProviderName = providerName;
             ProviderParameters = providerParams;
+            VaultParameters = vaultParams;
         }
 
         public string Name
@@ -29,21 +40,24 @@ namespace ACMESharp.Vault.Profile
         public IReadOnlyDictionary<string, object> ProviderParameters
         { get; }
 
+        public IReadOnlyDictionary<string, object> VaultParameters
+        { get; }
+
         #region -- Custom Serialization --
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(nameof(Name), Name);
             info.AddValue(nameof(ProviderName), ProviderName);
-            info.AddValue(nameof(ProviderParameters), ProviderParameters);
+            info.AddValue(nameof(VaultParameters), VaultParameters);
         }
 
         protected VaultProfile(SerializationInfo info, StreamingContext context)
         {
             Name = info.GetString(nameof(Name));
             ProviderName = info.GetString(nameof(ProviderName));
-            ProviderParameters = (Dictionary<string, object>)info.GetValue(
-                    nameof(ProviderParameters), typeof(Dictionary<string, object>));
+            VaultParameters = (Dictionary<string, object>)info.GetValue(
+                    nameof(VaultParameters), typeof(Dictionary<string, object>));
         }
 
         #endregion

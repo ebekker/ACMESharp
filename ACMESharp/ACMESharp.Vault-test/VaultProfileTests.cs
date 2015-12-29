@@ -34,9 +34,9 @@ namespace ACMESharp.Vault
             Assert.AreSame(p, p2);
 
             Assert.AreEqual("local", p.ProviderName);
-            Assert.IsNotNull(p.ProviderParameters);
+            Assert.IsNotNull(p.VaultParameters);
 
-            var pp = p.ProviderParameters;
+            var pp = p.VaultParameters;
             Assert.IsTrue(pp.Count > 0);
             Assert.IsTrue(pp.ContainsKey("RootPath"));
 
@@ -58,9 +58,9 @@ namespace ACMESharp.Vault
             Assert.AreSame(p, p2);
 
             Assert.AreEqual("local", p.ProviderName);
-            Assert.IsNotNull(p.ProviderParameters);
+            Assert.IsNotNull(p.VaultParameters);
 
-            var pp = p.ProviderParameters;
+            var pp = p.VaultParameters;
             Assert.IsTrue(pp.Count > 0);
             Assert.IsTrue(pp.ContainsKey("RootPath"));
 
@@ -80,7 +80,7 @@ namespace ACMESharp.Vault
             Assert.IsTrue(string.IsNullOrEmpty(Environment.GetEnvironmentVariable(envVar)));
 
             var profileName = VaultProfileManager.ResolveProfileName();
-            if (SysHelper.IsElevatedAdmin)
+            if (SysHelper.IsElevatedAdmin())
                 Assert.AreEqual(VaultProfileManager.PROFILE_DEFAULT_SYS_NAME, profileName);
             else
                 Assert.AreEqual(VaultProfileManager.PROFILE_DEFAULT_USER_NAME, profileName);
@@ -120,9 +120,9 @@ namespace ACMESharp.Vault
             Assert.IsNotNull(p);
             Assert.AreEqual("Test1", p.Name);
             Assert.AreEqual("local", p.ProviderName);
-            Assert.IsNotNull(p.ProviderParameters);
-            Assert.IsTrue(p.ProviderParameters.Count > 0);
-            Assert.IsTrue(p.ProviderParameters.ContainsKey("RootPath"));
+            Assert.IsNotNull(p.VaultParameters);
+            Assert.IsTrue(p.VaultParameters.Count > 0);
+            Assert.IsTrue(p.VaultParameters.ContainsKey("RootPath"));
 
             VaultProfileManager.RemoveProfile("Test1");
             profiles = VaultProfileManager.GetProfileNames();

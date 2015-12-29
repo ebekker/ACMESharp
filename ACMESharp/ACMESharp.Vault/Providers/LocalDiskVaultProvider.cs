@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using ACMESharp.Ext;
 using ACMESharp.Vault.Model;
 using ACMESharp.Vault.Util;
+using ACMESharp.Util;
 
 namespace ACMESharp.Vault.Providers
 {

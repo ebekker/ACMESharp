@@ -1,5 +1,6 @@
 ﻿using ACMESharp.POSH.Util;
-using ACMESharp.POSH.Vault;
+using ACMESharp.Vault;
+using ACMESharp.Vault.Model;
 using System;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,8 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using ACMESharp.HTTP;
 using ACMESharp.PKI;
+using ACMESharp.Vault.Util;
+using ACMESharp.Util;
 
 namespace ACMESharp.POSH
 {
@@ -52,10 +55,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
@@ -89,21 +92,21 @@ namespace ACMESharp.POSH
                         var crtDerFile = $"{ci.Id}-crt.der";
                         var crtPemFile = $"{ci.Id}-crt.pem";
 
-                        var crtDerAsset = vp.ListAssets(crtDerFile, VaultAssetType.CrtDer).FirstOrDefault();
-                        var crtPemAsset = vp.ListAssets(crtPemFile, VaultAssetType.CrtPem).FirstOrDefault();
+                        var crtDerAsset = vlt.ListAssets(crtDerFile, VaultAssetType.CrtDer).FirstOrDefault();
+                        var crtPemAsset = vlt.ListAssets(crtPemFile, VaultAssetType.CrtPem).FirstOrDefault();
 
                         if (crtDerAsset == null)
-                            crtDerAsset = vp.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
+                            crtDerAsset = vlt.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
                         if (crtPemAsset == null)
-                            crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
+                            crtPemAsset = vlt.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
 
                         using (var cp = CertificateProvider.GetProvider())
                         {
                             var bytes = ci.CertificateRequest.GetCertificateContent();
 
                             using (Stream source = new MemoryStream(bytes),
-                                    derTarget = vp.SaveAsset(crtDerAsset),
-                                    pemTarget = vp.SaveAsset(crtPemAsset))
+                                    derTarget = vlt.SaveAsset(crtDerAsset),
+                                    pemTarget = vlt.SaveAsset(crtPemAsset))
                             {
                                 var crt = cp.ImportCertificate(EncodingFormat.DER, source);
 
@@ -160,17 +163,17 @@ namespace ACMESharp.POSH
                                     {
                                         var cacertDerFile = $"ca-{sernum}-crt.der";
                                         var cacertPemFile = $"ca-{sernum}-crt.pem";
-                                        var issuerDerAsset = vp.ListAssets(cacertDerFile,
+                                        var issuerDerAsset = vlt.ListAssets(cacertDerFile,
                                                 VaultAssetType.IssuerDer).FirstOrDefault();
-                                        var issuerPemAsset = vp.ListAssets(cacertPemFile,
+                                        var issuerPemAsset = vlt.ListAssets(cacertPemFile,
                                                 VaultAssetType.IssuerPem).FirstOrDefault();
 
                                         if (Repeat || issuerDerAsset == null)
                                         {
                                             if (issuerDerAsset == null)
-                                            issuerDerAsset = vp.CreateAsset(VaultAssetType.IssuerDer, cacertDerFile);
+                                            issuerDerAsset = vlt.CreateAsset(VaultAssetType.IssuerDer, cacertDerFile);
                                                 using (Stream fs = new FileStream(tmp, FileMode.Open),
-                                                    s = vp.SaveAsset(issuerDerAsset))
+                                                    s = vlt.SaveAsset(issuerDerAsset))
                                             {
                                                 fs.CopyTo(s);
                                             }
@@ -178,13 +181,13 @@ namespace ACMESharp.POSH
                                         if (Repeat || issuerPemAsset == null)
                                         {
                                             if (issuerPemAsset == null)
-                                                issuerPemAsset = vp.CreateAsset(VaultAssetType.IssuerPem, cacertPemFile);
+                                                issuerPemAsset = vlt.CreateAsset(VaultAssetType.IssuerPem, cacertPemFile);
 
                                             using (var cp = CertificateProvider.GetProvider())
                                             {
 
-                                                using (Stream source = vp.LoadAsset(issuerDerAsset),
-                                                    target = vp.SaveAsset(issuerPemAsset))
+                                                using (Stream source = vlt.LoadAsset(issuerDerAsset),
+                                                    target = vlt.SaveAsset(issuerPemAsset))
                                                 {
                                                     var crt = cp.ImportCertificate(EncodingFormat.DER, source);
                                                     cp.ExportCertificate(crt, EncodingFormat.PEM, target);
@@ -219,7 +222,7 @@ namespace ACMESharp.POSH
                 v.Label = StringHelper.IfNullOrEmpty(Label);
                 v.Memo = StringHelper.IfNullOrEmpty(Memo);
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 WriteObject(ci);
             }

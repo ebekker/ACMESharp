@@ -48,7 +48,6 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
-    <Compile Include="IIdentifiable.cs" />
     <Compile Include="Model\CertificateInfo.cs" />
     <Compile Include="Model\IdentifierInfo.cs" />
     <Compile Include="Model\IssuerCertificateInfo.cs" />
@@ -58,8 +57,9 @@
     <Compile Include="Profile\VaultProfileManager.cs" />
     <Compile Include="Providers\LocalDiskVaultProvider.cs" />
     <Compile Include="Util\EntityDictionary.cs" />
+    <Compile Include="Util\EntityHelper.cs" />
+    <Compile Include="Util\IIdentifiable.cs" />
     <Compile Include="Util\IndexedDictionary.cs" />
-    <Compile Include="Util\JsonHelper.cs" />
     <Compile Include="Util\OrderedNameMap.cs" />
     <Compile Include="Model\ProviderConfig.cs" />
     <Compile Include="VaultAsset.cs" />

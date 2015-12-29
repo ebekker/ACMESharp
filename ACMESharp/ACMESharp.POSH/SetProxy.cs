@@ -41,10 +41,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (UseSystem)
                 {
@@ -52,7 +52,7 @@ namespace ACMESharp.POSH
                 }
                 else
                 {
-                    v.Proxy = new Vault.ProxyConfig
+                    v.Proxy = new Vault.Model.ProxyConfig
                     {
                         UseNoProxy = UseNoProxy,
                         ProxyUri = UseProxy,
@@ -66,7 +66,7 @@ namespace ACMESharp.POSH
                                 v.Proxy.PasswordEncoded));
                 };
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
             }
         }
     }

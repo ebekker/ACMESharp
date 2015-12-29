@@ -1,4 +1,4 @@
-﻿using ACMESharp.POSH.Vault;
+﻿using ACMESharp.Vault;
 using System;
 using System.IO;
 using System.Management.Automation;
@@ -29,10 +29,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.ProviderConfigs == null || v.ProviderConfigs.Count < 1)
                     throw new InvalidOperationException("No provider configs found");
@@ -50,9 +50,9 @@ namespace ACMESharp.POSH
                     var pcFilePath = Path.GetFullPath($"{pc.Id}.json");
 
                     // Copy out the asset to a temp file for editing
-                    var pcAsset = vp.GetAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
+                    var pcAsset = vlt.GetAsset(VaultAssetType.ProviderConfigInfo, $"{pc.Id}.json");
                     var temp = Path.GetTempFileName();
-                    using (var s = vp.LoadAsset(pcAsset))
+                    using (var s = vlt.LoadAsset(pcAsset))
                     {
                         using (var fs = new FileStream(temp, FileMode.Create))
                         {
@@ -62,7 +62,7 @@ namespace ACMESharp.POSH
                     NewProviderConfig.EditFile(temp, EditWith);
 
                     using (Stream fs = new FileStream(temp, FileMode.Open),
-                            assetStream = vp.SaveAsset(pcAsset))
+                            assetStream = vlt.SaveAsset(pcAsset))
                     {
                         fs.CopyTo(assetStream);
                     }

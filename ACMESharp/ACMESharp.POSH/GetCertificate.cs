@@ -1,4 +1,5 @@
-﻿using ACMESharp.POSH.Vault;
+﻿using ACMESharp.Vault;
+using ACMESharp.Vault.Model;
 using System;
 using System.IO;
 using System.Linq;
@@ -52,10 +53,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
@@ -91,28 +92,28 @@ namespace ACMESharp.POSH
                     {
                         if (string.IsNullOrEmpty(ci.KeyPemFile))
                             throw new InvalidOperationException("Cannot export private key; it hasn't been imported or generated");
-                        CopyTo(vp, VaultAssetType.KeyPem, ci.KeyPemFile, ExportKeyPEM, mode);
+                        CopyTo(vlt, VaultAssetType.KeyPem, ci.KeyPemFile, ExportKeyPEM, mode);
                     }
 
                     if (!string.IsNullOrEmpty(ExportCsrPEM))
                     {
                         if (string.IsNullOrEmpty(ci.CsrPemFile))
                             throw new InvalidOperationException("Cannot export CSR; it hasn't been imported or generated");
-                        CopyTo(vp, VaultAssetType.CsrPem, ci.CsrPemFile, ExportCsrPEM, mode);
+                        CopyTo(vlt, VaultAssetType.CsrPem, ci.CsrPemFile, ExportCsrPEM, mode);
                     }
 
                     if (!string.IsNullOrEmpty(ExportCertificatePEM))
                     {
                         if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtPemFile))
                             throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                        CopyTo(vp, VaultAssetType.CrtPem, ci.CrtPemFile, ExportCertificatePEM, mode);
+                        CopyTo(vlt, VaultAssetType.CrtPem, ci.CrtPemFile, ExportCertificatePEM, mode);
                     }
 
                     if (!string.IsNullOrEmpty(ExportCertificateDER))
                     {
                         if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtDerFile))
                             throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
-                        CopyTo(vp, VaultAssetType.CrtDer, ci.CrtDerFile, ExportCertificateDER, mode);
+                        CopyTo(vlt, VaultAssetType.CrtDer, ci.CrtDerFile, ExportCertificateDER, mode);
                     }
 
                     if (!string.IsNullOrEmpty(ExportPkcs12))
@@ -124,17 +125,17 @@ namespace ACMESharp.POSH
                         if (string.IsNullOrEmpty(ci.IssuerSerialNumber) || !v.IssuerCertificates.ContainsKey(ci.IssuerSerialNumber))
                             throw new InvalidOperationException("Cannot export PKCS12; Issuer certificate hasn't been resolved");
 
-                        var keyPemAsset = vp.GetAsset(VaultAssetType.KeyPem, ci.KeyPemFile);
-                        var crtPemAsset = vp.GetAsset(VaultAssetType.CrtPem, ci.CrtPemFile);
-                        var isuPemAsset = vp.GetAsset(VaultAssetType.IssuerPem,
+                        var keyPemAsset = vlt.GetAsset(VaultAssetType.KeyPem, ci.KeyPemFile);
+                        var crtPemAsset = vlt.GetAsset(VaultAssetType.CrtPem, ci.CrtPemFile);
+                        var isuPemAsset = vlt.GetAsset(VaultAssetType.IssuerPem,
                                 v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile);
 
                         using (var cp = CertificateProvider.GetProvider())
                         {
 
-                            using (Stream keyStream = vp.LoadAsset(keyPemAsset),
-                                crtStream = vp.LoadAsset(crtPemAsset),
-                                isuStream = vp.LoadAsset(isuPemAsset),
+                            using (Stream keyStream = vlt.LoadAsset(keyPemAsset),
+                                crtStream = vlt.LoadAsset(crtPemAsset),
+                                isuStream = vlt.LoadAsset(isuPemAsset),
                                 fs = new FileStream(ExportPkcs12, mode))
                             {
                                 var pk = cp.ImportPrivateKey<RsaPrivateKey>(EncodingFormat.PEM, keyStream);
@@ -157,10 +158,10 @@ namespace ACMESharp.POSH
             }
         }
 
-        public static void CopyTo(IVaultProvider vp, VaultAssetType vat, string van, string target, FileMode mode)
+        public static void CopyTo(IVault vlt, VaultAssetType vat, string van, string target, FileMode mode)
         {
-            var asset = vp.GetAsset(vat, van);
-            using (Stream s = vp.LoadAsset(asset),
+            var asset = vlt.GetAsset(vat, van);
+            using (Stream s = vlt.LoadAsset(asset),
                     fs = new FileStream(target, mode))
             {
                 s.CopyTo(fs);

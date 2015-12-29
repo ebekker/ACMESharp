@@ -1,4 +1,5 @@
 ﻿using ACMESharp.POSH.Util;
+using ACMESharp.Util;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
@@ -49,10 +50,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage(Force);
-                var v = vp.LoadVault();
+                vlt.OpenStorage(Force);
+                var v = vlt.LoadVault();
 
                 var baseUri = BaseUri;
                 if (string.IsNullOrEmpty(baseUri) && !string.IsNullOrEmpty(BaseService))
@@ -64,7 +65,7 @@ namespace ACMESharp.POSH
                 v.BaseService = StringHelper.IfNullOrEmpty(BaseService, v.BaseService);
                 v.BaseUri = StringHelper.IfNullOrEmpty(baseUri, v.BaseUri);
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
             }
         }
     }

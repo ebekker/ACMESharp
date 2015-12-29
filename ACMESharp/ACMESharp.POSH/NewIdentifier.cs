@@ -1,5 +1,6 @@
 ﻿using ACMESharp.POSH.Util;
-using ACMESharp.POSH.Vault;
+using ACMESharp.Vault.Model;
+using ACMESharp.Vault.Util;
 using System;
 using System.Management.Automation;
 
@@ -31,10 +32,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
@@ -67,7 +68,7 @@ namespace ACMESharp.POSH
                     v.Identifiers.Add(ii);
                 }
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 WriteObject(authzState);
             }

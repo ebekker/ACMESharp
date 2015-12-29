@@ -1,5 +1,7 @@
 ﻿using ACMESharp.POSH.Util;
-using ACMESharp.POSH.Vault;
+using ACMESharp.Vault;
+using ACMESharp.Vault.Model;
+using ACMESharp.Vault.Util;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
@@ -39,10 +41,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 AcmeRegistration r = null;
                 var ri = new RegistrationInfo
@@ -71,7 +73,7 @@ namespace ACMESharp.POSH
                     v.Registrations.Add(ri);
                 }
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 WriteObject(r);
             }

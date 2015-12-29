@@ -1,4 +1,4 @@
-﻿namespace ACMESharp.POSH.Util
+﻿namespace ACMESharp.Util
 {
     public static class StringHelper
     {

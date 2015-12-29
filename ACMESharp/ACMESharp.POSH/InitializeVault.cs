@@ -2,8 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using ACMESharp.POSH.Util;
-using ACMESharp.POSH.Vault;
+using ACMESharp.Vault;
 using System.Management.Automation;
+using ACMESharp.Vault.Model;
+using ACMESharp.Vault.Util;
 
 namespace ACMESharp.POSH
 {
@@ -66,10 +68,10 @@ namespace ACMESharp.POSH
                 else
                     throw new PSInvalidOperationException("either a base service or URI is required");
 
-            using (var vp = GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.InitStorage(Force);
-                var v = new VaultConfig
+                vlt.InitStorage(Force);
+                var v = new VaultInfo
                 {
                     Id = EntityHelper.NewId(),
                     Alias = Alias,
@@ -80,18 +82,8 @@ namespace ACMESharp.POSH
                     ServerDirectory = new AcmeServerDirectory()
                 };
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
             }
-        }
-
-        // TODO:  this routine doesn't belong here
-        public static IVaultProvider GetVaultProvider(string profile, string provider = null)
-        {
-            // TODO: implement provider resolution
-            var vp = new FileVaultProvider();
-            vp.VaultProfile = profile;
-            vp.Init();
-            return vp;
         }
     }
 }

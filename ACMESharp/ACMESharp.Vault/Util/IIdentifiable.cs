@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ACMESharp.POSH.Util
+namespace ACMESharp.Vault.Model
 {
     public interface IIdentifiable
     {

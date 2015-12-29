@@ -135,6 +135,7 @@
     <Compile Include="Util\BaseManualProvider.cs" />
     <Compile Include="Util\ExceptionExtensions.cs" />
     <Compile Include="Util\JsonHelper.cs" />
+    <Compile Include="Util\StringHelper.cs" />
     <Compile Include="Util\SysHelper.cs" />
     <Compile Include="WebServer\AwsS3WebServerProvider.cs" />
     <Compile Include="WebServer\IWebServerProvider.cs" />

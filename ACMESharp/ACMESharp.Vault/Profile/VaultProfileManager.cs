@@ -186,7 +186,8 @@ namespace ACMESharp.Vault.Profile
         }
 
         public static void SetProfile(string name, string providerName,
-                IReadOnlyDictionary<string, object> providerParams = null)
+                IReadOnlyDictionary<string, object> providerParams = null,
+                IReadOnlyDictionary<string, object> vaultParams = null)
         {
             if (name.StartsWith(":"))
                 throw new ArgumentException("invalid profile name", nameof(name))
@@ -196,7 +197,7 @@ namespace ACMESharp.Vault.Profile
                 Directory.CreateDirectory(PROFILES_ROOT_PATH);
 
             var profileFile = Path.Combine(PROFILES_ROOT_PATH, name);
-            var profile = new VaultProfile(name, providerName, providerParams);
+            var profile = new VaultProfile(name, providerName, providerParams, vaultParams);
 
             using (var fs = new FileStream(profileFile, FileMode.Create))
             {

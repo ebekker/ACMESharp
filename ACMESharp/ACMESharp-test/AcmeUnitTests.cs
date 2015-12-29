@@ -21,7 +21,7 @@ namespace ACMESharp
     /// components.
     /// </summary>
     [TestClass]
-    public class AcmeUnitTest
+    public class AcmeUnitTests
     {
         Uri _rootUrl = new Uri("http://acme2.aws3.ezshield.ws:4000/");
 

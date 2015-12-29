@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ACMESharp.Vault
 {
     [TestClass]
-    public class TestLocalDiskVaultProvider
+    public class LocalDiskVaultProviderTests
     {
         [TestMethod]
         public void TestProviderNamesCount()

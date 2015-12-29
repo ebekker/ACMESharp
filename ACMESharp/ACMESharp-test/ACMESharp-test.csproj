@@ -79,7 +79,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="JwsUnitTests.cs" />
     <Compile Include="JwsHelperUnitTests.cs" />
-    <Compile Include="AcmeUnitTest.cs" />
+    <Compile Include="AcmeUnitTests.cs" />
     <Compile Include="DnsUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>

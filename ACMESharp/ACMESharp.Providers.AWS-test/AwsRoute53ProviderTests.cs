@@ -10,27 +10,27 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ACMESharp.Providers.AWS
 {
     [TestClass]
-    public class TestAwsS3Provider
+    public class AwsRoute53ProviderTests
     {
-        private static config.HttpConfig _httpConfig;
+        private static config.DnsConfig _dnsConfig;
 
         [ClassInitialize]
         public static void Init(TestContext tctx)
         {
-            using (var fs = new FileStream("config\\httpConfig.json", FileMode.Open))
+            using (var fs = new FileStream("config\\dnsConfig.json", FileMode.Open))
             {
-                _httpConfig = JsonHelper.Load<config.HttpConfig>(fs);
+                _dnsConfig = JsonHelper.Load<config.DnsConfig>(fs);
             }
         }
 
-        public static AwsS3ChallengeHandlerProvider GetProvider()
+        public static AwsRoute53ChallengeHandlerProvider GetProvider()
         {
-            return new AwsS3ChallengeHandlerProvider();
+            return new AwsRoute53ChallengeHandlerProvider();
         }
 
-        public static AwsS3ChallengeHandler GetHandler(Challenge c)
+        public static AwsRoute53ChallengeHandler GetHandler(Challenge c)
         {
-            return (AwsS3ChallengeHandler)GetProvider().GetHandler(c, _httpConfig);
+            return (AwsRoute53ChallengeHandler)GetProvider().GetHandler(c, _dnsConfig);
         }
 
         [TestMethod]
@@ -48,8 +48,8 @@ namespace ACMESharp.Providers.AWS
         {
             var p = GetProvider();
 
-            Assert.IsTrue(p.IsSupported(TestCommon.HTTP_CHALLENGE));
-            Assert.IsFalse(p.IsSupported(TestCommon.DNS_CHALLENGE));
+            Assert.IsTrue(p.IsSupported(TestCommon.DNS_CHALLENGE));
+            Assert.IsFalse(p.IsSupported(TestCommon.HTTP_CHALLENGE));
             Assert.IsFalse(p.IsSupported(TestCommon.TLS_SNI_CHALLENGE));
             Assert.IsFalse(p.IsSupported(TestCommon.FAKE_CHALLENGE));
         }
@@ -59,7 +59,7 @@ namespace ACMESharp.Providers.AWS
         public void TestRequiredParams()
         {
             var p = GetProvider();
-            var c = TestCommon.HTTP_CHALLENGE;
+            var c = TestCommon.DNS_CHALLENGE;
             var h = p.GetHandler(c, new Dictionary<string, object>());
         }
 
@@ -67,8 +67,8 @@ namespace ACMESharp.Providers.AWS
         public void TestHandlerLifetime()
         {
             var p = GetProvider();
-            var c = TestCommon.HTTP_CHALLENGE;
-            var h = p.GetHandler(c, _httpConfig);
+            var c = TestCommon.DNS_CHALLENGE;
+            var h = p.GetHandler(c, _dnsConfig);
 
             Assert.IsNotNull(h);
             Assert.IsFalse(h.IsDisposed);
@@ -81,8 +81,8 @@ namespace ACMESharp.Providers.AWS
         public void TestHandlerDisposedAccess()
         {
             var p = GetProvider();
-            var c = TestCommon.HTTP_CHALLENGE;
-            var h = p.GetHandler(c, _httpConfig);
+            var c = TestCommon.DNS_CHALLENGE;
+            var h = p.GetHandler(c, _dnsConfig);
 
             h.Dispose();
             h.Handle(null);
@@ -92,56 +92,56 @@ namespace ACMESharp.Providers.AWS
         public void TestHandlerDefineAndCleanUpResourceRecord()
         {
             var r = new Random();
-            var bn = new byte[10];
+            var bn = new byte[4];
             var bv = new byte[10];
             r.NextBytes(bn);
             r.NextBytes(bv);
             var rn = BitConverter.ToString(bn);
             var rv = BitConverter.ToString(bv);
 
-            var c = new HttpChallenge(AcmeProtocol.CHALLENGE_TYPE_HTTP, new HttpChallengeAnswer())
+            var c = new DnsChallenge(AcmeProtocol.CHALLENGE_TYPE_DNS, new DnsChallengeAnswer())
             {
                 Token = "FOOBAR",
-                FileUrl = $"http://foobar.acmetesting.zyborg.io/utest/{rn}",
-                FilePath = $"/utest/{rn}",
-                FileContent = rv,
+                RecordName = $"{rn}.{_dnsConfig.DefaultDomain}",
+                RecordValue = rv,
             };
 
-            var awsParams = new AwsCommonParams();
-            awsParams.InitParams(_httpConfig);
+            var r53 = new Route53Helper
+            {
+                HostedZoneId = _dnsConfig.HostedZoneId,
+            };
+            r53.CommonParams.InitParams(_dnsConfig);
 
             var p = GetProvider();
-            using (var h = p.GetHandler(c, _httpConfig))
+            using (var h = p.GetHandler(c, _dnsConfig))
             {
-                // Assert test file does not exist
-                var s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,
-                        _httpConfig.BucketName, c.FilePath);
-                
                 // Assert test record does *not* exist
-                Assert.IsNull(s3Obj);
+                var rr = r53.GetRecords(c.RecordName);
+                var rrFirst = rr.ResourceRecordSets.FirstOrDefault(x =>
+                    x.Name.ToLower().StartsWith(c.RecordName.ToLower()))?.Name;
+
+                Assert.IsNull(rrFirst);
 
                 // Create the record...
                 h.Handle(c);
 
                 // ...and assert it does exist
-                s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,
-                        _httpConfig.BucketName, c.FilePath);
+                rr = r53.GetRecords(c.RecordName);
+                rrFirst = rr.ResourceRecordSets.FirstOrDefault(x =>
+                    x.Name.ToLower().StartsWith(c.RecordName.ToLower()))?.Name;
 
-                Assert.IsNotNull(s3Obj);
-                using (var sr = new StreamReader(s3Obj.ResponseStream))
-                {
-                    var v = sr.ReadToEnd();
-                    Assert.AreEqual(c.FileContent, v);
-                }
+                Assert.IsNotNull(rrFirst);
+                StringAssert.StartsWith(rrFirst.ToLower(), c.RecordName.ToLower());
 
                 // Clean up the record...
                 h.CleanUp(c);
 
                 // ...and assert it does not exist once more
-                s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,
-                        _httpConfig.BucketName, c.FilePath);
+                rr = r53.GetRecords(c.RecordName);
+                rrFirst = rr.ResourceRecordSets.FirstOrDefault(x =>
+                    x.Name.ToLower().StartsWith(c.RecordName.ToLower()))?.Name;
 
-                Assert.IsNull(s3Obj);
+                Assert.IsNull(rrFirst);
             }
         }
     }

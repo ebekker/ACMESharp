@@ -67,8 +67,8 @@
     </Compile>
     <Compile Include="config\HttpConfig.cs" />
     <Compile Include="config\DnsConfig.cs" />
-    <Compile Include="TestAwsS3Provider.cs" />
-    <Compile Include="TestAwsRoute53Provider.cs" />
+    <Compile Include="AwsS3ProviderTests.cs" />
+    <Compile Include="AwsRoute53ProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCommon.cs" />
   </ItemGroup>

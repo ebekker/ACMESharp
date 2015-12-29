@@ -4,6 +4,7 @@ using ACMESharp.Vault.Profile;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using ACMESharp.Util;
 
 namespace ACMESharp.Vault
 {
@@ -79,7 +80,10 @@ namespace ACMESharp.Vault
             Assert.IsTrue(string.IsNullOrEmpty(Environment.GetEnvironmentVariable(envVar)));
 
             var profileName = VaultProfileManager.ResolveProfileName();
-            Assert.AreEqual(VaultProfileManager.PROFILE_DEFAULT_USER_NAME, profileName);
+            if (SysHelper.IsElevatedAdmin)
+                Assert.AreEqual(VaultProfileManager.PROFILE_DEFAULT_SYS_NAME, profileName);
+            else
+                Assert.AreEqual(VaultProfileManager.PROFILE_DEFAULT_USER_NAME, profileName);
 
             Environment.SetEnvironmentVariable(envVar, "FooBar");
             Assert.AreEqual("FooBar", Environment.GetEnvironmentVariable(envVar));

@@ -11,19 +11,31 @@ using ACMESharp.Vault.Util;
 namespace ACMESharp.Vault.Providers
 {
 
-    [VaultProvider("local",
+    [VaultProvider(PROVIDER_NAME,
             Label = "Local Disk Vault",
             Description = "Vault provider based on system-local folder and files.")]
     public class LocalDiskVaultProvider : IVaultProvider
     {
-        public IVault GetVault(IDictionary<string, object> initParams)
+        public const string PROVIDER_NAME = "local";
+
+        public static readonly ParameterDetail ROOT_PATH = new ParameterDetail(
+                nameof(LocalDiskVault.RootPath), ParameterType.TEXT,
+                isRequired: true, label: "Root Path",
+                desc: "Specifies the directory path where vault data files will be rooted.");
+
+        static readonly ParameterDetail[] PARAMS =
         {
-            return new LocalDiskVault();
-        }
+            ROOT_PATH,
+        };
 
         public IEnumerable<ParameterDetail> DescribeParameters()
         {
-            return null;
+            return PARAMS;
+        }
+
+        public IVault GetVault(IReadOnlyDictionary<string, object> initParams)
+        {
+            return new LocalDiskVault();
         }
 
         public void Dispose()

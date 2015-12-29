@@ -55,6 +55,7 @@
     <Compile Include="IVault.cs" />
     <Compile Include="Model\RegistrationInfo.cs" />
     <Compile Include="Model\ProxyConfig.cs" />
+    <Compile Include="Profile\VaultProfileManager.cs" />
     <Compile Include="Providers\LocalDiskVaultProvider.cs" />
     <Compile Include="Util\EntityDictionary.cs" />
     <Compile Include="Util\IndexedDictionary.cs" />
@@ -76,6 +77,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{2D8381
 	ProjectSection(SolutionItems) = preProject
 		shared\SharedAssemblyInfo.cs = shared\SharedAssemblyInfo.cs
 		shared\SharedAssemblyVersionInfo.cs = shared\SharedAssemblyVersionInfo.cs
+		shared\SharedGlobalSuppressions.cs = shared\SharedGlobalSuppressions.cs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.POSH", "ACMESharp.POSH\ACMESharp.POSH.csproj", "{2F8D5934-B5A7-4983-8051-1F25882C7C30}"
@@ -32,6 +33,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.AWS", "ACMESharp.Providers.AWS\ACMESharp.Providers.AWS.csproj", "{CD8842F7-5CBD-4DB1-B2B9-387A095AB91F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.AWS-test", "ACMESharp.Providers.AWS-test\ACMESharp.Providers.AWS-test.csproj", "{C114BE40-9E62-45CD-842F-81E4902C2775}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{551C2059-1DE9-484C-8329-7894DDF57771}"
+	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{A6084888-8C82-4999-880F-2721BF1AA639}"
+	ProjectSection(SolutionItems) = preProject
+		..\ci\av-build.ps1 = ..\ci\av-build.ps1
+		..\ci\av-install.ps1 = ..\ci\av-install.ps1
+		..\ci\av-onfinish.ps1 = ..\ci\av-onfinish.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,5 +103,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A6084888-8C82-4999-880F-2721BF1AA639} = {551C2059-1DE9-484C-8329-7894DDF57771}
 	EndGlobalSection
 EndGlobal

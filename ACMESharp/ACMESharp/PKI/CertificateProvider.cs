@@ -17,7 +17,7 @@ namespace ACMESharp.PKI
     public abstract class CertificateProvider : IDisposable
     {
         private const string DEFAULT_PROVIDER_NAME = "";
-        private static readonly Type[] PROVIDER_CTOR_SIG = { typeof(IDictionary<string, string>) };
+        private static readonly Type[] PROVIDER_CTOR_SIG = { typeof(IReadOnlyDictionary<string, string>) };
 
         private static readonly Dictionary<string, Type> _providers = new Dictionary<string, Type>
         {

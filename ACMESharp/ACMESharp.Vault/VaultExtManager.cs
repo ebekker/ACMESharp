@@ -80,7 +80,7 @@ namespace ACMESharp.Vault
         /// produces.
         /// </remarks>
         public static IVaultProvider GetProvider(string name = null,
-            IDictionary<string, object> reservedLeaveNull = null)
+            IReadOnlyDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
             if (name == null)

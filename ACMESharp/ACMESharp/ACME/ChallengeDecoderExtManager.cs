@@ -61,7 +61,7 @@ namespace ACMESharp.ACME
         }
 
         public static IChallengeDecoderProvider GetProvider(string type,
-            IDictionary<string, object> reservedLeaveNull = null)
+            IReadOnlyDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
             return _config[type]?.Value;

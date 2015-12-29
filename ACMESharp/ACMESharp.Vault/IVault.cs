@@ -13,7 +13,7 @@ namespace ACMESharp.Vault
     {
         IEnumerable<ParameterDetail> DescribeParameters();
 
-        IVault GetVault(IDictionary<string, object> initParams);
+        IVault GetVault(IReadOnlyDictionary<string, object> initParams);
     }
 
     public interface IVault : IDisposable

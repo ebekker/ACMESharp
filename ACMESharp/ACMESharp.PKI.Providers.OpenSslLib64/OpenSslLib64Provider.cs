@@ -22,7 +22,7 @@ namespace ACMESharp.PKI.Providers
 
         public delegate int RsaKeyGeneratorCallback(int p, int n, object cbArg);
 
-        public OpenSslLib64Provider(IDictionary<string, string> initParams)
+        public OpenSslLib64Provider(IReadOnlyDictionary<string, string> initParams)
             : base(initParams)
         { }
 

@@ -18,7 +18,7 @@ namespace ACMESharp.ACME
 
         bool IsSupported(Challenge c);
 
-        IChallengeHandler GetHandler(Challenge c, IDictionary<string, object> initParams);
+        IChallengeHandler GetHandler(Challenge c, IReadOnlyDictionary<string, object> initParams);
     }
 
     /// <summary>

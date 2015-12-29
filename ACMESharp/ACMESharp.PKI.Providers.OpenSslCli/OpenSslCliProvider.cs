@@ -51,7 +51,7 @@ namespace ACMESharp.PKI.Providers
         { get; set; } = 30 * 1000;
 
 
-        public OpenSslCliProvider(IDictionary<string, string> initParams)
+        public OpenSslCliProvider(IReadOnlyDictionary<string, string> initParams)
             : base(initParams)
         {
             if (initParams.ContainsKey(PARAM_CLI_PATH))

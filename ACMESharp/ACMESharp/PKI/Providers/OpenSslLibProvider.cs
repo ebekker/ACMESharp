@@ -441,7 +441,7 @@ namespace ACMESharp.PKI.Providers
         }
         */
 
-        public OpenSslLibProvider(IDictionary<string, string> newParams)
+        public OpenSslLibProvider(IReadOnlyDictionary<string, string> newParams)
             : base(newParams)
         {
             if (_cpType == null)

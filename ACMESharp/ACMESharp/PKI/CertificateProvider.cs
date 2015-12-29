@@ -24,7 +24,7 @@ namespace ACMESharp.PKI
             { DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslLibProvider) },
         };
 
-        protected CertificateProvider(IDictionary<string, string> newParams)
+        protected CertificateProvider(IReadOnlyDictionary<string, string> newParams)
         { }
 
         public virtual void Dispose()
@@ -131,7 +131,7 @@ namespace ACMESharp.PKI
         /// </summary>
         /// <returns></returns>
         public static CertificateProvider GetProvider(string name = DEFAULT_PROVIDER_NAME,
-                IDictionary<string, string> initParams = null)
+                IReadOnlyDictionary<string, string> initParams = null)
         {
             Type t;
             lock (_providers)

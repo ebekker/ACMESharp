@@ -56,7 +56,7 @@ namespace ACMESharp.ACME.Providers
             return c is DnsChallenge || c is HttpChallenge;
         }
 
-        public IChallengeHandler GetHandler(Challenge c, IDictionary<string, object> initParams)
+        public IChallengeHandler GetHandler(Challenge c, IReadOnlyDictionary<string, object> initParams)
         {
             var h = new ManualChallengeHandler();
 

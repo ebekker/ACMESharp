@@ -48,7 +48,7 @@ namespace ACMESharp.Providers.AWS
         }
 
 
-        public IChallengeHandler GetHandler(Challenge c, IDictionary<string, object> initParams)
+        public IChallengeHandler GetHandler(Challenge c, IReadOnlyDictionary<string, object> initParams)
         {
             var h = new AwsS3ChallengeHandler();
 

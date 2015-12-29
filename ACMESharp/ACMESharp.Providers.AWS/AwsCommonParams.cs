@@ -51,7 +51,7 @@ namespace ACMESharp.Providers.AWS
 
         #region -- Methods --
 
-        public void InitParams(IDictionary<string, object> initParams)
+        public void InitParams(IReadOnlyDictionary<string, object> initParams)
         {
             if (initParams.ContainsKey(ACCESS_KEY_ID.Name))
                 AccessKeyId = (string)initParams[ACCESS_KEY_ID.Name];

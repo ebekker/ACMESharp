@@ -426,7 +426,7 @@ namespace ACMESharp
 
         public AuthorizeChallenge HandleChallenge(AuthorizationState authzState,
                 string challengeType,
-                string handlerName, IDictionary<string, object> handlerParams,
+                string handlerName, IReadOnlyDictionary<string, object> handlerParams,
                 bool cleanUp = false)
         {
             var provider = ChallengeHandlerExtManager.GetProvider(handlerName);

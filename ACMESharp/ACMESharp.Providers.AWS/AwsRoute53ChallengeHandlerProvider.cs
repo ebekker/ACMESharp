@@ -49,7 +49,7 @@ namespace ACMESharp.Providers.AWS
             return c is DnsChallenge;
         }
 
-        public IChallengeHandler GetHandler(Challenge c, IDictionary<string, object> initParams)
+        public IChallengeHandler GetHandler(Challenge c, IReadOnlyDictionary<string, object> initParams)
         {
             var h = new AwsRoute53ChallengeHandler();
 

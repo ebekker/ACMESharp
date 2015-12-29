@@ -447,7 +447,7 @@ namespace ACMESharp.PKI.Providers
             if (_cpType == null)
                 throw new InvalidOperationException("unresolved architecture-specific implementation");
 
-            var argTypes = new[] { typeof(IDictionary<string, string>) };
+            var argTypes = new[] { typeof(IReadOnlyDictionary<string, string>) };
             var cons = _cpType.GetConstructor(argTypes);
             if (cons == null)
                 throw new InvalidOperationException("unresolved paramterized constructor");

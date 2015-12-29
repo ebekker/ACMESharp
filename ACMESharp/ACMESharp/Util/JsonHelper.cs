@@ -5,15 +5,48 @@ using System.Collections.Generic;
 using System.IO;
 using ACMESharp.HTTP;
 
-namespace ACMESharp.POSH.Util
+namespace ACMESharp.Util
 {
     public static class JsonHelper
     {
-        private static Newtonsoft.Json.JsonSerializerSettings JSS =
+        //private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_NONE =
+        //        new Newtonsoft.Json.JsonSerializerSettings
+        //        {
+        //            Formatting = Newtonsoft.Json.Formatting.Indented,
+        //            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None,
+        //            Converters = new List<JsonConverter>
+        //            {
+        //                AcmeEntitySerializer.INSTANCE
+        //            }
+        //        };
+
+        //private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_ALL =
+        //        new Newtonsoft.Json.JsonSerializerSettings
+        //        {
+        //            Formatting = Newtonsoft.Json.Formatting.Indented,
+        //            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+        //            Converters = new List<JsonConverter>
+        //            {
+        //                AcmeEntitySerializer.INSTANCE
+        //            }
+        //        };
+
+        private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_OBJ =
                 new Newtonsoft.Json.JsonSerializerSettings
                 {
                     Formatting = Newtonsoft.Json.Formatting.Indented,
                     TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects,
+                    Converters = new List<JsonConverter>
+                    {
+                        AcmeEntitySerializer.INSTANCE
+                    }
+                };
+
+        private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_AUTO =
+                new Newtonsoft.Json.JsonSerializerSettings
+                {
+                    Formatting = Newtonsoft.Json.Formatting.Indented,
+                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>
                     {
                         AcmeEntitySerializer.INSTANCE
@@ -25,7 +58,7 @@ namespace ACMESharp.POSH.Util
         {
             using (var w = new StreamWriter(s))
             {
-                w.Write(JsonConvert.SerializeObject(obj, JSS));
+                w.Write(JsonConvert.SerializeObject(obj, JSS_TNH_OBJ));
             }
         }
 
@@ -33,7 +66,7 @@ namespace ACMESharp.POSH.Util
         {
             using (var r = new StreamReader(s))
             {
-                return JsonConvert.DeserializeObject<T>(r.ReadToEnd(), JSS);
+                return JsonConvert.DeserializeObject<T>(r.ReadToEnd(), JSS_TNH_AUTO);
             }
         }
 

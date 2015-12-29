@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using ACMESharp.ACME;
-using ACMESharp.POSH.Util;
+using ACMESharp.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ACMESharp.Providers.AWS

@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 using ACMESharp.ACME;
 using ACMESharp.JOSE;
 using ACMESharp.Messages;
-using ACMESharp.POSH.Util;
+using ACMESharp.Util;
 
 namespace ACMESharp
 {

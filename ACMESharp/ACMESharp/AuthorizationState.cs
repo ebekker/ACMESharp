@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ACMESharp.Messages;
-using ACMESharp.POSH.Util;
+using ACMESharp.Util;
 
 namespace ACMESharp
 {

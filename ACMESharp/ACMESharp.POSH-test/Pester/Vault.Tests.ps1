@@ -5,7 +5,11 @@ function Test-IsAdmin {
             [Security.Principal.WindowsBuiltInRole] "Administrator")
 }
 
-ipmo "$PSScriptRoot\..\bin\ACMEPowerShell"
+if (-not (Get-Variable ACME_POSH_PATH -ValueOnly -ErrorAction Ignore)) {
+    $ACME_POSH_PATH = "$PSScriptRoot\..\bin\ACMEPowerShell"
+}
+
+ipmo $ACME_POSH_PATH
 
 
 Describe "VaultProfileTests" {

@@ -24,6 +24,8 @@ artifacts:
 - path: ACMESharp\ACMESharp.POSH\bin
   name: ACME-posh
   type: zip
+- path: ACMESharp\ACMESharp.POSH-test\Pester
+  name: ACME-posh-pester  type: zip
 - path: ACMESharp\dist\nuget\*.nupkg
   name: ACME-lib-nuget
 - path: cov-int

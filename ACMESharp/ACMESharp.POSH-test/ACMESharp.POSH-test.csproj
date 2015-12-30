@@ -47,10 +47,7 @@
     <Content Include="README-PESTER.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Pester\VaultProfileTests\Test-GetVaultProfiles.ps1" />
-    <None Include="Pester\VaultProfileTests\Test-GetVaultProfiles.Tests.ps1" />
-    <None Include="Pester\VaultTests\Test-Vault.ps1" />
-    <None Include="Pester\VaultTests\Test-Vault.Tests.ps1" />
+    <None Include="Pester\Vault.Tests.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACMESharp.POSH\ACMESharp.POSH.csproj">

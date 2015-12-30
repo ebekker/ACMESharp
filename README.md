@@ -2,6 +2,11 @@
 
 An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .NET platform.
 
+--
+
+For announcements and discussions please see go to the **[Community Forums](https://groups.google.com/d/forum/acmesharp)**.
+
+---
 
 [![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/acmesharp)
 [![Join the chat at https://gitter.im/ebekker/letsencrypt-win](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ebekker/letsencrypt-win?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -12,9 +17,7 @@ An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .
 
 ---
 
-Please note, this project was formerly named **`letsencrypt-win`**.
-
----
+*Please note, this project was formerly named* **`letsencrypt-win`**.
 
 ## Related
 

@@ -25,10 +25,12 @@ namespace ACMESharp.Vault
     
         bool IsStorageOpen
         { get; }
-    
+
         #endregion -- Properties --
 
         #region -- Methods --
+
+        bool TestStorage();
 
         void InitStorage(bool force = false);
     

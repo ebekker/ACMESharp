@@ -1,4 +1,6 @@
-﻿using ACMESharp.Vault.Profile;
+﻿using ACMESharp.POSH.Util;
+using ACMESharp.Vault;
+using ACMESharp.Vault.Profile;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +17,6 @@ namespace ACMESharp.POSH
         public const string PSET_SET = "Set";
         public const string PSET_REMOVE = "Remove";
 
-
         [Parameter(Mandatory = true, Position = 0)]
         public string ProfileName
         { get; set; }
@@ -25,27 +26,55 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter(Mandatory = false, Position = 2, ParameterSetName = PSET_SET)]
-        public Dictionary<string, object> VaultParameters
+        public Hashtable VaultParameters
         { get; set; }
 
         [Parameter(Mandatory = false, ParameterSetName = PSET_SET)]
-        public Dictionary<string, object> ProviderParameters
+        public Hashtable ProviderParameters
         { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = PSET_REMOVE)]
         public SwitchParameter Remove
         { get; set; }
 
+        [Parameter(Mandatory = false)]
+        public SwitchParameter Force
+        { get; set; }
+
         protected override void ProcessRecord()
         {
+            IVault existingVault = null;
+            var existingProfile = VaultProfileManager.GetProfile(ProfileName);
+
+            if (existingProfile != null)
+            {
+                try { existingVault = Util.VaultHelper.GetVault(ProfileName); }
+                catch (Exception)
+                { }
+            }
+
             if (Remove)
             {
+                if (existingProfile == null)
+                    return;
+
+                if (!Force && existingVault != null && existingVault.TestStorage())
+                    throw new InvalidOperationException("profile refers to an existing Vault;"
+                            + " specify -Force to remove anyway");
                 VaultProfileManager.RemoveProfile(ProfileName);
             }
             else
             {
-                VaultProfileManager.SetProfile(ProfileName, ProviderName,
-                        VaultParameters, ProviderParameters);
+                if (!Force && existingProfile != null)
+                    throw new InvalidOperationException("existing profile found;"
+                            + " specify -Force to overwrite");
+
+                var pp = (IReadOnlyDictionary<string, object>
+                        )ProviderParameters.Convert<string, object>();
+                var vp = (IReadOnlyDictionary<string, object>
+                        )VaultParameters.Convert<string, object>();
+
+                VaultProfileManager.SetProfile(ProfileName, ProviderName, pp, vp);
             }
         }
     }

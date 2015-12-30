@@ -6,6 +6,7 @@ using ACMESharp.Vault;
 using System.Management.Automation;
 using ACMESharp.Vault.Model;
 using ACMESharp.Vault.Util;
+using System;
 
 namespace ACMESharp.POSH
 {

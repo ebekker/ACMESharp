@@ -9,27 +9,16 @@ namespace ACMESharp.Util
 {
     public static class JsonHelper
     {
-        //private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_NONE =
-        //        new Newtonsoft.Json.JsonSerializerSettings
-        //        {
-        //            Formatting = Newtonsoft.Json.Formatting.Indented,
-        //            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None,
-        //            Converters = new List<JsonConverter>
-        //            {
-        //                AcmeEntitySerializer.INSTANCE
-        //            }
-        //        };
-
-        //private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_ALL =
-        //        new Newtonsoft.Json.JsonSerializerSettings
-        //        {
-        //            Formatting = Newtonsoft.Json.Formatting.Indented,
-        //            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-        //            Converters = new List<JsonConverter>
-        //            {
-        //                AcmeEntitySerializer.INSTANCE
-        //            }
-        //        };
+        private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_NONE =
+                new Newtonsoft.Json.JsonSerializerSettings
+                {
+                    Formatting = Newtonsoft.Json.Formatting.Indented,
+                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None,
+                    Converters = new List<JsonConverter>
+                    {
+                        AcmeEntitySerializer.INSTANCE
+                    }
+                };
 
         private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_OBJ =
                 new Newtonsoft.Json.JsonSerializerSettings
@@ -53,12 +42,43 @@ namespace ACMESharp.Util
                     }
                 };
 
+        //private static Newtonsoft.Json.JsonSerializerSettings JSS_TNH_ALL =
+        //        new Newtonsoft.Json.JsonSerializerSettings
+        //        {
+        //            Formatting = Newtonsoft.Json.Formatting.Indented,
+        //            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+        //            Converters = new List<JsonConverter>
+        //            {
+        //                AcmeEntitySerializer.INSTANCE
+        //            }
+        //        };
 
+
+        /// <summary>
+        /// Serializes the given object as JSON to the target stream
+        /// adding type name annotation to any embeded object.
+        /// </summary>
         public static void Save(Stream s, object obj)
         {
             using (var w = new StreamWriter(s))
             {
                 w.Write(JsonConvert.SerializeObject(obj, JSS_TNH_OBJ));
+            }
+        }
+
+        /// <summary>
+        /// Serializes the given object as JSON to the target stream
+        /// adding type name annotations as specified.
+        /// </summary>
+        /// <param name="autoOrNone">if true, automatically decides whether
+        ///         type name annotations are needed on a case-by-case basis;
+        ///         if false, adds no type name annotations</param>
+        public static void Save(Stream s, object obj, bool autoOrNone)
+        {
+            using (var w = new StreamWriter(s))
+            {
+                w.Write(JsonConvert.SerializeObject(obj,
+                        autoOrNone ? JSS_TNH_AUTO : JSS_TNH_NONE));
             }
         }
 

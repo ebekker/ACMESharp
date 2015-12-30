@@ -231,7 +231,7 @@ namespace ACMESharp.Vault.Providers
             var tmp = $"{_vaultFile}.tmp{DateTime.Now.ToFileTime()}";
             using (var s = new FileStream(tmp, FileMode.Create))
             {
-                JsonHelper.Save(s, _vaultMeta);
+                JsonHelper.Save(s, _vaultMeta, true);
             }
             // Now commit the changes
             File.Copy(tmp, _vaultFile, true);

@@ -39,7 +39,7 @@ deploy:
   region: us-east-1
   bucket: acmesharp.zyborg.io
   folder: appveyor-deploy
-  artifact: ACME-lib,ACME-posh,ACME-lib-nuget
+  artifact: ACME-lib,ACME-posh,ACME-posh-pester
   set_public: true
 notifications:
 - provider: Webhook

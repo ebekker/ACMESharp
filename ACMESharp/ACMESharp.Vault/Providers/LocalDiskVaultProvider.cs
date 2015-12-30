@@ -24,6 +24,11 @@ namespace ACMESharp.Vault.Providers
                 isRequired: true, label: "Root Path",
                 desc: "Specifies the directory path where vault data files will be rooted.");
 
+        public static readonly ParameterDetail CREATE_PATH = new ParameterDetail(
+                nameof(LocalDiskVault.CreatePath), ParameterType.BOOLEAN,
+                isRequired: true, label: "Create Path",
+                desc: "Specifies the Root Path should be created if it does not exist.");
+
         static readonly ParameterDetail[] PARAMS =
         {
             ROOT_PATH,
@@ -36,7 +41,16 @@ namespace ACMESharp.Vault.Providers
 
         public IVault GetVault(IReadOnlyDictionary<string, object> initParams)
         {
-            return new LocalDiskVault();
+            var vault = new LocalDiskVault();
+
+            if (initParams.ContainsKey(ROOT_PATH.Name))
+                vault.RootPath = initParams[ROOT_PATH.Name] as string;
+            if (initParams.ContainsKey(CREATE_PATH.Name))
+                vault.CreatePath = (initParams[CREATE_PATH.Name] as bool?).GetValueOrDefault();
+
+            vault.Init();
+
+            return vault;
         }
 
         public void Dispose()
@@ -99,6 +113,9 @@ namespace ACMESharp.Vault.Providers
         public string RootPath
         { get; set; }
 
+        public bool CreatePath
+        { get; set; }
+
         public bool IsDisposed
         { get; private set; }
 
@@ -154,10 +171,22 @@ namespace ACMESharp.Vault.Providers
         {
             AssertNotDisposed();
 
+            if (!Directory.Exists(RootPath))
+            {
+                if (CreatePath)
+                    Directory.CreateDirectory(RootPath);
+                else
+                    throw new DirectoryNotFoundException("Root Path not found")
+                            .With(nameof(RootPath), RootPath)
+                            .With(nameof(CreatePath), CreatePath);
+            }
+
             if (!force)
             {
                 if (File.Exists(_tagFile) || File.Exists(_vaultFile))
-                    throw new Exception("Vault root path contains existing vault data");
+                    throw new Exception("Vault root path contains existing vault data")
+                            .With(nameof(RootPath), RootPath)
+                            .With(nameof(force), force);
 
                 var existingDir = Directory.GetFileSystemEntries(RootPath);
                 if (existingDir != null && existingDir.Length > 0)

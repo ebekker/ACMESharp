@@ -136,6 +136,7 @@ namespace ACMESharp.Vault.Profile
                     {
                         [Providers.LocalDiskVaultProvider.ROOT_PATH.Name] =
                                 Path.Combine(APP_SYS_ROOT_PATH, PROFILE_DEFAULT_SYS_ROOT_NAME),
+                        [Providers.LocalDiskVaultProvider.CREATE_PATH.Name] = true,
                     });
 
             PROFILE_DEFAULT_USER = new VaultProfile(
@@ -144,6 +145,7 @@ namespace ACMESharp.Vault.Profile
                     {
                         [Providers.LocalDiskVaultProvider.ROOT_PATH.Name] =
                                 Path.Combine(APP_USER_ROOT_PATH, PROFILE_DEFAULT_USER_ROOT_NAME),
+                        [Providers.LocalDiskVaultProvider.CREATE_PATH.Name] = true,
                     });
 
             BUILTIN_PROFILES = new KeyValuePair<string, VaultProfile>[]

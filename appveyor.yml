@@ -1,7 +1,7 @@
 version: 0.8.0.{build}
 pull_requests:
   do_not_increment_build_number: true
-environment:
+skip_tags: trueenvironment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
 install:
@@ -27,6 +27,16 @@ artifacts:
 - path: cov-int
   name: ACMESharp-coverity
   type: zip
+deploy:
+- provider: S3
+  access_key_id: AKIAIU2XOHJ3HOICE4NA
+  secret_access_key:
+    secure: SFUn+5KMSOZJunA0RgHcztIE1O3mSv2gVgSBJnBwWV/miBevC9/CB+GWpSJ2XBjn
+  region: us-east-1
+  bucket: acmesharp.zyborg.io
+  folder: appveyor-deploy
+  artifact: ACME-lib,ACME-posh,ACME-lib-nuget
+  set_public: true
 notifications:
 - provider: Webhook
   url: https://webhooks.gitter.im/e/dc0dd42c91579a605d09

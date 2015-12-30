@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\ACMEPowerShell\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\ACMEPowerShell\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -42,8 +42,21 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Pester\" />
+    <Content Include="README-PESTER.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Pester\VaultProfileTests\Test-GetVaultProfiles.ps1" />
+    <None Include="Pester\VaultProfileTests\Test-GetVaultProfiles.Tests.ps1" />
+    <None Include="Pester\VaultTests\Test-Vault.ps1" />
+    <None Include="Pester\VaultTests\Test-Vault.Tests.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ACMESharp.POSH\ACMESharp.POSH.csproj">
+      <Project>{2f8d5934-b5a7-4983-8051-1f25882c7c30}</Project>
+      <Name>ACMESharp.POSH</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

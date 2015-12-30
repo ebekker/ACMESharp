@@ -1,4 +1,4 @@
 ﻿function Test-GetVaultProfiles {
-	ipmo ..\..\..\ACMESharp.POSH\bin\Debug\ACMEPowerShell
+	ipmo $PSScriptRoot\..\..\bin\Debug\ACMEPowerShell
 	Get-ACMEVaultProfile -ListProfiles
 }

@@ -4,7 +4,7 @@ An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .
 
 --
 
-For announcements and discussions please see go to the **[Community Forums](https://groups.google.com/d/forum/acmesharp)**.
+For announcements and discussions please see go to the **[Community Forums](http://groups.google.com/group/acmesharp)**.
 
 ---
 

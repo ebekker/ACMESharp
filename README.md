@@ -15,6 +15,12 @@ For announcements and discussions please see go to the **[Community Forums](http
        src="https://scan.coverity.com/projects/7030/badge.svg"/>
 </a>
 
+
+| PS3 | PS4 | PS5 |
+------|-----|------
+[![PS3 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs3\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp) | [![PS4 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs4\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp) | [![PS5 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs5\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp)
+
+
 ---
 
 *Please note, this project was formerly named* **`letsencrypt-win`**.

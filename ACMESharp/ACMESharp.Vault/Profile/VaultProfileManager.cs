@@ -49,6 +49,7 @@ namespace ACMESharp.Vault.Profile
         {
             info.AddValue(nameof(Name), Name);
             info.AddValue(nameof(ProviderName), ProviderName);
+            info.AddValue(nameof(ProviderParameters), ProviderParameters);
             info.AddValue(nameof(VaultParameters), VaultParameters);
         }
 
@@ -56,6 +57,8 @@ namespace ACMESharp.Vault.Profile
         {
             Name = info.GetString(nameof(Name));
             ProviderName = info.GetString(nameof(ProviderName));
+            ProviderParameters = (Dictionary<string, object>)info.GetValue(
+                    nameof(ProviderParameters), typeof(Dictionary<string, object>));
             VaultParameters = (Dictionary<string, object>)info.GetValue(
                     nameof(VaultParameters), typeof(Dictionary<string, object>));
         }

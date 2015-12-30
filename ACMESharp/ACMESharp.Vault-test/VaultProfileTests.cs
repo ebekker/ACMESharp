@@ -106,10 +106,11 @@ namespace ACMESharp.Vault
         [TestMethod]
         public void TestSetGetProfile()
         {
-            VaultProfileManager.SetProfile("Test1", "local", new Dictionary<string, object>
-            {
-                ["RootPath"] = "zz:\\no\\such\\path"
-            });
+            VaultProfileManager.SetProfile("Test1", "local",
+                    vaultParams: new Dictionary<string, object>
+                    {
+                        ["RootPath"] = "zz:\\no\\such\\path"
+                    });
 
             var profiles = VaultProfileManager.GetProfileNames();
             Assert.IsNotNull(profiles);

@@ -39,7 +39,7 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter]
-        public bool Force
+        public SwitchParameter Force
         { get; set; }
 
         [Parameter]

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ACMESharp.HTTP;
+using System.Text;
 
 namespace ACMESharp.Util
 {
@@ -70,15 +71,33 @@ namespace ACMESharp.Util
         /// Serializes the given object as JSON to the target stream
         /// adding type name annotations as specified.
         /// </summary>
-        /// <param name="autoOrNone">if true, automatically decides whether
+        /// <param name="noneOrAuto">if true, automatically decides whether
         ///         type name annotations are needed on a case-by-case basis;
         ///         if false, adds no type name annotations</param>
-        public static void Save(Stream s, object obj, bool autoOrNone)
+        public static void Save(Stream s, object obj, bool noneOrAuto)
         {
             using (var w = new StreamWriter(s))
             {
                 w.Write(JsonConvert.SerializeObject(obj,
-                        autoOrNone ? JSS_TNH_AUTO : JSS_TNH_NONE));
+                        noneOrAuto ? JSS_TNH_AUTO : JSS_TNH_NONE));
+            }
+        }
+
+        public static string Save(object obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                Save(ms, obj);
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
+        }
+
+        public static string Save(object obj, bool noneOrAuto)
+        {
+            using (var ms = new MemoryStream())
+            {
+                Save(ms, obj, noneOrAuto);
+                return Encoding.UTF8.GetString(ms.ToArray());
             }
         }
 
@@ -87,6 +106,14 @@ namespace ACMESharp.Util
             using (var r = new StreamReader(s))
             {
                 return JsonConvert.DeserializeObject<T>(r.ReadToEnd(), JSS_TNH_AUTO);
+            }
+        }
+
+        public static T Load<T>(string s)
+        {
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(s)))
+            {
+                return Load<T>(ms);
             }
         }
 

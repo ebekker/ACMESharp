@@ -63,8 +63,6 @@ Describe "VaultProfileTests" {
     }
 
     Context "Manage Profile with Existing Vault" {
-        #$initCwd = [System.Environment]::CurrentDirectory
-        
         $testPath = "$(Join-Path $TestDrive 'test1')"
 
         $profName = "test_$([DateTime]::Now.ToString('yyyyMMdd_HHmmss'))"
@@ -109,8 +107,74 @@ Describe "VaultProfileTests" {
             Set-ACMEVaultProfile -ProfileName $profName -Remove -Force
             Test-Path $profPath | Should Be $false
         }
+    }
 
-        #[System.Environment]::CurrentDirectory = $initCwd
+}
+
+Describe "VaultTests" {
+
+    Context "Manage Profile with Existing Vault" {
+        $testPath = "$(Join-Path $TestDrive 'test1')"
+
+        $profName = "test_$([DateTime]::Now.ToString('yyyyMMdd_HHmmss'))"
+        $provName = "local"
+        $vaultParams = @{ RootPath = $testPath; CreatePath = $true }
+
+        It "creates a Profile" {
+            Set-ACMEVaultProfile -ProfileName $profName -ProviderName $provName -VaultParameters $vaultParams -Force
+        }
+        It "initializes the Vault" {
+            Initialize-ACMEVault -VaultProfile $profName -BaseService LetsEncrypt-STAGING -Force
+        }
+        It "retrieves the Vault" {
+            $v = Get-ACMEVault -VaultProfile $profName
+
+            $v | Should Not BeNullOrEmpty
+            $v.BaseService | Should Be LetsEncrypt-STAGING
+            $v.BaseUri | Should Be https://acme-staging.api.letsencrypt.org/
+        }
+        It "adds a Registration" {
+            $r = New-ACMERegistration -VaultProfile $profName -Contacts mailto:letsencrypt@mailinator.org
+            $v = Get-ACMEVault -VaultProfile $profName
+
+            $r | Should Not BeNullOrEmpty
+            $v.Registrations | Should Not BeNullOrEmpty
+            $v.Registrations.Count | Should Be 1
+            
+            ## Cheap way to test for member-wise equality between the returned object
+            ## and what was captured in the Vault, compare the serialized forms
+            $vr = $v.Registrations[0].Registration
+            ## This doesn't work because the deserialized form of some objects
+            ## are slightly different (e.g. dynamic object vs. JObject)
+            #    $r_s = $r | Out-String -Width 100
+            #    $vr_s = $vr | Out-String -Width 100
+            ## This doesn't work because the PS native JSON serialization
+            ## doesn't understand JSON.NET types or annotations
+            #    $r_s = ConvertTo-Json $r
+            #    $vr_s = ConvertTo-Json $vr
+            $r_s = [ACMESharp.Util.JsonHelper]::Save($r, $false)
+            $vr_s = [ACMESharp.Util.JsonHelper]::Save($vr, $false)
+
+            $r_s | Should Be $vr_s
+        }
+        It "adds an Identifier before accepting ToS" {
+            { New-ACMEIdentifier -VaultProfile $profName -Dns example.com -Alias dns1 } | Should Throw
+            $err = $Error[0]
+            $err.Exception.Response.StatusCode | Should Be "Forbidden"
+        }
+        It "updates Registration with contact and ToS" {
+            $r = Update-ACMERegistration -VaultProfile $profName -Contacts mailto:letsencrypt2@mailinator.org -AcceptTos
+            $r.TosLinkUri | Should Be $r.TosAgreementUri
+        }
+        ## Can't seem to find a black-listed DNS to test this
+        #It "adds an blacklisted Identifier" {
+        #    { New-ACMEIdentifier -VaultProfile $profName -Dns example.com -Alias dns1 } | Should Throw
+        #    $err = $Error[0]
+        #    $err.Exception.Response.StatusCode | Should Be "Forbidden"
+        #}
+        It "removes a Profile with Force" {
+            Set-ACMEVaultProfile -ProfileName $profName -Remove -Force
+        }
     }
 }
 

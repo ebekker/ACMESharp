@@ -112,6 +112,15 @@
     <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-IisSitePathWebServerProvider" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="en-US\about_LetsEncrypt.help.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="en-US\about_ACMESharp.help.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="en-US\ACMESharp.POSH.dll-Help.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="README-TESTING.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +156,7 @@
     <StartProgram>C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
     <StartArguments>-ExecutionPolicy RemoteSigned -NoExit -Command "ipmo .\$(Configuration)\ACMEPowerShell; if (-not (Test-Path TestVault)) { mkdir TestVault }; cd .\TestVault"</StartArguments>
     <StartWorkingDirectory>..\..</StartWorkingDirectory>
+    <DocumentationFile>bin\Debug\ACMEPowerShell\ACMESharp.POSH.XML</DocumentationFile>
   </PropertyGroup>
   <Target Name="XmlDoc2CmdletDoc" AfterTargets="Build">
     <Exec Command="$(ProjectDir)..\..\tools\XmlDoc2CmdletDoc\XmlDoc2CmdletDoc.exe $(TargetPath)" />

@@ -52,8 +52,10 @@
     <Compile Include="Model\IdentifierInfo.cs" />
     <Compile Include="Model\IssuerCertificateInfo.cs" />
     <Compile Include="IVault.cs" />
+    <Compile Include="Model\ProviderProfileInfo.cs" />
     <Compile Include="Model\RegistrationInfo.cs" />
     <Compile Include="Model\ProxyConfig.cs" />
+    <Compile Include="Profile\ProviderProfile.cs" />
     <Compile Include="Profile\VaultProfileManager.cs" />
     <Compile Include="Providers\LocalDiskVaultProvider.cs" />
     <Compile Include="Util\EntityDictionary.cs" />

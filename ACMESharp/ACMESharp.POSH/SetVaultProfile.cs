@@ -22,7 +22,7 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter(Mandatory = true, Position = 1, ParameterSetName = PSET_SET)]
-        public string ProviderName
+        public string Provider
         { get; set; }
 
         [Parameter(Mandatory = false, Position = 2, ParameterSetName = PSET_SET)]
@@ -74,7 +74,7 @@ namespace ACMESharp.POSH
                 var vp = (IReadOnlyDictionary<string, object>
                         )VaultParameters.Convert<string, object>();
 
-                VaultProfileManager.SetProfile(ProfileName, ProviderName, pp, vp);
+                VaultProfileManager.SetProfile(ProfileName, Provider, pp, vp);
             }
         }
     }

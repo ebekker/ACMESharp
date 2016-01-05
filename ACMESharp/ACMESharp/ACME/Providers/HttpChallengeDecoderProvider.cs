@@ -2,7 +2,7 @@
 
 namespace ACMESharp.ACME.Providers
 {
-    [ChallengeDecoderProvider("http-01", ChallengeTypeKind.DNS,
+    [ChallengeDecoderProvider("http-01", ChallengeTypeKind.HTTP,
         Description = "Challenge type decoder for the HTTP type" +
                       " as specified in" +
                       " https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.2")]

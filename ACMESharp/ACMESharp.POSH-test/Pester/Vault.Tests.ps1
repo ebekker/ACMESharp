@@ -240,6 +240,7 @@ Describe "VaultTests" {
 }
 
 Describe "RegTests" {
+
     Context "Manage Challenge Handler Profiles" {
         $testPath = "$(Join-Path $TestDrive 'test1')"
 
@@ -299,14 +300,49 @@ Describe "RegTests" {
         #    $err = $Error[0]
         #    $err.Exception.Response.StatusCode | Should Be "Forbidden"
         #}
+        It "removes a Profile with Force" {
+            Set-ACMEVaultProfile -ProfileName $profName -Remove -Force
+        }
+    }
+}
+
+Describe "ChallengeTests" {
+
+    Context "Manage Challenge Handler Profiles" {
+        $testPath = "$(Join-Path $TestDrive 'test1')"
+
+        $profName = "test_$([DateTime]::Now.ToString('yyyyMMdd_HHmmss'))"
+        $provName = "local"
+        $vaultParams = @{ RootPath = $testPath; CreatePath = $true }
+
+        It "creates a Profile" {
+            Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams -Force
+        }
+        It "initializes the Vault" {
+            Initialize-ACMEVault -VaultProfile $profName -BaseService LetsEncrypt-STAGING -Force
+        }
+        It "adds a new Registration with accepted ToS" {
+            $r = New-ACMERegistration -VaultProfile $profName -Contacts mailto:letsencrypt@mailinator.org -AcceptTos
+            $v = Get-ACMEVault -VaultProfile $profName
+
+            $r | Should Not BeNullOrEmpty
+            $v.Registrations | Should Not BeNullOrEmpty
+            $v.Registrations.Count | Should Be 1
+            
+            ## Cheap way to test for member-wise equality between the returned object
+            ## and what was captured in the Vault, compare the serialized forms
+            $vr = $v.Registrations[0].Registration
+            $r_s = [ACMESharp.Util.JsonHelper]::Save($r, $false)
+            $vr_s = [ACMESharp.Util.JsonHelper]::Save($vr, $false)
+
+            $r_s | Should Be $vr_s
+        }
         It "adds a new DNS Identifier" {
             $dnsId = New-ACMEIdentifier -VaultProfile $profName -Dns $TEST_DNS_ID -Alias dns1
 
             ## Sanity check some results
             $dnsId | Should Not BeNullOrEmpty
-            $dnsId.Uri | Should Not BeNullOrEmpty
             $dnsId.Status | Should Be pending
-            $dnsId.Expires | Should BeGreaterThan ([datetime]::Now)
             @($dnsId.Challenges).Count | Should BeGreaterThan 0
             @($dnsId.Combinations).Count | Should BeGreaterThan 0
 
@@ -319,15 +355,44 @@ Describe "RegTests" {
             $vltId_s = [ACMESharp.Util.JsonHelper]::Save($vltId, $false)
 
             $vltId_s| Should Be $dnsId_s
+
+            ## Add a second just for good measure
+            $dnsId = New-ACMEIdentifier -VaultProfile $profName -Dns $TEST_DNS_ID -Alias dns2
+        }
+        It "lists Identifiers in Vault" {
+            $ids = Get-ACMEIdentifier -VaultProfile $profName
+
+            $ids | Should Not BeNullOrEmpty
+            $ids.Count | Should Be 2
+            $ids[0].Seq | Should Be 0
+            $ids[0].Alias | Should Be dns1
+            $ids[0].Status | Should Be pending
+        }
+        It "gets expected Identifier details in Vault" {
+            $dnsId = Get-ACMEIdentifier -VaultProfile $profName -Ref dns1
+
+            $dnsId | Should Not BeNullOrEmpty
+            $dnsId.IdentifierType | Should Be dns
+            $dnsId.Identifier | Should Be $TEST_DNS_ID
+            $dnsId.Uri | Should Not BeNullOrEmpty
+            $dnsId.Status | Should Be pending
+            $dnsId.Expires | Should BeGreaterThan ([DateTime]::Now)
         }
         It "handles the HTTP challenge" {
-            #Get-ACMEChallengeHandler -List
+            $ch1 = Complete-ACMEChallenge -VaultProfile $profName -Ref dns1 -ChallengeType dns-01 `
+                    -Handler manual -HandlerParameters @{ WriteOutPath="$testPath\manualDns.out" }
+
+            "$testPath\manualDns.out" | Should Exist
+            $x = [System.IO.File]::ReadAllText("$testPath\manualDns.out")
+            Write-Out $x
+            
         }
         It "removes a Profile with Force" {
             Set-ACMEVaultProfile -ProfileName $profName -Remove -Force
         }
     }
 }
+
 
 
 <#

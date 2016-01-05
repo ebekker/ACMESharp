@@ -1,15 +1,18 @@
 ﻿Set-StrictMode -Version Latest
 
-function Test-IsAdmin {
-    ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
-            [Security.Principal.WindowsBuiltInRole] "Administrator")
-}
+$TEST_DNS_ID = "acme-pester.acmetesting.zyborg.io"
+
 
 if (-not (Get-Variable ACME_POSH_PATH -ValueOnly -ErrorAction Ignore)) {
     $ACME_POSH_PATH = "$PSScriptRoot\..\bin\ACMEPowerShell"
 }
-
 ipmo $ACME_POSH_PATH
+
+
+function Test-IsAdmin {
+    ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+            [Security.Principal.WindowsBuiltInRole] "Administrator")
+}
 
 
 Describe "VaultProfileTests" {
@@ -113,7 +116,51 @@ Describe "VaultProfileTests" {
 
 Describe "VaultTests" {
 
-    Context "Manage Profile with Existing Vault" {
+    Context "List and Get Available Challenge Types" {
+        It "verifies the Challenge Types" {
+            $ct = Get-ACMEChallengeHandlerProfile -ListChallengeTypes
+            ($ct | ConvertTo-Json -Compress) | Should Be (@('dns-01', 'http-01') | ConvertTo-Json -Compress)
+        }
+        It "gets the details of a non-existent Challenge Type" {
+            { Get-ACMEChallengeHandlerProfile -GetChallengeType no-such-type } | Should Throw
+        }
+        It "gets the details of the DNS Challenge Type" {
+            $ct = Get-ACMEChallengeHandlerProfile -GetChallengeType dns-01
+            $ct | Should Not BeNullOrEmpty
+            $ct.SupportedType | Should Be DNS
+            $ct.ChallengeType | Should Be dns-01
+        }
+        It "gets the details of the HTTP Challenge Type" {
+            $ct = Get-ACMEChallengeHandlerProfile -GetChallengeType http-01
+            $ct | Should Not BeNullOrEmpty
+            $ct.SupportedType | Should Be HTTP
+            $ct.ChallengeType | Should Be http-01
+        }
+    }
+
+    Context "List and Get Available Challenge Handlers" {
+        It "verifies the Challenge Handlers " {
+            $ch = Get-ACMEChallengeHandlerProfile -ListChallengeHandlers
+            ($ch | ConvertTo-Json -Compress) | Should Be (@('manual', 'awsRoute53', 'awsS3') | ConvertTo-Json -Compress)
+        }
+        It "gets the details of a non-existent Challenge Handler" {
+            { Get-ACMEChallengeHandlerProfile -GetChallengeHandler no-such-type } | Should Throw
+        }
+        It "gets the details of the MANUAL Challenge Handler" {
+            $ct = Get-ACMEChallengeHandlerProfile -GetChallengeHandler manual
+            $ct | Should Not BeNullOrEmpty
+            $ct.Parameters | Should Not BeNullOrEmpty
+            $ct.SupportedTypes | Should Be ([ACMESharp.ACME.ChallengeTypeKind]"DNS,HTTP")
+        }
+        It "gets the details of the MANUAL Challenge Handler parameters" {
+            $ctp = Get-ACMEChallengeHandlerProfile -GetChallengeHandler manual -ParametersOnly
+            $ctp | Should Not BeNullOrEmpty
+            $ctp.Count | Should Be 3
+            ($ctp | % { $_.Name } | ConvertTo-Json -Compress) | Should Be (@("WriteOutPath", "Append", "Overwrite") | ConvertTo-Json -Compress)
+        }
+    }
+
+    Context "Manage Challenge Handler Profiles" {
         $testPath = "$(Join-Path $TestDrive 'test1')"
 
         $profName = "test_$([DateTime]::Now.ToString('yyyyMMdd_HHmmss'))"
@@ -121,7 +168,87 @@ Describe "VaultTests" {
         $vaultParams = @{ RootPath = $testPath; CreatePath = $true }
 
         It "creates a Profile" {
-            Set-ACMEVaultProfile -ProfileName $profName -ProviderName $provName -VaultParameters $vaultParams -Force
+            Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams -Force
+        }
+        It "initializes the Vault" {
+            Initialize-ACMEVault -VaultProfile $profName -BaseService LetsEncrypt-STAGING -Force
+        }
+        It "retrieves the Vault" {
+            $v = Get-ACMEVault -VaultProfile $profName
+
+            $v | Should Not BeNullOrEmpty
+            $v.BaseService | Should Be LetsEncrypt-STAGING
+            $v.BaseUri | Should Be https://acme-staging.api.letsencrypt.org/
+        }
+        It "gets the null collection of Challenge Handler profiles" {
+            $lp = Get-ACMEChallengeHandlerProfile -VaultProfile $profName -ListProfiles
+            $lp | Should Be $null
+        }
+        It "gets the details of a non-existent Challenge Handler profile" {
+            $ch = Get-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileRef ch1
+            $ch | Should Be $null
+        }
+        It "sets the details of a new Challenge Handler profile" {
+            Set-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileName ch1 -ChallengeType dns-01 `
+                    -Handler manual -HandlerParameters @{ WriteOutPath = "$testPath\dnsManual" }
+            Set-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileName ch2 -ChallengeType http-01 `
+                    -Handler manual -HandlerParameters @{ WriteOutPath = "$testPath\httpManual" }
+
+            $ch1 = Get-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileRef ch1
+            $ch1 | Should Not BeNullOrEmpty
+            $ch1.ProviderType | Should Be ([ACMESharp.Vault.Profile.ProviderType]::CHALLENGE_HANDLER)
+            $ch1.ProviderName | Should Be manual
+            ($ch1.InstanceParameters | ConvertTo-Json) |
+                    Should Be (@{ WriteOutPath = "$testPath\dnsManual" } | ConvertTo-Json)
+        }
+        It "fails to set an existing Challenge Handler profile" {
+            { Set-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileName ch1 `
+                    -ChallengeType dns-01 -Handler manual `
+                    -HandlerParameters @{ WriteOutPath = "$testPath\manualHandler" } } | Should Throw
+            { Set-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileName ch2 `
+                    -ChallengeType http-01 -Handler manual `
+                    -HandlerParameters @{ WriteOutPath = "$testPath\manualHandler" } } | Should Throw
+        }
+        It "removes then re-set an existing Challenge Handler profile" {
+            Set-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileName ch1 -Remove
+
+            $ch1 = Get-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileRef ch1
+            $ch1 | Should Be $null
+
+            Set-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileName ch1 `
+                    -ChallengeType dns-01 -Handler manual `
+                    -HandlerParameters @{ WriteOutPath = "$testPath\dnsManual.txt" }
+
+            $ch1 = Get-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileRef ch1
+            $ch1 | Should Not BeNullOrEmpty
+            $ch1.ProviderType | Should Be ([ACMESharp.Vault.Profile.ProviderType]::CHALLENGE_HANDLER)
+            $ch1.ProviderName | Should Be manual
+
+            Set-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileName ch2 -Force `
+                    -ChallengeType dns-01 -Handler manual `
+                    -HandlerParameters @{ WriteOutPath = "$testPath\dnsManual.txt" }
+
+            $ch2 = Get-ACMEChallengeHandlerProfile -VaultProfile $profName -ProfileRef ch2
+            $ch2 | Should Not BeNullOrEmpty
+            $ch2.ProviderType | Should Be ([ACMESharp.Vault.Profile.ProviderType]::CHALLENGE_HANDLER)
+            $ch2.ProviderName | Should Be manual
+        }
+        It "removes a Profile with Force" {
+            Set-ACMEVaultProfile -ProfileName $profName -Remove -Force
+        }
+    }
+}
+
+Describe "RegTests" {
+    Context "Manage Challenge Handler Profiles" {
+        $testPath = "$(Join-Path $TestDrive 'test1')"
+
+        $profName = "test_$([DateTime]::Now.ToString('yyyyMMdd_HHmmss'))"
+        $provName = "local"
+        $vaultParams = @{ RootPath = $testPath; CreatePath = $true }
+
+        It "creates a Profile" {
+            Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams -Force
         }
         It "initializes the Vault" {
             Initialize-ACMEVault -VaultProfile $profName -BaseService LetsEncrypt-STAGING -Force
@@ -172,11 +299,36 @@ Describe "VaultTests" {
         #    $err = $Error[0]
         #    $err.Exception.Response.StatusCode | Should Be "Forbidden"
         #}
+        It "adds a new DNS Identifier" {
+            $dnsId = New-ACMEIdentifier -VaultProfile $profName -Dns $TEST_DNS_ID -Alias dns1
+
+            ## Sanity check some results
+            $dnsId | Should Not BeNullOrEmpty
+            $dnsId.Uri | Should Not BeNullOrEmpty
+            $dnsId.Status | Should Be pending
+            $dnsId.Expires | Should BeGreaterThan ([datetime]::Now)
+            @($dnsId.Challenges).Count | Should BeGreaterThan 0
+            @($dnsId.Combinations).Count | Should BeGreaterThan 0
+
+            ## Make sure the expected challenges types that we plan to test with are there
+            $dnsId.Challenges | ? { $_.Type -eq "dns-01" } | Should Not BeNullOrEmpty
+            $dnsId.Challenges | ? { $_.Type -eq "http-01" } | Should Not BeNullOrEmpty
+
+            $vltId = Get-ACMEIdentifier -VaultProfile $profName -Ref dns1
+            $dnsId_s = [ACMESharp.Util.JsonHelper]::Save($dnsId, $false)
+            $vltId_s = [ACMESharp.Util.JsonHelper]::Save($vltId, $false)
+
+            $vltId_s| Should Be $dnsId_s
+        }
+        It "handles the HTTP challenge" {
+            #Get-ACMEChallengeHandler -List
+        }
         It "removes a Profile with Force" {
             Set-ACMEVaultProfile -ProfileName $profName -Remove -Force
         }
     }
 }
+
 
 <#
 $isAdmin = [ACMESharp.Util.SysHelper]::IsElevatedAdmin()

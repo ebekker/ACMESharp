@@ -60,27 +60,44 @@ namespace ACMESharp.Vault.Util
                 _dictByAlias.Add(item.Alias, item);
         }
 
-        public TEntity GetByRef(string entityRef)
+        public void Remove(Guid id)
+        {
+            var x = this[id];
+            if (x != null)
+            {
+                _dictByAlias.Remove(x.Alias);
+                _dictById.Remove(x.Id);
+            }
+        }
+
+        public TEntity GetByRef(string entityRef, bool throwOnMissing = true,
+                TEntity def = default(TEntity))
         {
             if (string.IsNullOrEmpty(entityRef))
-                throw new ArgumentNullException("ref", "Invalid or missing reference");
+                throw new ArgumentNullException("ref", "invalid or missing reference");
 
             if (entityRef.StartsWith("="))
             {
                 // Ref by ID
                 var id = Guid.Parse(entityRef.Substring(1));
-                return this[id];
+                if (throwOnMissing || ContainsKey(id))
+                    return this[id];
             }
             else if (char.IsNumber(entityRef, 0))
             {
                 // Ref by Index
-                return this[int.Parse(entityRef)];
+                var index = int.Parse(entityRef);
+                if (throwOnMissing || ContainsKey(index))
+                    return this[index];
             }
             else
             {
                 // Ref by Alias
-                return this[entityRef];
+                if (throwOnMissing || ContainsKey(entityRef))
+                    return this[entityRef];
             }
+
+            return def;
         }
 
         public IEnumerator<TEntity> GetEnumerator()

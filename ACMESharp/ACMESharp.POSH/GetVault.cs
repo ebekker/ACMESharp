@@ -11,7 +11,6 @@ namespace ACMESharp.POSH
     [OutputType(typeof(Vault.Model.VaultInfo))]
     public class GetVault : Cmdlet
     {
-
         [Parameter]
         public string VaultProfile
         { get; set; }

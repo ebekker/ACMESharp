@@ -63,14 +63,20 @@ namespace ACMESharp.POSH
         {
             var baseUri = BaseUri;
             if (string.IsNullOrEmpty(baseUri))
+            {
                 if (!string.IsNullOrEmpty(BaseService)
                         && WELL_KNOWN_BASE_SERVICES.ContainsKey(BaseService))
+                {
                     baseUri = WELL_KNOWN_BASE_SERVICES[BaseService];
+                    WriteVerbose($"Resolved Base URI from Base Service [{baseUri}]");
+                }
                 else
                     throw new PSInvalidOperationException("either a base service or URI is required");
+            }
 
             using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
+                WriteVerbose("Initializing Storage Backend");
                 vlt.InitStorage(Force);
                 var v = new VaultInfo
                 {

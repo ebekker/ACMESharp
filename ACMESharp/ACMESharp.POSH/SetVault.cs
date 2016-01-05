@@ -57,8 +57,12 @@ namespace ACMESharp.POSH
 
                 var baseUri = BaseUri;
                 if (string.IsNullOrEmpty(baseUri) && !string.IsNullOrEmpty(BaseService))
+                {
                     baseUri = InitializeVault.WELL_KNOWN_BASE_SERVICES[BaseService];
+                    WriteVerbose($"Updating Base URI from Well Known Base Service [{baseUri}]");
+                }
 
+                WriteVerbose("Updating Vault settings");
                 v.Alias = StringHelper.IfNullOrEmpty(Alias, v.Alias);
                 v.Label = StringHelper.IfNullOrEmpty(Label, v.Label);
                 v.Memo = StringHelper.IfNullOrEmpty(Memo, v.Memo);

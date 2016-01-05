@@ -148,4 +148,29 @@
     <StartArguments>-ExecutionPolicy RemoteSigned -NoExit -Command "ipmo .\$(Configuration)\ACMEPowerShell; if (-not (Test-Path TestVault)) { mkdir TestVault }; cd .\TestVault"</StartArguments>
     <StartWorkingDirectory>..\..</StartWorkingDirectory>
   </PropertyGroup>
+  <Target Name="XmlDoc2CmdletDoc" AfterTargets="Build">
+    <Exec Command="$(ProjectDir)..\..\tools\XmlDoc2CmdletDoc\XmlDoc2CmdletDoc.exe $(TargetPath)" />
+    <Exec Command="move $(TargetPath)-Help.xml $(TargetDir)en-US" />
+    <!-- Add the generated help XML to the Content item group -->
+    <!-- Thanks to http://stackoverflow.com/a/12887795 for this -->
+    <!--
+    
+      ** THIS DOES NOT WORK BECAUSE THIS TARGET HAS TO RUN **
+      ** AFTER THE BUILD PROCESS HAS GENERATED AN ASSEMBLY **
+    
+    <CreateItem Include="$(TargetPath)Foo-Help.xml">
+      <Output TaskParameter="Include" ItemName="FileWrites"/>
+    </CreateItem>
+    <CreateItem Include="$(TargetPath)Foo-Help.xml">
+      <Output TaskParameter="Include" ItemName="FileWrites"/>
+    </CreateItem>
+    <CreateItem Include="$(TargetPath)Foo-Help.xml"
+                AdditionalMetadata="TargetPath=$(TargetPath)Foo-Help.xml">
+      <Output TaskParameter="Include" ItemName="ContentWithTargetPath"/>
+    </CreateItem>
+    <CreateItem Include="$(TargetPath)Foo-Help.xml">
+      <Output TaskParameter="Include" ItemName="Content"/>
+    </CreateItem>
+    -->
+  </Target>
 </Project>

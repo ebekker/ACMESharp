@@ -54,6 +54,10 @@
       <Project>{2f8d5934-b5a7-4983-8051-1f25882c7c30}</Project>
       <Name>ACMESharp.POSH</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ACMESharp.Providers.AWS\ACMESharp.Providers.AWS.csproj">
+      <Project>{cd8842f7-5cbd-4db1-b2b9-387a095ab91f}</Project>
+      <Name>ACMESharp.Providers.AWS</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

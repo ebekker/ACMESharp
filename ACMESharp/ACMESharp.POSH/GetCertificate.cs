@@ -8,6 +8,19 @@ using ACMESharp.PKI;
 
 namespace ACMESharp.POSH
 {
+    /// <summary>
+    /// <para type="synopsis">
+    ///   Gets the status and details of a Certificate stored in the Vault.
+    /// </para>
+    /// <para type="description">
+    ///   This cmdlet retrieves the details of a Certificate defined in the Vault.
+    ///   It is also used to export various artificates associated with the Certificate
+    ///   to various formats.
+    /// </para>
+    /// <para type="link">New-Certificate</para>
+    /// <para type="link">Submit-Certificate</para>
+    /// <para type="link">Update-Certificate</para>
+    /// </summary>
     [Cmdlet(VerbsCommon.Get, "Certificate", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(CertificateInfo))]
     public class GetCertificate : Cmdlet
@@ -15,40 +28,95 @@ namespace ACMESharp.POSH
         public const string PSET_LIST = "List";
         public const string PSET_GET = "Get";
 
-        [Parameter(ParameterSetName = PSET_GET)]
-        public string Ref
+        /// <summary>
+        /// <para type="description">
+        ///     A reference (ID or alias) to a previously defined Certificate request.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0)]
+        [Alias("Ref")]
+        public string CertificateRef
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Optionally, specifies a file path where the private key associated
+        ///     with the referenced Certificate will be saved in PEM format.
+        /// </para>
+        /// </summary>
         [Parameter(ParameterSetName = PSET_GET)]
         public string ExportKeyPEM
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Optionally, specifies a file path where the CSR associated
+        ///     with the referenced Certificate will be saved in PEM format.
+        /// </para>
+        /// </summary>
         [Parameter(ParameterSetName = PSET_GET)]
         public string ExportCsrPEM
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Optionally, specifies a file path where the referenced Certificate
+        ///     will be saved in PEM format.
+        /// </para>
+        /// </summary>
         [Parameter(ParameterSetName = PSET_GET)]
         public string ExportCertificatePEM
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Optionally, specifies a file path where the referenced Certificate
+        ///     will be saved in DER format.
+        /// </para>
+        /// </summary>
         [Parameter(ParameterSetName = PSET_GET)]
         public string ExportCertificateDER
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Optionally, specifies a file path where the referenced Certificate
+        ///     and related artifacts will be saved into a PKCS#12 archive format.
+        /// </para>
+        /// </summary>
         [Parameter(ParameterSetName = PSET_GET)]
         public string ExportPkcs12
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Optionally, specifies a password to use to secure an exported
+        ///     PKCS#12 archive file.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = PSET_GET)]
+        public string CertificatePassword
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        ///     This flag indicates that any existing files matching any of the
+        ///     requested export parameter paths will be overwritten.  If not
+        ///     specified, existing files will cause this cmdlet to error.
+        /// </para>
+        /// </summary>
         [Parameter(ParameterSetName = PSET_GET)]
         public SwitchParameter Overwrite
         { get; set; }
 
-        [Parameter(ParameterSetName = PSET_GET)]
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a Vault profile name that will resolve to the Vault instance to be
+        ///     used for all related operations and storage/retrieval of all related assets.
+        /// </para>
+        /// </summary>
+        [Parameter]
         public string VaultProfile
-        { get; set; }
-
-        [Parameter(ParameterSetName = PSET_GET)]
-        public string CertificatePassword
         { get; set; }
 
         protected override void ProcessRecord()
@@ -64,7 +132,7 @@ namespace ACMESharp.POSH
                 var ri = v.Registrations[0];
                 var r = ri.Registration;
 
-                if (string.IsNullOrEmpty(Ref))
+                if (string.IsNullOrEmpty(CertificateRef))
                 {
                     int seq = 0;
                     WriteObject(v.Certificates.Values.Select(x => new
@@ -82,7 +150,7 @@ namespace ACMESharp.POSH
                     if (v.Certificates == null || v.Certificates.Count < 1)
                         throw new InvalidOperationException("No certificates found");
 
-                    var ci = v.Certificates.GetByRef(Ref);
+                    var ci = v.Certificates.GetByRef(CertificateRef);
                     if (ci == null)
                         throw new ItemNotFoundException("Unable to find a Certificate for the given reference");
 

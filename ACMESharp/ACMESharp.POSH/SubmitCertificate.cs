@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
 using ACMESharp.Util;
+using System.Collections;
 
 namespace ACMESharp.POSH
 {
@@ -15,19 +16,31 @@ namespace ACMESharp.POSH
     [OutputType(typeof(CertificateInfo))]
     public class SubmitCertificate : Cmdlet
     {
-        [Parameter(Mandatory = true)]
-        public string Ref
+        /// <summary>
+        /// <para type="description">
+        ///     A reference (ID or alias) to a previously defined Certificate request.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0)]
+        [Alias("Ref")]
+        public string CertificateRef
         { get; set; }
 
-        [Parameter]
-        [ValidateSet("Rsa", "Ec")]
-        public string KeyType
-        { get; set; } = "Rsa";
+        //[Parameter]
+        //[ValidateSet("Rsa", "Ec")]
+        //public string KeyType
+        //{ get; set; } = "Rsa";
+        //
+        //[Parameter]
+        //public Hashtable KeyParams
+        //{ get; set; }
 
-        [Parameter]
-        public System.Collections.Hashtable KeyParams
-        { get; set; }
-
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a Vault profile name that will resolve to the Vault instance to be
+        ///     used for all related operations and storage/retrieval of all related assets.
+        /// </para>
+        /// </summary>
         [Parameter]
         public string VaultProfile
         { get; set; }
@@ -48,7 +61,7 @@ namespace ACMESharp.POSH
                 if (v.Certificates == null || v.Certificates.Count < 1)
                     throw new InvalidOperationException("No certificates found");
 
-                var ci = v.Certificates.GetByRef(Ref);
+                var ci = v.Certificates.GetByRef(CertificateRef);
                 if (ci == null)
                     throw new Exception("Unable to find a Certificate for the given reference");
 

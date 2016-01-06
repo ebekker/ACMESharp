@@ -38,7 +38,7 @@ namespace ACMESharp.Providers.AWS
                 ParameterType.TEXT, label: "AWS Stored Credential Profile Location",
                 desc: "Overrides the default location to search for a stored credential profile");
 
-        public static readonly ParameterDetail USE_IAM_ROLE = new ParameterDetail(
+        public static readonly ParameterDetail IAM_ROLE = new ParameterDetail(
                 nameof(AwsCommonParams.AwsIamRole),
                 ParameterType.TEXT, label: "IAM Role",
                 desc: "Indicates an IAM Role to be used to resolve credentials; specify '*' to use first Role found");
@@ -48,7 +48,7 @@ namespace ACMESharp.Providers.AWS
                 ParameterType.TEXT, label: "API Endpoint Region",
                 desc: "Region of the API endpoint to call");
 
-        public const string AWS_IAM_ROLE_ANY = "*";
+        public const string IAM_ROLE_ANY = "*";
 
         #endregion -- Constants --
 
@@ -91,6 +91,17 @@ namespace ACMESharp.Providers.AWS
                 AwsAccessKeyId = (string)initParams[ACCESS_KEY_ID.Name];
             if (initParams.ContainsKey(SECRET_ACCESS_KEY.Name))
                 AwsSecretAccessKey = (string)initParams[SECRET_ACCESS_KEY.Name];
+            if (initParams.ContainsKey(SESSION_TOKEN.Name))
+                AwsSessionToken = (string)initParams[SESSION_TOKEN.Name];
+
+            if (initParams.ContainsKey(PROFILE_NAME.Name))
+                AwsProfileName = (string)initParams[PROFILE_NAME.Name];
+            if (initParams.ContainsKey(PROFILE_LOCATION.Name))
+                AwsProfileLocation = (string)initParams[PROFILE_LOCATION.Name];
+
+            if (initParams.ContainsKey(IAM_ROLE.Name))
+                AwsIamRole = (string)initParams[IAM_ROLE.Name];
+
             if (initParams.ContainsKey(REGION.Name))
                 AwsRegion = (string)initParams[REGION.Name];
 
@@ -132,32 +143,36 @@ namespace ACMESharp.Providers.AWS
         /// </remarks>
         public AWSCredentials ResolveCredentials()
         {
+            AWSCredentials cr;
+
             if (!string.IsNullOrEmpty(AwsAccessKeyId))
             {
                 if (!string.IsNullOrEmpty(AwsSessionToken))
                 {
-                    return new SessionAWSCredentials(AwsAccessKeyId, AwsSecretAccessKey, AwsSessionToken);
+                    cr = new SessionAWSCredentials(AwsAccessKeyId, AwsSecretAccessKey, AwsSessionToken);
                 }
                 else
                 {
-                    return new Amazon.Runtime.BasicAWSCredentials(AwsAccessKeyId, AwsSecretAccessKey);
+                    cr = new Amazon.Runtime.BasicAWSCredentials(AwsAccessKeyId, AwsSecretAccessKey);
                 }
             }
             else if (!string.IsNullOrEmpty(AwsProfileName))
             {
-                return new StoredProfileAWSCredentials(AwsProfileName, AwsProfileLocation);
+                cr = new StoredProfileAWSCredentials(AwsProfileName, AwsProfileLocation);
             }
             else if (!string.IsNullOrEmpty(AwsIamRole))
             {
-                if (AwsIamRole == AWS_IAM_ROLE_ANY)
-                    return new InstanceProfileAWSCredentials();
+                if (AwsIamRole == IAM_ROLE_ANY)
+                    cr = new InstanceProfileAWSCredentials();
                 else
-                    return new InstanceProfileAWSCredentials(AwsIamRole);
+                    cr = new InstanceProfileAWSCredentials(AwsIamRole);
             }
             else
             {
-                return new EnvironmentVariablesAWSCredentials();
+                cr = new EnvironmentVariablesAWSCredentials();
             }
+
+            return cr;
         }
 
         #endregion -- Methods --

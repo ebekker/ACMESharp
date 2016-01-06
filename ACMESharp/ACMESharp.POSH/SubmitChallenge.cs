@@ -4,14 +4,42 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
+    /// <summary>
+    /// <para type="synopsis">Submits a completed Challenge for verification by ACME CA Server.</paratype>
+    /// <para type="description">
+    ///   After a Challenge has been handled and completed, it needs to be submitted to the
+    ///   ACME CA Server that issued the Challenge.  This cmdlet submits the Challenge of a
+    ///   particular type to the ACME Server to be verified.  If the ACME Server issued multiple
+    ///   Challenges and combinations that will satisfy the validation of ownership of an
+    ///   Identifier, you can use this cmdlet to submit each Challenge type completed.
+    /// </para>
+    /// <para type="link">New-Identifier</para>
+    /// <para type="link">Complete-Challenge</para>
+    /// </summary>
     [Cmdlet(VerbsLifecycle.Submit, "Challenge")]
     public class SubmitChallenge : Cmdlet
     {
-        [Parameter(Mandatory = true)]
-        public string Ref
+        /// <summary>
+        /// <para type="description">
+        ///     A reference (ID or alias) to a previously defined Identifier submitted
+        ///     to the ACME CA Server for verification.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0)]
+        [Alias("Ref")]
+        public string IdentifierRef
         { get; set; }
 
-        [Parameter(Mandatory = true)]
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies the ACME Challenge type that should be submitted.  This type
+        ///     is expected to be found in the list of Challenges returned by the
+        ///     ACME CA Server for the associated Identifier and it should already have
+        ///     been handled previously, either externally to the ACMESharp operations
+        ///     or via the Handler mechanisms within.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 1)]
         [ValidateSet(
                 AcmeProtocol.CHALLENGE_TYPE_DNS,
                 AcmeProtocol.CHALLENGE_TYPE_HTTP,
@@ -19,10 +47,22 @@ namespace ACMESharp.POSH
         public string Challenge
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Overrides the base URI associated with the target Registration and used
+        ///     for subsequent communication with the associated ACME CA Server.
+        /// </para>
+        /// </summary>
         [Parameter]
         public SwitchParameter UseBaseUri
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a Vault profile name that will resolve to the Vault instance to be
+        ///     used for all related operations and storage/retrieval of all related assets.
+        /// </para>
+        /// </summary>
         [Parameter]
         public string VaultProfile
         { get; set; }
@@ -43,7 +83,7 @@ namespace ACMESharp.POSH
                 if (v.Identifiers == null || v.Identifiers.Count < 1)
                     throw new InvalidOperationException("No identifiers found");
 
-                var ii = v.Identifiers.GetByRef(Ref);
+                var ii = v.Identifiers.GetByRef(IdentifierRef);
                 if (ii == null)
                     throw new Exception("Unable to find an Identifier for the given reference");
 

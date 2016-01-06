@@ -43,21 +43,6 @@ namespace ACMESharp.POSH
 
         /// <summary>
         /// <para type="description">
-        ///     Specifies the ACME Challenge type that should be handled.  This type
-        ///     is expected to be found in the list of Challenges returned by the
-        ///     ACME CA Server for the associated Identifier.
-        /// </para>
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 1)]
-        [ValidateSet(
-                AcmeProtocol.CHALLENGE_TYPE_DNS,
-                AcmeProtocol.CHALLENGE_TYPE_HTTP,
-                IgnoreCase = true)]
-        public string ChallengeType
-        { get; set; }
-
-        /// <summary>
-        /// <para type="description">
         ///     Specifies a reference (ID or alias) to a previously defined Challenge
         ///     Handler profile in the associated Vault that defines the Handler
         ///     provider and associated instance parameters that should be used to
@@ -66,6 +51,21 @@ namespace ACMESharp.POSH
         /// </summary>
         [Parameter(Mandatory = true, ParameterSetName = PSET_CHALLENGE_HANDLER_PROFILE)]
         public string HandlerProfileRef
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies the ACME Challenge type that should be handled.  This type
+        ///     is expected to be found in the list of Challenges returned by the
+        ///     ACME CA Server for the associated Identifier.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 1, ParameterSetName = PSET_CHALLENGE_HANDLER_INLINE)]
+        [ValidateSet(
+                AcmeProtocol.CHALLENGE_TYPE_DNS,
+                AcmeProtocol.CHALLENGE_TYPE_HTTP,
+                IgnoreCase = true)]
+        public string ChallengeType
         { get; set; }
 
         /// <summary>

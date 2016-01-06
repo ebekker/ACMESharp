@@ -22,6 +22,10 @@ namespace ACMESharp.POSH
         { get; set; }
 
         [Parameter(Mandatory = true, Position = 1, ParameterSetName = PSET_SET)]
+        [ValidateSet(
+                AcmeProtocol.CHALLENGE_TYPE_DNS,
+                AcmeProtocol.CHALLENGE_TYPE_HTTP,
+                IgnoreCase = true)]
         public string ChallengeType
         { get; set; }
 
@@ -109,6 +113,8 @@ namespace ACMESharp.POSH
                     };
                     var pp = new ProviderProfile
                     {
+                        ProfileParameters = new Dictionary<string, object>
+                                { [nameof(ChallengeType)] = ChallengeType, },
                         ProviderType = ProviderType.CHALLENGE_HANDLER,
                         ProviderName = Handler,
                         InstanceParameters = (IReadOnlyDictionary<string, object>

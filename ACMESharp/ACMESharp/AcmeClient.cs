@@ -358,6 +358,7 @@ namespace ACMESharp
             c.Status = cp.Status;
         }
 
+        [Obsolete]
         public AuthorizeChallenge GenerateAuthorizeChallengeAnswer(AuthorizationState authzState, string type)
         {
             AssertInit();
@@ -503,6 +504,7 @@ namespace ACMESharp
             return authzChallenge;
         }
 
+        [Obsolete]
         public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState,
                 string challengeType, bool useRootUrl = false)
         {

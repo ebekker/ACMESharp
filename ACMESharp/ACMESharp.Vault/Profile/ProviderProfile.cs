@@ -33,5 +33,8 @@ namespace ACMESharp.Vault.Profile
 
         public IReadOnlyDictionary<string, object> InstanceParameters
         { get; set; }
+
+        public IReadOnlyDictionary<string, object> ProfileParameters
+        { get; set; }
     }
 }

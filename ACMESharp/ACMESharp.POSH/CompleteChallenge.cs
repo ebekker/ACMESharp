@@ -176,10 +176,75 @@ namespace ACMESharp.POSH
                 if (ii.ChallengeCompleted == null)
                     ii.ChallengeCompleted = new Dictionary<string, DateTime?>();
 
+                // Resolve details from inline or profile attributes
+                string challengeType = null;
+                string handlerName = null;
+                IReadOnlyDictionary<string, object> handlerParams = null;
+                IReadOnlyDictionary<string, object> cliHandlerParams = null;
+
+                if (HandlerParameters?.Count > 0)
+                    cliHandlerParams = (IReadOnlyDictionary<string, object>
+                                    )PoshHelper.Convert<string, object>(HandlerParameters);
+
+                if (!string.IsNullOrEmpty(HandlerProfileRef))
+                {
+                    var ppi = v.ProviderProfiles.GetByRef(HandlerProfileRef);
+                    if (ppi == null)
+                        throw new ItemNotFoundException("no Handler profile found for the given reference")
+                                .With(nameof(HandlerProfileRef), HandlerProfileRef);
+
+                    var ppAsset = vlt.GetAsset(Vault.VaultAssetType.ProviderConfigInfo,
+                            ppi.Id.ToString());
+                    ProviderProfile pp;
+                    using (var s = vlt.LoadAsset(ppAsset))
+                    {
+                        pp = JsonHelper.Load<ProviderProfile>(s);
+                    }
+                    if (pp.ProviderType != ProviderType.CHALLENGE_HANDLER)
+                        throw new InvalidOperationException("referenced profile does not resolve to a Challenge Handler")
+                                .With(nameof(HandlerProfileRef), HandlerProfileRef)
+                                .With("actualProfileProviderType", pp.ProviderType.ToString());
+
+                    if (!pp.ProfileParameters.ContainsKey(nameof(ChallengeType)))
+                        throw new InvalidOperationException("handler profile is incomplete; missing Challenge Type")
+                                .With(nameof(HandlerProfileRef), HandlerProfileRef);
+
+                    challengeType = (string)pp.ProfileParameters[nameof(ChallengeType)];
+                    handlerName = pp.ProviderName;
+                    handlerParams = pp.InstanceParameters;
+                    if (cliHandlerParams != null)
+                    {
+                        WriteVerbose("Override Handler parameters specified");
+                        if (handlerParams == null || handlerParams.Count == 0)
+                        {
+                            WriteVerbose("Profile does not define any parameters, using override parameters only");
+                            handlerParams = cliHandlerParams;
+                        }
+                        else
+                        {
+                            WriteVerbose("Merging Handler override parameters with profile");
+                            var mergedParams = new Dictionary<string, object>();
+
+                            foreach (var kv in pp.InstanceParameters)
+                                mergedParams[kv.Key] = kv.Value;
+                            foreach (var kv in cliHandlerParams)
+                                mergedParams[kv.Key] = kv.Value;
+
+                            handlerParams = mergedParams;
+                        }
+                    }
+                }
+                else
+                {
+                    challengeType = ChallengeType;
+                    handlerName = Handler;
+                    handlerParams = cliHandlerParams;
+                }
+
                 AuthorizeChallenge challenge = null;
                 DateTime? challengCompleted = null;
-                ii.Challenges.TryGetValue(ChallengeType, out challenge);
-                ii.ChallengeCompleted.TryGetValue(ChallengeType, out challengCompleted);
+                ii.Challenges.TryGetValue(challengeType, out challenge);
+                ii.ChallengeCompleted.TryGetValue(challengeType, out challengCompleted);
 
                 if (challenge == null || Regenerate)
                 {
@@ -188,78 +253,21 @@ namespace ACMESharp.POSH
                         c.Init();
                         c.GetDirectory(true);
 
-                        challenge = c.DecodeChallenge(authzState, ChallengeType);
-                        ii.Challenges[ChallengeType] = challenge;
+                        challenge = c.DecodeChallenge(authzState, challengeType);
+                        ii.Challenges[challengeType] = challenge;
                     }
                 }
 
                 if (Repeat || challengCompleted == null)
                 {
-                    string handlerName = null;
-                    IReadOnlyDictionary<string, object> handlerParams = null;
-                    IReadOnlyDictionary<string, object> cliHandlerParams = null;
-
-                    if (HandlerParameters?.Count > 0)
-                        cliHandlerParams = (IReadOnlyDictionary<string, object>
-                                        )PoshHelper.Convert<string, object>(HandlerParameters);
-
-                    if (!string.IsNullOrEmpty(HandlerProfileRef))
-                    {
-                        var ppi = v.ProviderProfiles.GetByRef(HandlerProfileRef);
-                        if (ppi == null)
-                            throw new ItemNotFoundException("no Handler profile found for the given reference")
-                                    .With(nameof(HandlerProfileRef), HandlerProfileRef);
-
-                        var ppAsset = vlt.GetAsset(Vault.VaultAssetType.ProviderConfigInfo,
-                                ppi.Id.ToString());
-                        ProviderProfile pp;
-                        using (var s = vlt.LoadAsset(ppAsset))
-                        {
-                            pp = JsonHelper.Load<ProviderProfile>(s);
-                        }
-                        if (pp.ProviderType != ProviderType.CHALLENGE_HANDLER)
-                            throw new InvalidOperationException("referenced profile does not resolve to a Challenge Handler")
-                                    .With(nameof(HandlerProfileRef), HandlerProfileRef)
-                                    .With("actualProfileProviderType", pp.ProviderType.ToString());
-
-                        handlerName = pp.ProviderName;
-                        handlerParams = pp.InstanceParameters;
-                        if (cliHandlerParams != null)
-                        {
-                            WriteVerbose("Override Handler parameters specified");
-                            if (handlerParams == null || handlerParams.Count == 0)
-                            {
-                                WriteVerbose("Profile does not define any parameters, using override parameters only");
-                                handlerParams = cliHandlerParams;
-                            }
-                            else
-                            {
-                                WriteVerbose("Merging Handler override parameters with profile");
-                                var mergedParams = new Dictionary<string, object>();
-
-                                foreach (var kv in pp.InstanceParameters)
-                                    mergedParams[kv.Key] = kv.Value;
-                                foreach (var kv in cliHandlerParams)
-                                    mergedParams[kv.Key] = kv.Value;
-
-                                handlerParams = mergedParams;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        handlerName = Handler;
-                        handlerParams = cliHandlerParams;
-                    }
-
                     using (var c = ClientHelper.GetClient(v, ri))
                     {
                         c.Init();
                         c.GetDirectory(true);
 
-                        challenge = c.HandleChallenge(authzState, ChallengeType,
+                        challenge = c.HandleChallenge(authzState, challengeType,
                                 handlerName, handlerParams, CleanUp);
-                        ii.ChallengeCompleted[ChallengeType] = DateTime.Now;
+                        ii.ChallengeCompleted[challengeType] = DateTime.Now;
                     }
                 }
 

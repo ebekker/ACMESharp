@@ -121,9 +121,21 @@ namespace ACMESharp.Util
         {
             public static readonly AcmeEntitySerializer INSTANCE = new AcmeEntitySerializer();
 
+            public override bool CanRead
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
             public override bool CanConvert(Type objectType)
             {
-                return false
+                return typeof(ACME.Challenge).IsAssignableFrom(objectType)
+                        || typeof(ACME.ChallengeAnswer).IsAssignableFrom(objectType)
+
+                        // false
+
                         //||typeof(AcmeServerDirectory) == objectType
                         //|| typeof(LinkCollection) == objectType
                         //|| (objectType.IsGenericType
@@ -194,6 +206,28 @@ namespace ACMESharp.Util
                     foreach (var l in ((IEnumerable<Link>)lc))
                         writer.WriteValue(l.Value);
                     writer.WriteEndArray();
+                }
+
+                // TODO:  MAJOR HACK HERE!!!!!
+                // THIS WHOLE THING NEEDS TO BE EXTINGUISHED!
+
+                else if (typeof(ACME.Challenge).IsAssignableFrom(objectType))
+                {
+                    var ch = (ACME.Challenge)value;
+                    var jt = JToken.FromObject(value);
+                    ((JObject)jt).AddFirst(new JProperty("$type", value.GetType().AssemblyQualifiedName));
+                    if (ch.Answer != null)
+                    {
+                        ((JObject)jt[nameof(ch.Answer)]).AddFirst(
+                                new JProperty("$type", ch.Answer.GetType().AssemblyQualifiedName));
+                    }
+                    jt.WriteTo(writer, this);
+                }
+                else if (typeof(ACME.ChallengeAnswer).IsAssignableFrom(objectType))
+                {
+                    var jt = JToken.FromObject(value);
+                    ((JObject)jt).AddFirst(new JProperty("$type", value.GetType().AssemblyQualifiedName));
+                    jt.WriteTo(writer);
                 }
                 else
                 {

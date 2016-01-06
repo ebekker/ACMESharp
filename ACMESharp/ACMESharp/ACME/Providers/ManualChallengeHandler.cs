@@ -182,6 +182,20 @@ namespace ACMESharp.ACME.Providers
 
         public void Dispose()
         {
+            if (_stream != null)
+            {
+                try
+                {
+                    _writer.Dispose();
+                    _stream.Dispose();
+                }
+                catch (Exception)
+                {
+                    // TODO: failure to clean up the prior Out
+                    // should do what???
+                }
+            }
+
             IsDisposed = true;
         }
 

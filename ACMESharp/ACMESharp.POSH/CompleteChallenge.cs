@@ -48,7 +48,7 @@ namespace ACMESharp.POSH
         ///     ACME CA Server for the associated Identifier.
         /// </para>
         /// </summary>
-        [Parameter(Mandatory = true)]
+        [Parameter(Mandatory = true, Position = 1)]
         [ValidateSet(
                 AcmeProtocol.CHALLENGE_TYPE_DNS,
                 AcmeProtocol.CHALLENGE_TYPE_HTTP,
@@ -90,8 +90,7 @@ namespace ACMESharp.POSH
         ///     override, whatever parameters are already defined within the profile.
         /// </para>
         /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = PSET_CHALLENGE_HANDLER_INLINE)]
-        [Parameter(Mandatory = true, ParameterSetName = PSET_CHALLENGE_HANDLER_PROFILE)]
+        [Parameter]
         public Hashtable HandlerParameters
         { get; set; }
 
@@ -104,8 +103,7 @@ namespace ACMESharp.POSH
         ///     of the steps that were needed during the challenge-handling process.
         /// </para>
         /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = PSET_CHALLENGE_HANDLER_INLINE)]
-        [Parameter(Mandatory = true, ParameterSetName = PSET_CHALLENGE_HANDLER_PROFILE)]
+        [Parameter]
         public SwitchParameter CleanUp
         { get; set; }
 
@@ -132,8 +130,8 @@ namespace ACMESharp.POSH
 
         /// <summary>
         /// <para type="description">
-        ///     Overrides the URI associated with the resolve Challenge when communicating
-        ///     with the ACME CA Server.
+        ///     Overrides the base URI associated with the target Registration and used
+        ///     for subsequent communication with the associated ACME CA Server.
         /// </para>
         /// </summary>
         [Parameter]

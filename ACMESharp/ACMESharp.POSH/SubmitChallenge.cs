@@ -44,7 +44,7 @@ namespace ACMESharp.POSH
                 AcmeProtocol.CHALLENGE_TYPE_DNS,
                 AcmeProtocol.CHALLENGE_TYPE_HTTP,
                 IgnoreCase = true)]
-        public string Challenge
+        public string ChallengeType
         { get; set; }
 
         /// <summary>
@@ -94,8 +94,8 @@ namespace ACMESharp.POSH
                     c.Init();
                     c.GetDirectory(true);
 
-                    var challenge = c.SubmitAuthorizeChallengeAnswer(authzState, Challenge, UseBaseUri);
-                    ii.Challenges[Challenge] = challenge;
+                    var challenge = c.SubmitChallengeAnswer(authzState, ChallengeType, UseBaseUri);
+                    ii.Challenges[ChallengeType] = challenge;
                 }
 
                 vlt.SaveVault(v);

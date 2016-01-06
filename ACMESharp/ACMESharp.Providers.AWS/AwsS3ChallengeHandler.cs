@@ -76,7 +76,7 @@ namespace ACMESharp.Providers.AWS
                 filePath = filePath.Substring(1);
 
             using (var s3 = new Amazon.S3.AmazonS3Client(
-                commonParams.AccessKeyId, commonParams.SecretAccessKey,
+                commonParams.AwsAccessKeyId, commonParams.AwsSecretAccessKey,
                 commonParams.RegionEndpoint))
             {
                 var s3Requ = new Amazon.S3.Model.GetObjectRequest
@@ -110,9 +110,8 @@ namespace ACMESharp.Providers.AWS
             if (filePath.StartsWith("/"))
                 filePath = filePath.Substring(1);
 
-            using (var s3 = new Amazon.S3.AmazonS3Client(
-                CommonParams.AccessKeyId, CommonParams.SecretAccessKey,
-                CommonParams.RegionEndpoint))
+            using (var s3 = new Amazon.S3.AmazonS3Client(CommonParams.ResolveCredentials(),
+                    CommonParams.RegionEndpoint))
             {
                 if (delete)
                 {

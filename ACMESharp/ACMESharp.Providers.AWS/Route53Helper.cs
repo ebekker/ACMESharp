@@ -27,7 +27,7 @@ namespace ACMESharp.Providers.AWS
                 string startingDnsName, string startingDnsType = null)
         {
             using (var r53 = new Amazon.Route53.AmazonRoute53Client(
-                    CommonParams.AccessKeyId, CommonParams.SecretAccessKey,
+                    CommonParams.ResolveCredentials(),
                     CommonParams.RegionEndpoint))
             {
                 var rrRequ = new Amazon.Route53.Model.ListResourceRecordSetsRequest
@@ -96,7 +96,7 @@ namespace ACMESharp.Providers.AWS
         public void EditR53Record(Amazon.Route53.Model.ResourceRecordSet rrset, bool delete = false)
         {
             using (var r53 = new Amazon.Route53.AmazonRoute53Client(
-                    CommonParams.AccessKeyId, CommonParams.SecretAccessKey,
+                    CommonParams.ResolveCredentials(),
                     CommonParams.RegionEndpoint))
             {
                 var rrRequ = new Amazon.Route53.Model.ChangeResourceRecordSetsRequest

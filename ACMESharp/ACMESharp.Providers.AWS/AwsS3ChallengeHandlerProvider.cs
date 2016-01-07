@@ -32,8 +32,16 @@ namespace ACMESharp.Providers.AWS
         static readonly ParameterDetail[] PARAMS =
         {
             BUCKET_NAME,
+
             AwsCommonParams.ACCESS_KEY_ID,
             AwsCommonParams.SECRET_ACCESS_KEY,
+            AwsCommonParams.SESSION_TOKEN,
+
+            AwsCommonParams.PROFILE_NAME,
+            AwsCommonParams.PROFILE_LOCATION,
+
+            AwsCommonParams.IAM_ROLE,
+
             AwsCommonParams.REGION,
         };
 

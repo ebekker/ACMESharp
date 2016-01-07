@@ -21,12 +21,12 @@ namespace ACMESharp.Providers.AWS
 
         public static readonly ParameterDetail RR_TYPE = new ParameterDetail(
                 nameof(AwsRoute53ChallengeHandler.ResourceRecordType),
-                ParameterType.TEXT, isRequired: true, label: "Resource Record Type",
+                ParameterType.TEXT, label: "Resource Record Type",
                 desc: "Qualifies the type of RR that should be configured (TXT, A, CNAME)");
 
         public static readonly ParameterDetail RR_TTL = new ParameterDetail(
                 nameof(AwsRoute53ChallengeHandler.ResourceRecordTtl),
-                ParameterType.TEXT, isRequired: true, label: "Resource Record TTL",
+                ParameterType.TEXT, label: "Resource Record TTL",
                 desc: "Specifies the time-to-live (TTL) in seconds of the RR (defaults to 300)");
 
         static readonly ParameterDetail[] PARAMS =
@@ -34,8 +34,16 @@ namespace ACMESharp.Providers.AWS
             HOSTED_ZONE_ID,
             RR_TYPE,
             RR_TTL,
+
             AwsCommonParams.ACCESS_KEY_ID,
             AwsCommonParams.SECRET_ACCESS_KEY,
+            AwsCommonParams.SESSION_TOKEN,
+
+            AwsCommonParams.PROFILE_NAME,
+            AwsCommonParams.PROFILE_LOCATION,
+
+            AwsCommonParams.IAM_ROLE,
+
             AwsCommonParams.REGION,
         };
 

@@ -779,10 +779,10 @@ namespace ACMESharp
 
                     var handlerParams = new Dictionary<string, object>
                     {
-                        [nameof(handlerConfig.AccessKeyId)]     /**/ = handlerConfig.AccessKeyId,
-                        [nameof(handlerConfig.SecretAccessKey)] /**/ = handlerConfig.SecretAccessKey,
-                        [nameof(handlerConfig.Region)]          /**/ = handlerConfig.Region,
-                        [nameof(handlerConfig.HostedZoneId)]    /**/ = handlerConfig.HostedZoneId,
+                        [AwsCommonParams.ACCESS_KEY_ID.Name]                     /**/ = handlerConfig.AccessKeyId,
+                        [AwsCommonParams.SECRET_ACCESS_KEY.Name]                 /**/ = handlerConfig.SecretAccessKey,
+                        [AwsCommonParams.REGION.Name]                            /**/ = handlerConfig.Region,
+                        [AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name] /**/ = handlerConfig.HostedZoneId,
                     };
 
                     var authzChallenge = client.HandleChallenge(authzState,
@@ -1047,10 +1047,10 @@ namespace ACMESharp
 
                     var handlerParams = new Dictionary<string, object>
                     {
-                        [nameof(handlerConfig.AccessKeyId)]     /**/ = handlerConfig.AccessKeyId,
-                        [nameof(handlerConfig.SecretAccessKey)] /**/ = handlerConfig.SecretAccessKey,
-                        [nameof(handlerConfig.Region)]          /**/ = handlerConfig.Region,
-                        [nameof(handlerConfig.BucketName)]      /**/ = handlerConfig.BucketName,
+                        [AwsCommonParams.ACCESS_KEY_ID.Name]             /**/ = handlerConfig.AccessKeyId,
+                        [AwsCommonParams.SECRET_ACCESS_KEY.Name]         /**/ = handlerConfig.SecretAccessKey,
+                        [AwsCommonParams.REGION.Name]                    /**/ = handlerConfig.Region,
+                        [AwsS3ChallengeHandlerProvider.BUCKET_NAME.Name] /**/ = handlerConfig.BucketName,
                     };
 
                     var authzChallenge = client.HandleChallenge(authzState,

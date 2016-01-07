@@ -56,7 +56,7 @@ Describe "VaultProfileTests" {
 
         It "creates a new Profile" {
             Test-Path $profPath | Should Be $false
-            Set-ACMEVaultProfile -ProfileName $profName -ProviderName $provName -VaultParameters $vaultParams
+            Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams
             Test-Path $profPath | Should Be $true
         }
         It "removes a new Profile" {
@@ -82,7 +82,7 @@ Describe "VaultProfileTests" {
 
         It "creates a Profile" {
             Test-Path $profPath | Should Be $false
-            Set-ACMEVaultProfile -ProfileName $profName -ProviderName $provName -VaultParameters $vaultParams1
+            Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams1
             Test-Path $profPath | Should Be $true
         }
         It "initializes a Vault without CreatePath" {
@@ -91,11 +91,11 @@ Describe "VaultProfileTests" {
             Test-Path $testPath | Should Be $false
         }
         It "update a Profile without Force" {
-            { Set-ACMEVaultProfile -ProfileName $profName -ProviderName $provName -VaultParameters $vaultParams2 } |
+            { Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams2 } |
                     Should Throw ## Can't update existing profile without a -Force
         }
         It "update a Profile with Force" {
-            Set-ACMEVaultProfile -ProfileName $profName -ProviderName $provName -VaultParameters $vaultParams2 -Force
+            Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams2 -Force
         }
         It "initializes a Vault with CreatePath" {
             Test-Path $testPath | Should Be $false
@@ -557,8 +557,18 @@ Describe "AwsHandlerTests" {
                #    Private
                #    PublicRead
                #    PublicReadWrite
-                AwsProfileName = "pesterAwsTestCreds"
                #Region = "us-east-1"
+            }
+
+            try {
+                $awsCredProfile = "pesterAwsTestCreds"
+                if (Get-AWSCredentials $awsCredProfile) {
+                    $awsS3Params.AwsProfileName = $awsCredProfile
+                    Write-Host "Using AWS Credential Profile [$awsCredProfile]"
+                }
+            }
+            catch {
+                Write-Host "Using ENV VARS for AWS Creds (due to:  $($Error[0]))"
             }
 
             $authzState = Complete-ACMEChallenge -VaultProfile $profName -IdentifierRef dns1 -ChallengeType http-01 `

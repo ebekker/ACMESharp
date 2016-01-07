@@ -1,7 +1,8 @@
 version: 0.8.0.{build}
 pull_requests:
   do_not_increment_build_number: true
-skip_tags: trueenvironment:
+skip_tags: true
+environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
 install:
@@ -25,7 +26,11 @@ artifacts:
   name: ACME-posh
   type: zip
 - path: ACMESharp\ACMESharp.POSH-test\Pester
-  name: ACME-posh-pester  type: zip
+  name: ACME-posh-pester
+  type: zip
+- path: ACMESharp\ACMESharp.POSH-test\bin
+  name: ACME-posh-pester-bin
+  type: zip
 - path: ACMESharp\dist\nuget\*.nupkg
   name: ACME-lib-nuget
 - path: cov-int
@@ -39,7 +44,7 @@ deploy:
   region: us-east-1
   bucket: acmesharp.zyborg.io
   folder: appveyor-deploy
-  artifact: ACME-lib,ACME-posh,ACME-posh-pester
+  artifact: ACME-lib,ACME-posh,ACME-posh-pester,ACME-posh-pester-bin
   set_public: true
 notifications:
 - provider: Webhook

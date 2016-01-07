@@ -1,7 +1,7 @@
 ﻿{
     "DefaultDomain": "sample.com",
     "HostedZoneId": "Route53-Hosted-Zone-ID",
-    "AccessKeyId": "IAM-Account-AccessKey",
-    "SecretAccessKey": "IAM-Account-SecretKey",
-    "Region": "us-east-1"
+    "AwsAccessKeyId": "IAM-Account-AccessKey",
+    "AwsSecretAccessKey": "IAM-Account-SecretKey",
+    "AwsRegion": "us-east-1"
 }

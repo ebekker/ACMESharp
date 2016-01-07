@@ -8,6 +8,7 @@ namespace ACMESharp.Providers.AWS.config
 {
     public class DnsConfig : Dictionary<string, object>
     {
+        [Obsolete]
         public string DefaultDomain
         {
             get { return (string)this[nameof(DefaultDomain)]; }
@@ -15,22 +16,22 @@ namespace ACMESharp.Providers.AWS.config
 
         public string HostedZoneId
         {
-            get { return (string)this[nameof(HostedZoneId)]; }
+            get { return (string)this[AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name]; }
         }
 
         public string AccessKeyId
         {
-            get { return (string)this[nameof(AccessKeyId)]; }
+            get { return (string)this[AwsCommonParams.ACCESS_KEY_ID.Name]; }
         }
 
         public string SecretAccessKey
         {
-            get { return (string)this[nameof(SecretAccessKey)]; }
+            get { return (string)this[AwsCommonParams.SECRET_ACCESS_KEY.Name]; }
         }
 
         public string Region
         {
-            get { return (string)this[nameof(Region)]; }
+            get { return (string)this[AwsCommonParams.REGION.Name]; }
         }
     }
 }

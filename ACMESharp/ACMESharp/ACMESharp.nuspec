@@ -9,12 +9,12 @@
     <owners>https://github.com/ebekker</owners>
     <licenseUrl>https://raw.githubusercontent.com/ebekker/ACMESharp/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/ebekker/ACMESharp</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/ebekker/ACMESharp/rename-le-win-to-acmesharp/artwork/ACMESharp-logo-square64.png</iconUrl>
+    <iconUrl>https://cdn.rawgit.com/ebekker/ACMESharp/49bf6524da8239ecf258ab3857dfbbf40366ecfd/artwork/ACMESharp-logo-square64.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Initial nuget package early-access release of nuget package.</releaseNotes>
-    <copyright>Copyright &#169; 2015 Eugene Bekker</copyright>
-    <tags>pki ssl tls security certificates letsencrypt</tags>
+    <copyright>Copyright &#169; 2016 Eugene Bekker</copyright>
+    <tags>pki ssl tls security certificates letsencrypt acme</tags>
 
     <dependencies>
       <dependency id="ACMESharp.PKI.Providers.OpenSslLib32" version="$version$.$buildNum$$versionLabel$" />

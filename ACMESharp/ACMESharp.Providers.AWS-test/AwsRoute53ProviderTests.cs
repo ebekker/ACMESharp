@@ -12,14 +12,14 @@ namespace ACMESharp.Providers.AWS
     [TestClass]
     public class AwsRoute53ProviderTests
     {
-        private static config.DnsConfig _dnsConfig;
+        private static Config.DnsConfig _dnsConfig;
 
         [ClassInitialize]
         public static void Init(TestContext tctx)
         {
             using (var fs = new FileStream("config\\dnsConfig.json", FileMode.Open))
             {
-                _dnsConfig = JsonHelper.Load<config.DnsConfig>(fs);
+                _dnsConfig = JsonHelper.Load<Config.DnsConfig>(fs);
             }
         }
 

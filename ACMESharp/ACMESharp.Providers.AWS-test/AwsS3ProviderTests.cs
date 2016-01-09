@@ -12,14 +12,14 @@ namespace ACMESharp.Providers.AWS
     [TestClass]
     public class AwsS3ProviderTests
     {
-        private static config.HttpConfig _httpConfig;
+        private static Config.HttpConfig _handlerConfig;
 
         [ClassInitialize]
         public static void Init(TestContext tctx)
         {
             using (var fs = new FileStream("config\\httpConfig.json", FileMode.Open))
             {
-                _httpConfig = JsonHelper.Load<config.HttpConfig>(fs);
+                _handlerConfig = JsonHelper.Load<Config.HttpConfig>(fs);
             }
         }
 
@@ -30,7 +30,7 @@ namespace ACMESharp.Providers.AWS
 
         public static AwsS3ChallengeHandler GetHandler(Challenge c)
         {
-            return (AwsS3ChallengeHandler)GetProvider().GetHandler(c, _httpConfig);
+            return (AwsS3ChallengeHandler)GetProvider().GetHandler(c, _handlerConfig);
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace ACMESharp.Providers.AWS
         {
             var p = GetProvider();
             var c = TestCommon.HTTP_CHALLENGE;
-            var h = p.GetHandler(c, _httpConfig);
+            var h = p.GetHandler(c, _handlerConfig);
 
             Assert.IsNotNull(h);
             Assert.IsFalse(h.IsDisposed);
@@ -82,14 +82,14 @@ namespace ACMESharp.Providers.AWS
         {
             var p = GetProvider();
             var c = TestCommon.HTTP_CHALLENGE;
-            var h = p.GetHandler(c, _httpConfig);
+            var h = p.GetHandler(c, _handlerConfig);
 
             h.Dispose();
             h.Handle(null);
         }
 
         [TestMethod]
-        public void TestHandlerDefineAndCleanUpResourceRecord()
+        public void TestHandlerUploadAndCleanUpObject()
         {
             var r = new Random();
             var bn = new byte[10];
@@ -108,14 +108,14 @@ namespace ACMESharp.Providers.AWS
             };
 
             var awsParams = new AwsCommonParams();
-            awsParams.InitParams(_httpConfig);
+            awsParams.InitParams(_handlerConfig);
 
             var p = GetProvider();
-            using (var h = p.GetHandler(c, _httpConfig))
+            using (var h = p.GetHandler(c, _handlerConfig))
             {
                 // Assert test file does not exist
                 var s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,
-                        _httpConfig.BucketName, c.FilePath);
+                        _handlerConfig.BucketName, c.FilePath);
                 
                 // Assert test record does *not* exist
                 Assert.IsNull(s3Obj);
@@ -125,7 +125,7 @@ namespace ACMESharp.Providers.AWS
 
                 // ...and assert it does exist
                 s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,
-                        _httpConfig.BucketName, c.FilePath);
+                        _handlerConfig.BucketName, c.FilePath);
 
                 Assert.IsNotNull(s3Obj);
                 using (var sr = new StreamReader(s3Obj.ResponseStream))
@@ -139,7 +139,7 @@ namespace ACMESharp.Providers.AWS
 
                 // ...and assert it does not exist once more
                 s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,
-                        _httpConfig.BucketName, c.FilePath);
+                        _handlerConfig.BucketName, c.FilePath);
 
                 Assert.IsNull(s3Obj);
             }

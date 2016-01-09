@@ -65,8 +65,9 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
-    <Compile Include="config\HttpConfig.cs" />
-    <Compile Include="config\DnsConfig.cs" />
+    <Compile Include="Config\BaseParams.cs" />
+    <Compile Include="Config\HttpConfig.cs" />
+    <Compile Include="Config\DnsConfig.cs" />
     <Compile Include="AwsS3ProviderTests.cs" />
     <Compile Include="AwsRoute53ProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,10 +84,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="config\dnsConfig.json">
+    <None Include="Config\dnsConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="config\httpConfig.json">
+    <None Include="Config\httpConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

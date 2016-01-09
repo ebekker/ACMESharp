@@ -7,18 +7,21 @@ using System.Threading.Tasks;
 
 namespace ACMESharp.Providers.AWS.Config
 {
-    public class DnsConfig : BaseParams
+    public class AwsS3HandlerParams : BaseParams
     {
-        [Obsolete]
-        public string DefaultDomain
+        public string BucketName
         {
-            get { return (string)this[nameof(DefaultDomain)]; }
+            get { return Get<string>(AwsS3ChallengeHandlerProvider.BUCKET_NAME.Name); }
         }
 
-        public string HostedZoneId
+        public string ContentType
         {
-            get { return Get<string>(AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name); }
-            set { this[AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name] = value; }
+            get { return Get<string>(AwsS3ChallengeHandlerProvider.CONTENT_TYPE.Name); }
+        }
+
+        public string CannedAcl
+        {
+            get { return Get<string>(AwsS3ChallengeHandlerProvider.CANNED_ACL.Name); }
         }
 
         public string AccessKeyId

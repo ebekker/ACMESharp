@@ -12,14 +12,14 @@ namespace ACMESharp.Providers.AWS
     [TestClass]
     public class AwsRoute53ProviderTests
     {
-        private static Config.DnsConfig _dnsConfig;
+        private static Config.AwsR53HandlerParams _handlerParams;
 
         [ClassInitialize]
         public static void Init(TestContext tctx)
         {
-            using (var fs = new FileStream("Config\\dnsConfig.json", FileMode.Open))
+            using (var fs = new FileStream("Config\\AwsR53HandlerParams.json", FileMode.Open))
             {
-                _dnsConfig = JsonHelper.Load<Config.DnsConfig>(fs);
+                _handlerParams = JsonHelper.Load<Config.AwsR53HandlerParams>(fs);
             }
         }
 
@@ -30,7 +30,7 @@ namespace ACMESharp.Providers.AWS
 
         public static AwsRoute53ChallengeHandler GetHandler(Challenge c)
         {
-            return (AwsRoute53ChallengeHandler)GetProvider().GetHandler(c, _dnsConfig);
+            return (AwsRoute53ChallengeHandler)GetProvider().GetHandler(c, _handlerParams);
         }
 
         [TestMethod]
@@ -68,7 +68,7 @@ namespace ACMESharp.Providers.AWS
         {
             var p = GetProvider();
             var c = TestCommon.DNS_CHALLENGE;
-            var h = p.GetHandler(c, _dnsConfig);
+            var h = p.GetHandler(c, _handlerParams);
 
             Assert.IsNotNull(h);
             Assert.IsFalse(h.IsDisposed);
@@ -82,7 +82,7 @@ namespace ACMESharp.Providers.AWS
         {
             var p = GetProvider();
             var c = TestCommon.DNS_CHALLENGE;
-            var h = p.GetHandler(c, _dnsConfig);
+            var h = p.GetHandler(c, _handlerParams);
 
             h.Dispose();
             h.Handle(null);
@@ -102,18 +102,18 @@ namespace ACMESharp.Providers.AWS
             var c = new DnsChallenge(AcmeProtocol.CHALLENGE_TYPE_DNS, new DnsChallengeAnswer())
             {
                 Token = "FOOBAR",
-                RecordName = $"{rn}.{_dnsConfig.DefaultDomain}",
+                RecordName = $"{rn}.{_handlerParams.DefaultDomain}",
                 RecordValue = rv,
             };
 
             var r53 = new Route53Helper
             {
-                HostedZoneId = _dnsConfig.HostedZoneId,
+                HostedZoneId = _handlerParams.HostedZoneId,
             };
-            r53.CommonParams.InitParams(_dnsConfig);
+            r53.CommonParams.InitParams(_handlerParams);
 
             var p = GetProvider();
-            using (var h = p.GetHandler(c, _dnsConfig))
+            using (var h = p.GetHandler(c, _handlerParams))
             {
                 // Assert test record does *not* exist
                 var rr = r53.GetRecords(c.RecordName);

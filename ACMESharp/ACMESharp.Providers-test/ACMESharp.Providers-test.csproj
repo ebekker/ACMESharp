@@ -65,16 +65,20 @@
     <Compile Include="AwsRoute53ProviderTests.cs" />
     <Compile Include="AwsS3ProviderTests.cs" />
     <Compile Include="Config\BaseParams.cs" />
-    <Compile Include="Config\DnsConfig.cs" />
-    <Compile Include="Config\HttpConfig.cs" />
+    <Compile Include="Config\AwsR53HandlerParams.cs" />
+    <Compile Include="Config\AwsS3HandlerParams.cs" />
     <Compile Include="Config\IisHandlerParams.cs" />
     <Compile Include="IisProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCommon.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Config\dnsConfig.json" />
-    <None Include="Config\httpConfig.json" />
+    <None Include="Config\AwsR53HandlerParams.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Config\AwsS3HandlerParams.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

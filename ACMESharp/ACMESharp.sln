@@ -32,8 +32,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Vault-test", "ACM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.AWS", "ACMESharp.Providers.AWS\ACMESharp.Providers.AWS.csproj", "{CD8842F7-5CBD-4DB1-B2B9-387A095AB91F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.AWS-test", "ACMESharp.Providers.AWS-test\ACMESharp.Providers.AWS-test.csproj", "{C114BE40-9E62-45CD-842F-81E4902C2775}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{551C2059-1DE9-484C-8329-7894DDF57771}"
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
@@ -102,10 +100,6 @@ Global
 		{CD8842F7-5CBD-4DB1-B2B9-387A095AB91F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD8842F7-5CBD-4DB1-B2B9-387A095AB91F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD8842F7-5CBD-4DB1-B2B9-387A095AB91F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C114BE40-9E62-45CD-842F-81E4902C2775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C114BE40-9E62-45CD-842F-81E4902C2775}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C114BE40-9E62-45CD-842F-81E4902C2775}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C114BE40-9E62-45CD-842F-81E4902C2775}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}.Release|Any CPU.ActiveCfg = Release|Any CPU

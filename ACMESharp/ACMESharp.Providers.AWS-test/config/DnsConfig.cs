@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ACMESharp.Providers.Config;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ACMESharp.Providers.AWS.config
+namespace ACMESharp.Providers.AWS.Config
 {
-    public class DnsConfig : Dictionary<string, object>
+    public class DnsConfig : BaseParams
     {
         [Obsolete]
         public string DefaultDomain
@@ -16,22 +17,26 @@ namespace ACMESharp.Providers.AWS.config
 
         public string HostedZoneId
         {
-            get { return (string)this[AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name]; }
+            get { return Get<string>(AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name); }
+            set { this[AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name] = value; }
         }
 
         public string AccessKeyId
         {
-            get { return (string)this[AwsCommonParams.ACCESS_KEY_ID.Name]; }
+            get { return Get<string>(AwsCommonParams.ACCESS_KEY_ID.Name); }
+            set { this[AwsCommonParams.ACCESS_KEY_ID.Name] = value; }
         }
 
         public string SecretAccessKey
         {
-            get { return (string)this[AwsCommonParams.SECRET_ACCESS_KEY.Name]; }
+            get { return Get<string>(AwsCommonParams.SECRET_ACCESS_KEY.Name); }
+            set { this[AwsCommonParams.SECRET_ACCESS_KEY.Name] = value; }
         }
 
         public string Region
         {
-            get { return (string)this[AwsCommonParams.REGION.Name]; }
+            get { return Get<string>(AwsCommonParams.REGION.Name); }
+            set { this[AwsCommonParams.REGION.Name] = value; }
         }
     }
 }

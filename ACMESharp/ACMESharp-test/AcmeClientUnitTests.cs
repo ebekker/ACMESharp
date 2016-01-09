@@ -783,11 +783,18 @@ namespace ACMESharp
                         [AwsCommonParams.SECRET_ACCESS_KEY.Name]                 /**/ = handlerConfig.SecretAccessKey,
                         [AwsCommonParams.REGION.Name]                            /**/ = handlerConfig.Region,
                         [AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name] /**/ = handlerConfig.HostedZoneId,
+                        [AwsRoute53ChallengeHandlerProvider.RR_TTL.Name]         /**/ = 30,
                     };
 
                     var authzChallenge = client.HandleChallenge(authzState,
                             AcmeProtocol.CHALLENGE_TYPE_DNS,
                             "awsRoute53", handlerParams);
+
+                    // Need to put in an artificial delay before we consider this "effective"
+                    // such that ACME Server can test it -- without this, the subsequent test
+                    // by the ACME Server was happening too fast before AWS R53 had propogated
+                    // the DNS record change and thus the validation was always failing
+                    Thread.Sleep(10 * 1000);  // 10s
 
                     _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{_baseLocalStore}\\130-TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Create))
@@ -800,7 +807,6 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        [Ignore] // Waiting till dns-01 has been implemented in Boulder STAGE https://github.com/letsencrypt/boulder/issues/1242
         public void Test0136_SubmitDnsChallengeAnswer()
         {
             using (var signer = new RS256Signer())

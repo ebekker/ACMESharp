@@ -48,6 +48,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{A6084888-8C82-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.POSH-test", "ACMESharp.POSH-test\ACMESharp.POSH-test.csproj", "{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.IIS", "ACMESharp.Providers.IIS\ACMESharp.Providers.IIS.csproj", "{944EC9BD-81A1-484E-BA29-360BC155BF51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,10 @@ Global
 		{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}.Release|Any CPU.Build.0 = Release|Any CPU
+		{944EC9BD-81A1-484E-BA29-360BC155BF51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{944EC9BD-81A1-484E-BA29-360BC155BF51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{944EC9BD-81A1-484E-BA29-360BC155BF51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{944EC9BD-81A1-484E-BA29-360BC155BF51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

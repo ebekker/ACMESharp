@@ -68,6 +68,7 @@
     <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
       <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
       <Name>ACMESharp</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

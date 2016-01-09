@@ -17,7 +17,7 @@ namespace ACMESharp.Providers.AWS
         [ClassInitialize]
         public static void Init(TestContext tctx)
         {
-            using (var fs = new FileStream("config\\dnsConfig.json", FileMode.Open))
+            using (var fs = new FileStream("Config\\dnsConfig.json", FileMode.Open))
             {
                 _dnsConfig = JsonHelper.Load<Config.DnsConfig>(fs);
             }

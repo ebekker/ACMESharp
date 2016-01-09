@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ACMESharp.Providers.AWS-test")]
+[assembly: AssemblyTitle("ACMESharp.Providers-test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Amazon.com")]
-[assembly: AssemblyProduct("ACMESharp.Providers.AWS-test")]
-[assembly: AssemblyCopyright("Copyright © Amazon.com 2015")]
+[assembly: AssemblyProduct("ACMESharp.Providers-test")]
+[assembly: AssemblyCopyright("Copyright © Amazon.com 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c114be40-9e62-45cd-842f-81e4902c2775")]
+[assembly: Guid("46933e79-e139-45a0-a321-5efa7fec3ee9")]
 
 // Version information for an assembly consists of the following four values:
 //

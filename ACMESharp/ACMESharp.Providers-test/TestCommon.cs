@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ACMESharp.ACME;
 
-namespace ACMESharp.Providers.AWS
+namespace ACMESharp.Providers
 {
     static class TestCommon
     {

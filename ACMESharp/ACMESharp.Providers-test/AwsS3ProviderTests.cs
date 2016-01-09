@@ -17,7 +17,7 @@ namespace ACMESharp.Providers.AWS
         [ClassInitialize]
         public static void Init(TestContext tctx)
         {
-            using (var fs = new FileStream("config\\httpConfig.json", FileMode.Open))
+            using (var fs = new FileStream("Config\\httpConfig.json", FileMode.Open))
             {
                 _handlerConfig = JsonHelper.Load<Config.HttpConfig>(fs);
             }

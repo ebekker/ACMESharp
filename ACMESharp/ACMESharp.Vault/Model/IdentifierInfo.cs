@@ -34,5 +34,8 @@ namespace ACMESharp.Vault.Model
 
         public Dictionary<string, DateTime?> ChallengeCompleted
         { get; set; }
+
+        public Dictionary<string, DateTime?> ChallengeCleanedUp
+        { get; set; }
     }
 }

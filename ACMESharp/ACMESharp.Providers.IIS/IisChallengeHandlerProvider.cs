@@ -38,7 +38,6 @@ namespace ACMESharp.Providers.IIS
             SKIP_LOCAL_WEB_CONFIG,
         };
 
-
         public IEnumerable<ParameterDetail> DescribeParameters()
         {
             return PARAMS;

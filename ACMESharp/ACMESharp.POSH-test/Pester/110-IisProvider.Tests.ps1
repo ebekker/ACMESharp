@@ -3,10 +3,8 @@
 
 
 function Get-MyIP {
-    $x = Invoke-WebRequest http://checkip.dyndns.com/
-    if ($x.Content -match "Current IP Address:\s*([0-9\.]+)") {
-        $Matches[1]
-    }
+    $ipJson = Invoke-WebRequest -Uri https://api.ipify.org?format=json | ConvertFrom-Json
+    $ipJson.ip
 }
 
 $r53HostedZoneId = $env:PESTER_AWSR53_HOSTEDZONEID

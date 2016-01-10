@@ -3,7 +3,7 @@
 
 
 function Get-MyIP {
-    $ipJson = Invoke-WebRequest -Uri https://api.ipify.org?format=json | ConvertFrom-Json
+    $ipJson = Invoke-WebRequest -Uri https://api.ipify.org?format=json -UseBasicParsing | ConvertFrom-Json
     $ipJson.ip
 }
 

@@ -88,7 +88,9 @@ namespace ACMESharp.POSH.Vault
             if (string.IsNullOrEmpty(RootPath))
                 RootPath = psCwd;
 
-            RootPath = Path.GetFullPath(Path.Combine(psCwd, RootPath));
+            // Optional Fix , Allows VaultProfile to be a full path and not relative to the current working path.
+            if (Path.IsPathRooted(RootPath) == false)
+                RootPath = Path.GetFullPath(Path.Combine(psCwd, RootPath));
 
             // If the Root and CWD aren't the same, we need to
             // temporarily move the CWD while we're working

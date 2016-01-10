@@ -10,7 +10,8 @@ namespace ACMESharp.Messages
         protected NewRegRequest(string resource) : base(resource)
         { }
 
-        public IEnumerable<string> Contact
+        //  Extremely Important FIX! The LetsEncrypt API at this stage does not accept CONTACT as field but CONTACTS (in plural) will be accepted
+        public IEnumerable<string> Contacts 
         { get; set; }
 
         public string Agreement

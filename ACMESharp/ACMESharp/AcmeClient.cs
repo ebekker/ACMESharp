@@ -146,9 +146,10 @@ namespace ACMESharp
         {
             AssertInit();
 
+            //  Extremely Important FIX! The LetsEncrypt API at this stage does not accept CONTACT as field but CONTACTS (in plural) will be accepted
             var requMsg = new NewRegRequest
             {
-                Contact = contacts,
+                Contacts = contacts,
             };
 
             var resp = RequestHttpPost(new Uri(RootUrl,
@@ -198,8 +199,9 @@ namespace ACMESharp
 
             var requMsg = new UpdateRegRequest();
 
-            if (contacts != null)
-                requMsg.Contact = contacts;
+            if (contacts != null) 
+                requMsg.Contacts = contacts;
+            //  Extremely Important FIX! The LetsEncrypt API at this stage does not accept CONTACT as field but CONTACTS (in plural) will be accepted
 
             if (agreeToTos && !string.IsNullOrWhiteSpace(Registration.TosLinkUri))
                 requMsg.Agreement = Registration.TosLinkUri;

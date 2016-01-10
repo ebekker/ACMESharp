@@ -176,6 +176,9 @@ namespace ACMESharp.POSH
                 if (ii.ChallengeCompleted == null)
                     ii.ChallengeCompleted = new Dictionary<string, DateTime?>();
 
+                if (ii.ChallengeCleanedUp == null)
+                    ii.ChallengeCleanedUp = new Dictionary<string, DateTime?>();
+
                 // Resolve details from inline or profile attributes
                 string challengeType = null;
                 string handlerName = null;
@@ -242,9 +245,11 @@ namespace ACMESharp.POSH
                 }
 
                 AuthorizeChallenge challenge = null;
-                DateTime? challengCompleted = null;
+                DateTime? challengeCompleted = null;
+                DateTime? challengeCleanedUp = null;
                 ii.Challenges.TryGetValue(challengeType, out challenge);
-                ii.ChallengeCompleted.TryGetValue(challengeType, out challengCompleted);
+                ii.ChallengeCompleted.TryGetValue(challengeType, out challengeCompleted);
+                ii.ChallengeCleanedUp.TryGetValue(challengeType, out challengeCleanedUp);
 
                 if (challenge == null || Regenerate)
                 {
@@ -258,7 +263,7 @@ namespace ACMESharp.POSH
                     }
                 }
 
-                if (Repeat || challengCompleted == null)
+                if (CleanUp && (Repeat || challengeCleanedUp == null))
                 {
                     using (var c = ClientHelper.GetClient(v, ri))
                     {
@@ -267,6 +272,18 @@ namespace ACMESharp.POSH
 
                         challenge = c.HandleChallenge(authzState, challengeType,
                                 handlerName, handlerParams, CleanUp);
+                        ii.ChallengeCleanedUp[challengeType] = DateTime.Now;
+                    }
+                }
+                else if (Repeat || challengeCompleted == null)
+                {
+                    using (var c = ClientHelper.GetClient(v, ri))
+                    {
+                        c.Init();
+                        c.GetDirectory(true);
+
+                        challenge = c.HandleChallenge(authzState, challengeType,
+                                handlerName, handlerParams);
                         ii.ChallengeCompleted[challengeType] = DateTime.Now;
                     }
                 }

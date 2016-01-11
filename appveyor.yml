@@ -18,6 +18,10 @@ test:
     except:
     - skipCI
     - acmeServerIntegXXX
+after_test:
+- ps: >-
+    choco install pester
+    Invoke-Pester
 artifacts:
 - path: ACMESharp\ACMESharp\bin
   name: ACME-lib

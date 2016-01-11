@@ -22,8 +22,8 @@ Describe "IisHandlerTests" {
             $myIp | Should Not BeNullOrEmpty
             $myIp | Should Match "\d+\.\d+\.\d+\.\d+"
 
-            $TEST_MY_DNS_ID | Should Not BeNullOrEmpty
-            Write-Host $TEST_MY_DNS_ID
+            $TEST_MYIP_DNS_ID | Should Not BeNullOrEmpty
+            Write-Host $TEST_MYIP_DNS_ID
 
             ## For our tests, we use an AWS Route 53-managed DNS domain
             ## and we need to update our test DNS record to point to the
@@ -52,8 +52,8 @@ Describe "IisHandlerTests" {
                     " On [$([System.Environment]::MachineName)]" +
                     " By [$([System.Environment]::UserName)]")
             Write-Host "Tag:  $r53EditTag"
-            $r53.EditARecord($TEST_MY_DNS_ID, $myIp)
-            $r53.EditTxtRecord($TEST_MY_DNS_ID, $r53EditTag)
+            $r53.EditARecord($TEST_MYIP_DNS_ID, $myIp)
+            $r53.EditTxtRecord($TEST_MYIP_DNS_ID, $r53EditTag)
 
             ## Pause for a second to let the change propogate
             Write-Host "Taking a breath..."
@@ -95,7 +95,7 @@ Describe "IisHandlerTests" {
             $r_s | Should Be $vr_s
         }
         It "adds a new DNS Identifier" {
-            $dnsId = New-ACMEIdentifier -VaultProfile $profName -Dns $TEST_MY_DNS_ID -Alias dns1
+            $dnsId = New-ACMEIdentifier -VaultProfile $profName -Dns $TEST_MYIP_DNS_ID -Alias dns1
 
             ## Sanity check some results
             $dnsId | Should Not BeNullOrEmpty
@@ -114,7 +114,7 @@ Describe "IisHandlerTests" {
             $vltId_s| Should Be $dnsId_s
 
             ## Add a second just for good measure
-            $dnsId = New-ACMEIdentifier -VaultProfile $profName -Dns $TEST_MY_DNS_ID -Alias dns2
+            $dnsId = New-ACMEIdentifier -VaultProfile $profName -Dns $TEST_MYIP_DNS_ID -Alias dns2
         }
         It "lists Identifiers in Vault" {
             $ids = Get-ACMEIdentifier -VaultProfile $profName
@@ -130,7 +130,7 @@ Describe "IisHandlerTests" {
 
             $dnsId | Should Not BeNullOrEmpty
             $dnsId.IdentifierType | Should Be dns
-            $dnsId.Identifier | Should Be $TEST_MY_DNS_ID
+            $dnsId.Identifier | Should Be $TEST_MYIP_DNS_ID
             $dnsId.Uri | Should Not BeNullOrEmpty
             $dnsId.Status | Should Be pending
             $dnsId.Expires | Should BeGreaterThan ([DateTime]::Now)

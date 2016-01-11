@@ -146,6 +146,17 @@ Describe "IisHandlerTests" {
             $authzState | Should Not BeNullOrEmpty
 
             "C:\inetpub\wwwroot\.well-known\acme-challenge" | Should Exist
+
+            $dnsId = Get-ACMEIdentifier -VaultProfile $profName -Ref dns1
+            $dnsId | Should Not BeNullOrEmpty
+            $dnsId.Challenges | Should Not BeNullOrEmpty
+            
+            $httpChallenge = $dnsId.Challenges | ? { $_.Type -eq 'http-01' }
+            $httpChallenge | Should Not BeNullOrEmpty
+            $httpChallenge.Challenge | Should Not BeNullOrEmpty
+            $httpChallenge.Challenge.FileUrl | Should Not BeNullOrEmpty
+
+            Write-Host "Challenge response content URL: [$($httpChallenge.Challenge.FileUrl)]"
         }
         It "submits the HTTP Challenge to be validated" {
             $authzState = Submit-ACMEChallenge -VaultProfile $profName -IdentifierRef dns1 -ChallengeType http-01
@@ -161,9 +172,16 @@ Describe "IisHandlerTests" {
                 if ($authz.Status -ne "pending") {
                     break
                 }
+                Write-Host "   ...still pending"
                 sleep -Seconds 10 ## Wait some period of time to give the server time to verify
             } while ($tries++ -lt 3)
         
+            if ($authz.Status -ne 'valid') {
+                Write-Warning "WARNING:  INVALID status, pausing..."
+                Write-Host "WARNING:  INVALID status, pausing..."
+                sleep -s 120
+            }
+
             $authz.Status | Should Be "valid"
         }
         It "cleans up the IIS Handler artifacts" {

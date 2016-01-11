@@ -2,7 +2,7 @@
 Set-StrictMode -Version Latest
 
 $TEST_DNS_ID    = "acme-pester.acmetesting.zyborg.io"
-$TEST_MY_DNS_ID = "acme-pester-me.acmetesting.zyborg.io"
+$TEST_MY_DNS_ID = "acme-pester-ps$($PSVersionTable.PSVersion.Major).acmetesting.zyborg.io"
 
 
 if (-not (Get-Variable ACME_POSH_PATH -ValueOnly -ErrorAction Ignore)) {

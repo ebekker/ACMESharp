@@ -21,6 +21,8 @@ test:
 after_test:
 - ps: >-
     choco install pester
+	$modulePath = Join-Path $env:ProgramFiles WindowsPowerShell\Modules\Pester
+	ipmo $modulePath
     Invoke-Pester
 artifacts:
 - path: ACMESharp\ACMESharp\bin

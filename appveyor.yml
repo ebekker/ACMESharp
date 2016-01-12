@@ -48,6 +48,10 @@ artifacts:
   type: zip
 - path: ACMESharp\dist\nuget\*.nupkg
   name: ACME-lib-nuget
+- path: ACMESharp\ACMESharp.POSH\choco\**\*.nupkg
+  name: ACME-posh-choco
+- path: ACMESharp\ACMESharp.POSH-test\choco\**\*.nupkg
+  name: ACME-posh-all-choco
 - path: cov-int
   name: ACMESharp-coverity
   type: zip

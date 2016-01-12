@@ -1218,7 +1218,6 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        [Ignore]
         public void Test0170_GenCsrAndRequestCertificate()
         {
             using (var cp = CertificateProvider.GetProvider())
@@ -1341,7 +1340,6 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        [Ignore]
         public void Test0190_RefreshCertificateRequest()
         {
             using (var signer = new RS256Signer())

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>acmesharp-posh-all</id>
+    <title>ACMESharp PowerShell Module - ALL (Install)</title>
+    <version>0.8.0.0</version>
+    <authors>ACMESharp</authors>
+    <owners>ebekker</owners>
+    <summary>PowerShell module to talk to Let's Encrypt CA and other ACME servers (includes ALL extensions).</summary>
+    <description>ACMESharp is a .NET library and PowerShell client for the ACME protocol, which is used to interopertate with the Let's Encrypt project's CA server and any other ACME-compliant server.
+        
+        This package installs the PowerShell module client to allow requesting and retrieving PKI certificates (X.509 SSL/TLS) from an ACME-compatible CA server.  If you install this package with elevated privileges, the module will be installed to the system-wide PS modules directory.  Otherwise, it will be installed to the installing user's personal PS modules directory.
+        
+        ACMESharp implements an extensible provider model for various parts of its operation, including:
+        * **Vault** - handles storage of client-side state and artifacts
+        * **Challenge Types** and Challenge Handlers** - used to verify domain ownership to the CA
+        * **PKI** - handle PKI-related operations such as generating private keys and CSRs
+        * **Installers** - install issued PKI certificates to target servers
+        
+        This package includes the base ACMESharp PowerShell module and *all* official ACMESharp extension Providers which include:
+        * `manual` - DNS and HTTP Challenge Handler
+        * `iis` - HTTP Challenge Handler for local Windows IIS server
+        * `awsRoute53` - DNS Challenge Handler for AWS Route 53 service
+        * `awsS3` - HTTP Challenge Handler for AWS S3 service in combination with CloudFront front-end
+
+        This package currently includes **no automated installers**, therefore you need to manually install the generated certificates.  By exporting them first into an appropriate format.
+    </description>
+    <iconUrl>https://cdn.rawgit.com/ebekker/ACMESharp/49bf6524da8239ecf258ab3857dfbbf40366ecfd/artwork/ACMESharp-logo-square64.png</iconUrl>
+
+    <projectUrl>https://github.com/ebekker/ACMESharp</projectUrl>
+    <projectSourceUrl>https://github.com/ebekker/ACMESharp/tree/v0.8.0.0-EA</projectSourceUrl>
+    <packageSourceUrl>https://github.com/ebekker/ACMESharp/tree/v0.8.0.0-EA/ACMESharp/ACMESharp.POSH-test/choco</packageSourceUrl>
+
+    <docsUrl>https://github.com/ebekker/ACMESharp/wiki</docsUrl>
+    <mailingListUrl>http://groups.google.com/group/acmesharp</mailingListUrl>
+    <bugTrackerUrl>https://github.com/ebekker/ACMESharp/issues</bugTrackerUrl>
+
+    <tags>pki ssl tls security certificates letsencrypt acme powershell acmesharp</tags>
+
+    <copyright>Copyright &#169; 2016 Eugene Bekker</copyright>
+    <licenseUrl>https://raw.githubusercontent.com/ebekker/ACMESharp/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+    <dependencies>
+      <dependency id="psget"      version="1.0.4.407" />
+    </dependencies>
+    <releaseNotes>Please see the release notes from the release distribution page:
+        
+        &gt; https://github.com/ebekker/ACMESharp/releases/tag/v0.8.0.0-EA
+    </releaseNotes>
+    <!--<provides></provides>-->
+  </metadata>
+  <files>
+    <file src="tools\**\*.ps1" target="tools" />
+    <file src="..\..\bin\Debug\**" target="source" />
+  </files>
+</package>

@@ -67,6 +67,12 @@ namespace ACMESharp
         private static string _testCertRequRefreshed_AcmeCertRequFile = $"{DEFAULT_BASE_LOCAL_STORE}\\501-TestCertRequ-Refreshed.acmeCertRequ";
         private static string _testCertRequRefreshed_CerFile = $"{DEFAULT_BASE_LOCAL_STORE}\\502-TestCertRequ-Refreshed.cer";
 
+        public static AcmeClient LastAcmeClient
+        { get; set; }
+
+        public TestContext TestContext
+        { get; set; }
+
         [ClassInitialize]
         public static void OneTimeSetup(TestContext tctx)
         {
@@ -107,7 +113,24 @@ namespace ACMESharp
                     x.Headers.Add("X-ACME-TestTag", testTagHeader);
                 };
 
+            LastAcmeClient = c;
             return c;
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            var testOut = TestContext.CurrentTestOutcome;
+
+            if (testOut.HasFlag(UnitTestOutcome.Error)
+                    || testOut.HasFlag(UnitTestOutcome.Failed))
+            {
+                if (LastAcmeClient?.LastResponse != null)
+                {
+                    var lastResponse = LastAcmeClient.LastResponse.ContentAsString;
+                    Console.Error.WriteLine($"Failed Test:  Last Response = [{lastResponse}]")
+                }
+            }
         }
 
         [TestMethod]

@@ -78,6 +78,9 @@ namespace ACMESharp
         public string NextNonce
         { get; private set; }
 
+        public AcmeHttpResponse LastResponse
+        { get; private set; }
+
         #endregion -- Properties --
 
         #region -- Methods --
@@ -626,7 +629,9 @@ namespace ACMESharp
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);
-                    return new AcmeHttpResponse(resp);
+                    var acmeResp = new AcmeHttpResponse(resp);
+                    LastResponse = acmeResp;
+                    return acmeResp;
                 }
             }
             catch (WebException ex) when (ex.Response != null)
@@ -638,6 +643,7 @@ namespace ACMESharp
                         IsError = true,
                         Error = ex,
                     };
+                    LastResponse = acmeResp;
 
                     if (ProblemDetailResponse.CONTENT_TYPE == resp.ContentType
                             && !string.IsNullOrEmpty(acmeResp.ContentAsString))
@@ -685,7 +691,9 @@ namespace ACMESharp
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);
-                    return new AcmeHttpResponse(resp);
+                    var acmeResp = new AcmeHttpResponse(resp);
+                    LastResponse = acmeResp;
+                    return acmeResp;
                 }
             }
             catch (WebException ex) when (ex.Response != null)
@@ -697,6 +705,7 @@ namespace ACMESharp
                         IsError = true,
                         Error = ex,
                     };
+                    LastResponse = acmeResp;
 
                     if (ProblemDetailResponse.CONTENT_TYPE == resp.ContentType
                             && !string.IsNullOrEmpty(acmeResp.ContentAsString))

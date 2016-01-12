@@ -158,12 +158,12 @@ Describe "IisHandlerTests" {
 
             Write-Host "Challenge response content URL: [$($httpChallenge.Challenge.FileUrl)]"
         }
-        It "submits the HTTP Challenge to be validated" {
+        It -Skip "submits the HTTP Challenge to be validated" {
             $authzState = Submit-ACMEChallenge -VaultProfile $profName -IdentifierRef dns1 -ChallengeType http-01
         
             $authzState | Should Not BeNullOrEmpty
         }
-        It "checks the status of the Identifier verification" {
+        It -Skip "checks the status of the Identifier verification" {
             $tries = 0
             do {
                 $authz = Update-ACMEIdentifier -VaultProfile $profName -IdentifierRef dns1
@@ -198,7 +198,7 @@ Describe "IisHandlerTests" {
 
             "C:\inetpub\wwwroot\.well-known\acme-challenge" | Should Not Exist
         }
-        It "requests a new Certificate" {
+        It -Skip "requests a new Certificate" {
             $cert1a = New-ACMECertificate -VaultProfile $profName -IdentifierRef dns1 -Generate -Alias cert1
             $cert1a | Should Not BeNullOrEmpty
 
@@ -215,7 +215,7 @@ Describe "IisHandlerTests" {
             $cert1c.SerialNumber | Should Not BeNullOrEmpty
             $cert1c.IssuerSerialNumber | Should Not BeNullOrEmpty
         }
-        It "exports Certificate matter" {
+        It -Skip "exports Certificate matter" {
             $getParams = @{
                 ExportKeyPem          = "$testPath\ExportKeyPem.out"
                 ExportCsrPEM          = "$testPath\ExportCsrPEM.out"

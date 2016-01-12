@@ -80,6 +80,26 @@ namespace ACMESharp.POSH
 
         /// <summary>
         /// <para type="description">
+        ///     Optionally, specifies a file path where the referenced Issuer
+        ///     Certificate will be saved in PEM format.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = PSET_GET)]
+        public string ExportIssuerPEM
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        ///     Optionally, specifies a file path where the referenced Issuer
+        ///     Certificate will be saved in DER format.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = PSET_GET)]
+        public string ExportIssuerDER
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
         ///     Optionally, specifies a file path where the referenced Certificate
         ///     and related artifacts will be saved into a PKCS#12 archive format.
         /// </para>
@@ -182,6 +202,28 @@ namespace ACMESharp.POSH
                         if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtDerFile))
                             throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
                         CopyTo(vlt, VaultAssetType.CrtDer, ci.CrtDerFile, ExportCertificateDER, mode);
+                    }
+
+                    if (!string.IsNullOrEmpty(ExportIssuerPEM))
+                    {
+                        if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtPemFile))
+                            throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
+                        if (string.IsNullOrEmpty(ci.IssuerSerialNumber) || !v.IssuerCertificates.ContainsKey(ci.IssuerSerialNumber))
+                            throw new InvalidOperationException("Issuer certificate hasn't been resolved");
+                        CopyTo(vlt, VaultAssetType.IssuerPem,
+                                v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile,
+                                ExportIssuerDER, mode);
+                    }
+
+                    if (!string.IsNullOrEmpty(ExportIssuerDER))
+                    {
+                        if (ci.CertificateRequest == null || string.IsNullOrEmpty(ci.CrtDerFile))
+                            throw new InvalidOperationException("Cannot export CRT; CSR hasn't been submitted or CRT hasn't been retrieved");
+                        if (string.IsNullOrEmpty(ci.IssuerSerialNumber) || !v.IssuerCertificates.ContainsKey(ci.IssuerSerialNumber))
+                            throw new InvalidOperationException("Issuer certificate hasn't been resolved");
+                        CopyTo(vlt, VaultAssetType.IssuerDer,
+                                v.IssuerCertificates[ci.IssuerSerialNumber].CrtDerFile,
+                                ExportIssuerDER, mode);
                     }
 
                     if (!string.IsNullOrEmpty(ExportPkcs12))

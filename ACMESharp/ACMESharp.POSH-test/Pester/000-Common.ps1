@@ -11,7 +11,7 @@ $TEST_DNS_CHLNG_ID = "acme-pester-ps$($env:PESTER_PSVER)-chlng.acmetesting.zybor
 
 
 if (-not (Get-Variable ACME_POSH_PATH -ValueOnly -ErrorAction Ignore)) {
-    $ACME_POSH_PATH = "$PSScriptRoot\..\bin\ACMEPowerShell"
+    $ACME_POSH_PATH = "$PSScriptRoot\..\bin\ACMESharp"
 }
 Write-Host "Resolve ACMESharp POSH Module path to [$ACME_POSH_PATH]"
 ipmo $ACME_POSH_PATH

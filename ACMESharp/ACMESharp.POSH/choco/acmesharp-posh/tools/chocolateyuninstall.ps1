@@ -2,7 +2,7 @@
 $ErrorActionPreference = 'Stop'; # stop on all errors
 
 $packageName = 'acmesharp-posh'
-$poshModuleName = 'ACMEPowerShell'
+$poshModuleName = 'ACMESharp'
 $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 
 $isAdmin = Test-ProcessAdminRights

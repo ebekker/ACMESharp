@@ -2,7 +2,7 @@
 $ErrorActionPreference = 'Stop'; # stop on all errors
 
 $packageName = 'acmesharp-posh' # arbitrary name for the package, used in messages
-$poshModuleName = 'ACMEPowerShell'
+$poshModuleName = 'ACMESharp'
 $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $sourceDir = "$(Split-Path -parent $toolsDir)\source"
 

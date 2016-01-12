@@ -16,18 +16,20 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\$(Configuration)\ACMEPowerShell\</OutputPath>
+    <OutputPath>bin\$(Configuration)\ACMESharp\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\$(Configuration)\ACMESharp\ACMESharp.POSH.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\$(Configuration)\ACMEPowerShell\</OutputPath>
+    <OutputPath>bin\$(Configuration)\ACMESharp\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\$(Configuration)\ACMESharp\ACMESharp.POSH.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -66,7 +68,6 @@
     <Compile Include="GetVaultProfile.cs" />
     <Compile Include="NewCertificate.cs" />
     <Compile Include="NewIdentifier.cs" />
-    <Compile Include="ProviderConfigSamples\Loader.cs" />
     <Compile Include="SetChallengeHandlerProfile.cs" />
     <Compile Include="SetProxy.cs" />
     <Compile Include="SetServerDirectory.cs" />
@@ -86,27 +87,22 @@
     <Compile Include="Util\VaultHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-ManualWebServerProvider" />
-    <None Include="ACMEPowerShell-AWS\ACMEPowerShell-AWS.psm1">
+    <None Include="ACMESharp-AWS\ACMESharp-AWS.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ACMEPowerShell-AWS\ACMEPowerShell-AWS.psd1">
+    <None Include="ACMESharp-AWS\ACMESharp-AWS.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ACMEPowerShell-IIS\ACMEPowerShell-IIS.psd1">
+    <None Include="ACMESharp-IIS\ACMESharp-IIS.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ACMEPowerShell-IIS\ACMEPowerShell-IIS.psm1">
+    <None Include="ACMESharp-IIS\ACMESharp-IIS.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ACMEPowerShell.psd1">
+    <None Include="ACMESharp.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <EmbeddedResource Include="ProviderConfigSamples\dnsInfo.json.sample-AwsRoute53DnsProvider" />
-    <EmbeddedResource Include="ProviderConfigSamples\dnsInfo.json.sample-ManualDnsProvider" />
-    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-AwsS3WebServerProvider" />
-    <EmbeddedResource Include="ProviderConfigSamples\webServerInfo.json.sample-IisSitePathWebServerProvider" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="en-US\about_LetsEncrypt.help.txt">
@@ -151,9 +147,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
-    <StartArguments>-ExecutionPolicy RemoteSigned -NoExit -Command "ipmo .\$(Configuration)\ACMEPowerShell; if (-not (Test-Path TestVault)) { mkdir TestVault }; cd .\TestVault"</StartArguments>
+    <StartArguments>-ExecutionPolicy RemoteSigned -NoExit -Command "ipmo .\$(Configuration)\ACMESharp; if (-not (Test-Path TestVault)) { mkdir TestVault }; cd .\TestVault"</StartArguments>
     <StartWorkingDirectory>..\..</StartWorkingDirectory>
-    <DocumentationFile>bin\Debug\ACMEPowerShell\ACMESharp.POSH.XML</DocumentationFile>
   </PropertyGroup>
   <Target Name="XmlDoc2CmdletDoc" AfterTargets="Build">
     <Exec Command="$(ProjectDir)..\..\tools\XmlDoc2CmdletDoc\XmlDoc2CmdletDoc.exe $(TargetPath)" />

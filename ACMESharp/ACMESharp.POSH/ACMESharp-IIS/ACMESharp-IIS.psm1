@@ -11,7 +11,7 @@ Install-ACMECertificateToIIS -Ref <cert-ref>
 	-HostHeader <hostheader-name> - optional (defaults to none)
 	-IPAddress <ip-address> - optional (defaults to all)
 	-Port <port-num> - optional (defaults to 443)
-
+	-VaultProfile <vp>
 #>
 
 function Install-CertificateToIIS {
@@ -24,6 +24,7 @@ function Install-CertificateToIIS {
 		[string]$SNIHostname,
 		[switch]$SNIRequired,
 		[switch]$Replace,
+		[string]$VaultProfile,
 
 		[System.Management.Automation.Runspaces.PSSession]$RemoteSession
 	)
@@ -31,11 +32,16 @@ function Install-CertificateToIIS {
 	## TODO:  We'll need to either "assume" that the user has
 	## already imported the module or explicitly re-import it
 	## and we'll also have to address the Default Noun Prefix
-	##Import-Module ACMEPowerShell
+	##Import-Module ACMESharp
 
-	$ci = Get-ACMECertificate -Ref $Certificate
+	$vpParams = @{}
+	if ($VaultProfile) {
+		$vpParams.VaultProfile = $VaultProfile
+	}
+
+	$ci = Get-ACMECertificate @vpParams -Ref $Certificate
 	if ($ci.IssuerSerialNumber) {
-		$ic = Get-ACMEIssuerCertificate -SerialNumber $ci.IssuerSerialNumber
+		$ic = Get-ACMEIssuerCertificate @vpParams -SerialNumber $ci.IssuerSerialNumber
 		if ($ic) {
 			if (-not $ic.CrtPemFile) {
 				throw "Unable to resolve Issuer Certificate PEM file $($ci.IssuerSerialNumber)"
@@ -52,7 +58,7 @@ function Install-CertificateToIIS {
 
 	## Export out the PFX to a local temp file
 	$pfxTemp = [System.IO.Path]::GetTempFileName()
-	$crt = Get-ACMECertificate -Ref $Certificate -ExportPkcs12 $pfxTemp -Overwrite
+	$crt = Get-ACMECertificate @vpParams -Ref $Certificate -ExportPkcs12 $pfxTemp -Overwrite
 	if (-not $crt.Thumbprint) {
 		throw "Unable to resolve certificate Thumbprint"
 	}

@@ -10,6 +10,7 @@ Install-ACMECertificateToAWS -Ref <cert-ref>
 	-IAMName <path> - required
 	-ELBName <elb-name> - optional to install on ELB
 	-ELBPort <elb-port> - required if elb-name is specified
+	-VaultProfile <vp>
 #>
 
 ## We need the AWS POSH Module
@@ -18,7 +19,7 @@ Import-Module AWSPowerShell
 ## TODO:  We'll need to either "assume" that the user has
 ## already imported the module or explicitly re-import it
 ## and we'll also have to address the Default Noun Prefix
-##Import-Module ACMEPowerShell
+##Import-Module ACMESharp
 
 function Install-CertificateToAWS {
 	param(
@@ -42,6 +43,11 @@ function Install-CertificateToAWS {
 		[Amazon.Runtime.AWSCredentials]$Credentials
 	)
 
+	$vpParams = @{}
+	if ($VaultProfile) {
+		$vpParams.VaultProfile = $VaultProfile
+	}
+
 	## This switch is just a flag that we need to check for the IAM Server
 	## Certificate path to match some specific naming convention
 	if ($UseWithCloudFront) {
@@ -50,9 +56,9 @@ function Install-CertificateToAWS {
 		}
 	}
 
-	$ci = Get-ACMECertificate -Ref $Certificate
+	$ci = Get-ACMECertificate @vpParams -Ref $Certificate
 	if ($ci.IssuerSerialNumber) {
-		$ic = Get-ACMEIssuerCertificate -SerialNumber $ci.IssuerSerialNumber
+		$ic = Get-ACMEIssuerCertificate @vpParams -SerialNumber $ci.IssuerSerialNumber
 		if ($ic) {
 			if (-not $ic.CrtPemFile) {
 				throw "Unable to resolve Issuer Certificate PEM file"
@@ -70,7 +76,7 @@ function Install-CertificateToAWS {
 	$privKeyFile = [System.IO.Path]::GetTempFileName()
 	$certBodyFile = [System.IO.Path]::GetTempFileName()
 
-	Get-ACMECertificate	-Ref $Certificate `
+	Get-ACMECertificate @vpParams	-Ref $Certificate `
 			-ExportKeyPEM $privKeyFile `
 			-ExportCertificatePEM $certBodyFile
 
@@ -78,7 +84,7 @@ function Install-CertificateToAWS {
 	$certBody = [System.IO.File]::ReadAllText($certBodyFile)
 	if ($ic) {
 		$certChainFile = [System.IO.Path]::GetTempFileName()
-		Get-ACMEIssuerCertificate -ExportCertificatePEM $certChainFile
+		Get-ACMEIssuerCertificate @vpParams -ExportCertificatePEM $certChainFile
 		$certChain = [System.IO.File]::ReadAllText($certChainFile)
 		del $certChainFile
 	}

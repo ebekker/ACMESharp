@@ -6,8 +6,8 @@ try
     $coPath = '%system.teamcity.build.checkoutDir%'
 
     ## This EnvVar is looked for by the Pester tests for ipmo
-    #$ACME_POSH_PATH = "$coPath\ACME-posh\Debug\ACMEPowerShell"
-    $ACME_POSH_PATH = "$coPath\ACME-posh-pester\ACMEPowerShell"
+    #$ACME_POSH_PATH = "$coPath\ACME-posh\Debug\ACMESharp"
+    $ACME_POSH_PATH = "$coPath\ACME-posh-pester\ACMESharp"
 
     ## TODO:  This is temporary
     #$pesterTestUri = "https://raw.githubusercontent.com/ebekker/ACMESharp/cleanup-providers/ACMESharp/ACMESharp.POSH-test/Pester/Vault.Tests.ps1"

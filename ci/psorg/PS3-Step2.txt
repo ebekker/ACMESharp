@@ -1,7 +1,7 @@
 try
 {
     $coPath = '%system.teamcity.build.checkoutDir%'
-    $ACME_POSH_PATH = "$coPath\ACME-posh\Debug\ACMEPowerShell"
+    $ACME_POSH_PATH = "$coPath\ACME-posh\Debug\ACMESharp"
 
 
     ## TODO:  This is temporary

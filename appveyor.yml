@@ -5,7 +5,7 @@ skip_tags: true
 environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
-  ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMEPowerShell
+  ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp
 install:
 - ps: .\ci\av-install.ps1
 nuget:
@@ -30,7 +30,7 @@ after_test:
 - ps: >-
     $doPester = ((wget http://acmesharp.zyborg.io/appveyor-pester.txt).Content -eq 1)
     if ($doPester) {
-      $env:ACME_POSH_PATH = 'C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMEPowerShell'
+      $env:ACME_POSH_PATH = 'C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp'
       Invoke-Pester
     }
 artifacts:

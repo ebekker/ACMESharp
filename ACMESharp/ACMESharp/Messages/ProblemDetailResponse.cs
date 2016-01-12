@@ -53,5 +53,12 @@
         /// </summary>
         public string Instance
         { get; set; }
+
+        /// <summary>
+        /// Supplies the original, unparsed, unprocessed content that was
+        /// used to populate this Response object.
+        /// </summary>
+        public string OrignalContent
+        { get; set; }
     }
 }

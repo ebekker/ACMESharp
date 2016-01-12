@@ -703,6 +703,7 @@ namespace ACMESharp
                     {
                         acmeResp.ProblemDetail = JsonConvert.DeserializeObject<ProblemDetailResponse>(
                                 acmeResp.ContentAsString);
+                        acmeResp.ProblemDetail.OrignalContent = acmeResp.ContentAsString;
                     }
 
                     return acmeResp;
@@ -828,6 +829,9 @@ namespace ACMESharp
                     AcmeHttpResponse response = null) : base(message, innerException)
             {
                 Response = response;
+                if (Response?.ProblemDetail?.OrignalContent != null)
+                    this.With(nameof(Response.ProblemDetail),
+                            Response.ProblemDetail.OrignalContent);
             }
 
             protected AcmeWebException(SerializationInfo info, StreamingContext context) : base(info, context)

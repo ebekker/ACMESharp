@@ -212,7 +212,7 @@ namespace ACMESharp.POSH
                             throw new InvalidOperationException("Issuer certificate hasn't been resolved");
                         CopyTo(vlt, VaultAssetType.IssuerPem,
                                 v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile,
-                                ExportIssuerDER, mode);
+                                ExportIssuerPEM, mode);
                     }
 
                     if (!string.IsNullOrEmpty(ExportIssuerDER))

@@ -5,6 +5,7 @@ skip_tags: true
 environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
+  ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMEPowerShell
 install:
 - ps: .\ci\av-install.ps1
 nuget:
@@ -13,6 +14,13 @@ nuget:
   disable_publish_on_pr: true
 build_script:
 - ps: .\ci\av-build.ps1
+before_test:
+- ps: >-
+    $doPester = ((wget http://acmesharp.zyborg.io/appveyor-pester.txt).Content -eq 1)
+    if ($doPester) {
+      echo ACME_POSH_PATH = $ENV:ACME_POSH_PATH
+      choco install pester
+    }
 test:
   categories:
     except:
@@ -20,10 +28,11 @@ test:
     - acmeServerIntegXXX
 after_test:
 - ps: >-
-    choco install pester
-    $modulePath = Join-Path $env:ProgramFiles WindowsPowerShell\Modules\Pester
-    ipmo $modulePath
-    Invoke-Pester
+    $doPester = ((wget http://acmesharp.zyborg.io/appveyor-pester.txt).Content -eq 1)
+    if ($doPester) {
+      $env:ACME_POSH_PATH = 'C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMEPowerShell'
+      Invoke-Pester
+    }
 artifacts:
 - path: ACMESharp\ACMESharp\bin
   name: ACME-lib

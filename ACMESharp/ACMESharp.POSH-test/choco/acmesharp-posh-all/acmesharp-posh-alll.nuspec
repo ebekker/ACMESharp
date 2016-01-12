@@ -53,6 +53,6 @@
   </metadata>
   <files>
     <file src="tools\**\*.ps1" target="tools" />
-    <file src="..\..\bin\Debug\**" target="source" />
+    <file src="..\..\bin\**" target="source" />
   </files>
 </package>

@@ -57,7 +57,6 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
-    <Compile Include="EditProviderConfig.cs" />
     <Compile Include="GetCertificate.cs" />
     <Compile Include="GetChallengeHandlerProfile.cs" />
     <Compile Include="GetIdentifier.cs" />
@@ -67,8 +66,6 @@
     <Compile Include="GetVaultProfile.cs" />
     <Compile Include="NewCertificate.cs" />
     <Compile Include="NewIdentifier.cs" />
-    <Compile Include="NewProviderConfig.cs" />
-    <Compile Include="ProviderConfigDto.cs" />
     <Compile Include="ProviderConfigSamples\Loader.cs" />
     <Compile Include="SetChallengeHandlerProfile.cs" />
     <Compile Include="SetProxy.cs" />

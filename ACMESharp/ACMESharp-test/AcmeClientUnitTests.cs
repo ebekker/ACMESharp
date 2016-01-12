@@ -128,7 +128,7 @@ namespace ACMESharp
                 if (LastAcmeClient?.LastResponse != null)
                 {
                     var lastResponse = LastAcmeClient.LastResponse.ContentAsString;
-                    Console.Error.WriteLine($"Failed Test:  Last Response = [{lastResponse}]")
+                    Console.Error.WriteLine($"Failed Test:  Last Response = [{lastResponse}]");
                 }
             }
         }

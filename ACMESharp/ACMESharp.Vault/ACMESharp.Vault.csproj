@@ -63,7 +63,6 @@
     <Compile Include="Util\IIdentifiable.cs" />
     <Compile Include="Util\IndexedDictionary.cs" />
     <Compile Include="Util\OrderedNameMap.cs" />
-    <Compile Include="Model\ProviderConfig.cs" />
     <Compile Include="VaultAsset.cs" />
     <Compile Include="VaultAssetType.cs" />
     <Compile Include="Model\VaultInfo.cs" />

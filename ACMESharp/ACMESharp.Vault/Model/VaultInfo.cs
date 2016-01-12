@@ -35,9 +35,6 @@ namespace ACMESharp.Vault.Model
         public ProxyConfig Proxy
         { get; set; }
 
-        public EntityDictionary<ProviderConfig> ProviderConfigs
-        { get; set; }
-
         public EntityDictionary<ProviderProfileInfo> ProviderProfiles
         { get; set; }
 

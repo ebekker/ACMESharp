@@ -4,7 +4,7 @@ using ACMESharp.DNS;
 
 namespace ACMESharp.WebServer
 {
-    public class AwsS3WebServerProvider : IWebServerProvider
+    public class AwsS3WebServerProvider : XXXIWebServerProvider
     {
         public string BucketName
         { get; set; }
@@ -24,7 +24,7 @@ namespace ACMESharp.WebServer
         public Amazon.RegionEndpoint RegionEndpoint
         { get; set; } = Amazon.RegionEndpoint.USEast1;
 
-        public IDnsProvider DnsProvider
+        public XXXIDnsProvider DnsProvider
         { get; set; }
 
         public string DnsCnameTarget

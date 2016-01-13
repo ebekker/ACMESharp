@@ -46,13 +46,17 @@
     <Compile Include="..\shared\SharedAssemblyVersionInfo.cs">
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="OpenSslCliProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
       <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
-      <Name>LetsEncrypt.ACME</Name>
+      <Name>ACMESharp</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -30,4 +30,8 @@ else {
 	.\ACMESharp\ACMESharp\mynuget.cmd
 	.\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib32\mynuget.cmd
 	.\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib64\mynuget.cmd
+
+	Write-Output "Building choco packages"
+	.\ACMESharp\ACMESharp.POSH\choco\acmesharp-posh\choco-pack.cmd
+	.\ACMESharp\ACMESharp.POSH-test\choco\acmesharp-posh-all\choco-pack.cmd
 }

@@ -4,7 +4,7 @@ using ACMESharp.Util;
 
 namespace ACMESharp.WebServer
 {
-    public class ManualWebServerProvider : BaseManualProvider, IWebServerProvider
+    public class ManualWebServerProvider : BaseManualProvider, XXXIWebServerProvider
     {
         public string FilePath
         { get; set; }

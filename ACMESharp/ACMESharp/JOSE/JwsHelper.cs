@@ -14,7 +14,7 @@ namespace ACMESharp.JOSE
     /// JWS JSON Serialization</see> format, and so this helper class' scope and
     /// implelmentation of JWS is limited to those features required for ACME.
     /// </remarks>
-    public class JwsHelper
+    public static class JwsHelper
     {
         /*
          *  In the JWS JSON Serialization, a JWS is represented as a JSON object
@@ -168,12 +168,29 @@ namespace ACMESharp.JOSE
         /// <see cref="https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.1"
         /// >ACME specification, section 7.1</see>.
         /// </summary>
-        /// <param name="signer"></param>
-        /// <returns></returns>
         public static string ComputeKeyAuthorization(ISigner signer, string token)
         {
-            var jwkThumb = Base64UrlEncode(ComputeThumbprint(signer, SHA256.Create()));
-            return $"{token}.{jwkThumb}";
+            using (var sha = SHA256.Create())
+            {
+                var jwkThumb = Base64UrlEncode(ComputeThumbprint(signer, sha));
+                return $"{token}.{jwkThumb}";
+            }
+        }
+
+        /// <summary>
+        /// Computes a SHA256 digest over the <see cref="ComputeKeyAuthorization"
+        /// >ACME Key Authorization</see> as required by some of the ACME Challenge
+        /// responses.
+        /// </summary>
+        public static string ComputeKeyAuthorizationDigest(ISigner signer, string token)
+        {
+            using (var sha = SHA256.Create())
+            {
+                var jwkThumb = Base64UrlEncode(ComputeThumbprint(signer, sha));
+                var keyAuthz = $"{token}.{jwkThumb}";
+                var keyAuthzDig = sha.ComputeHash(Encoding.UTF8.GetBytes(keyAuthz));
+                return Base64UrlEncode(keyAuthzDig);
+            }
         }
 
         public class JwsSigned

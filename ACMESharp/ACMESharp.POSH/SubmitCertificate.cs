@@ -1,11 +1,14 @@
 ﻿using ACMESharp.POSH.Util;
-using ACMESharp.POSH.Vault;
+using ACMESharp.Vault;
+using ACMESharp.Vault.Model;
 using System;
 using System.IO;
 using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
+using ACMESharp.Util;
+using System.Collections;
 
 namespace ACMESharp.POSH
 {
@@ -13,29 +16,41 @@ namespace ACMESharp.POSH
     [OutputType(typeof(CertificateInfo))]
     public class SubmitCertificate : Cmdlet
     {
-        [Parameter(Mandatory = true)]
-        public string Ref
+        /// <summary>
+        /// <para type="description">
+        ///     A reference (ID or alias) to a previously defined Certificate request.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0)]
+        [Alias("Ref")]
+        public string CertificateRef
         { get; set; }
 
-        [Parameter]
-        [ValidateSet("Rsa", "Ec")]
-        public string KeyType
-        { get; set; } = "Rsa";
+        //[Parameter]
+        //[ValidateSet("Rsa", "Ec")]
+        //public string KeyType
+        //{ get; set; } = "Rsa";
+        //
+        //[Parameter]
+        //public Hashtable KeyParams
+        //{ get; set; }
 
-        [Parameter]
-        public System.Collections.Hashtable KeyParams
-        { get; set; }
-
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a Vault profile name that will resolve to the Vault instance to be
+        ///     used for all related operations and storage/retrieval of all related assets.
+        /// </para>
+        /// </summary>
         [Parameter]
         public string VaultProfile
         { get; set; }
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
@@ -46,7 +61,7 @@ namespace ACMESharp.POSH
                 if (v.Certificates == null || v.Certificates.Count < 1)
                     throw new InvalidOperationException("No certificates found");
 
-                var ci = v.Certificates.GetByRef(Ref);
+                var ci = v.Certificates.GetByRef(CertificateRef);
                 if (ci == null)
                     throw new Exception("Unable to find a Certificate for the given reference");
 
@@ -61,8 +76,8 @@ namespace ACMESharp.POSH
                         //    CSR:  Details pulled from CSR Details JSON file
 
                         CsrDetails csrDetails;
-                        var csrDetailsAsset = vp.GetAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
-                        using (var s = vp.LoadAsset(csrDetailsAsset))
+                        var csrDetailsAsset = vlt.GetAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);
+                        using (var s = vlt.LoadAsset(csrDetailsAsset))
                         {
                             csrDetails = JsonHelper.Load<CsrDetails>(s);
                         }
@@ -72,19 +87,19 @@ namespace ACMESharp.POSH
                         var csrGenFile = $"{ci.Id}-gen-csr.json";
                         var csrPemFile = $"{ci.Id}-csr.pem";
 
-                        var keyGenAsset = vp.CreateAsset(VaultAssetType.KeyGen, keyGenFile);
-                        var keyPemAsset = vp.CreateAsset(VaultAssetType.KeyPem, keyPemFile);
-                        var csrGenAsset = vp.CreateAsset(VaultAssetType.CsrGen, csrGenFile);
-                        var csrPemAsset = vp.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
+                        var keyGenAsset = vlt.CreateAsset(VaultAssetType.KeyGen, keyGenFile);
+                        var keyPemAsset = vlt.CreateAsset(VaultAssetType.KeyPem, keyPemFile);
+                        var csrGenAsset = vlt.CreateAsset(VaultAssetType.CsrGen, csrGenFile);
+                        var csrPemAsset = vlt.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
 
                         var genKeyParams = new RsaPrivateKeyParams();
 
                         var genKey = cp.GeneratePrivateKey(genKeyParams);
-                        using (var s = vp.SaveAsset(keyGenAsset))
+                        using (var s = vlt.SaveAsset(keyGenAsset))
                         {
                             cp.SavePrivateKey(genKey, s);
                         }
-                        using (var s = vp.SaveAsset(keyPemAsset))
+                        using (var s = vlt.SaveAsset(keyPemAsset))
                         {
                             cp.ExportPrivateKey(genKey, EncodingFormat.PEM, s);
                         }
@@ -95,11 +110,11 @@ namespace ACMESharp.POSH
                             Details = csrDetails
                         };
                         var genCsr = cp.GenerateCsr(csrParams, genKey, Crt.MessageDigest.SHA256);
-                        using (var s = vp.SaveAsset(csrGenAsset))
+                        using (var s = vlt.SaveAsset(csrGenAsset))
                         {
                             cp.SaveCsr(genCsr, s);
                         }
-                        using (var s = vp.SaveAsset(csrPemAsset))
+                        using (var s = vlt.SaveAsset(csrPemAsset))
                         {
                             cp.ExportCsr(genCsr, EncodingFormat.PEM, s);
                         }
@@ -112,9 +127,9 @@ namespace ACMESharp.POSH
 
                     byte[] derRaw;
 
-                    var asset = vp.GetAsset(VaultAssetType.CsrPem, ci.CsrPemFile);
+                    var asset = vlt.GetAsset(VaultAssetType.CsrPem, ci.CsrPemFile);
                     // Convert the stored CSR in PEM format to DER
-                    using (var source = vp.LoadAsset(asset))
+                    using (var source = vlt.LoadAsset(asset))
                     {
                         var csr = cp.ImportCsr(EncodingFormat.PEM, source);
                         using (var target = new MemoryStream())
@@ -141,12 +156,12 @@ namespace ACMESharp.POSH
 
                         var crtDerBytes = ci.CertificateRequest.GetCertificateContent();
 
-                        var crtDerAsset = vp.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
-                        var crtPemAsset = vp.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
+                        var crtDerAsset = vlt.CreateAsset(VaultAssetType.CrtDer, crtDerFile);
+                        var crtPemAsset = vlt.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
 
                         using (Stream source = new MemoryStream(crtDerBytes),
-                                derTarget = vp.SaveAsset(crtDerAsset),
-                                pemTarget = vp.SaveAsset(crtPemAsset))
+                                derTarget = vlt.SaveAsset(crtDerAsset),
+                                pemTarget = vlt.SaveAsset(crtPemAsset))
                         {
                             var crt = cp.ImportCertificate(EncodingFormat.DER, source);
 
@@ -167,7 +182,7 @@ namespace ACMESharp.POSH
                     }
                 }
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 WriteObject(ci);
             }

@@ -17,14 +17,14 @@ namespace ACMESharp.PKI
     public abstract class CertificateProvider : IDisposable
     {
         private const string DEFAULT_PROVIDER_NAME = "";
-        private static readonly Type[] PROVIDER_CTOR_SIG = { typeof(IDictionary<string, string>) };
+        private static readonly Type[] PROVIDER_CTOR_SIG = { typeof(IReadOnlyDictionary<string, string>) };
 
-        private static Dictionary<string, Type> _providers = new Dictionary<string, Type>
+        private static readonly Dictionary<string, Type> _providers = new Dictionary<string, Type>
         {
             { DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslLibProvider) },
         };
 
-        protected CertificateProvider(IDictionary<string, string> newParams)
+        protected CertificateProvider(IReadOnlyDictionary<string, string> newParams)
         { }
 
         public virtual void Dispose()
@@ -105,7 +105,7 @@ namespace ACMESharp.PKI
 
         public abstract void ExportCertificate(Crt cert, EncodingFormat fmt, Stream target);
 
-        public abstract void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target);
+        public abstract void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "");
 
         public static void RegisterProvider<CP>(string name = DEFAULT_PROVIDER_NAME) where CP : CertificateProvider
         {
@@ -131,7 +131,7 @@ namespace ACMESharp.PKI
         /// </summary>
         /// <returns></returns>
         public static CertificateProvider GetProvider(string name = DEFAULT_PROVIDER_NAME,
-                IDictionary<string, string> initParams = null)
+                IReadOnlyDictionary<string, string> initParams = null)
         {
             Type t;
             lock (_providers)

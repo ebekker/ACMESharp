@@ -15,7 +15,7 @@ namespace ACMESharp.DNS
         public string DefaultDomain
         { get; set; }
 
-        public IDnsProvider Provider
+        public XXXIDnsProvider Provider
         { get; set; }
 
         public void Save(System.IO.Stream s)

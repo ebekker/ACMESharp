@@ -4,7 +4,7 @@ using ACMESharp.Util;
 
 namespace ACMESharp.DNS
 {
-    public class ManualDnsProvider : BaseManualProvider, IDnsProvider
+    public class ManualDnsProvider : BaseManualProvider, XXXIDnsProvider
     {
         public void EditTxtRecord(string dnsName, IEnumerable<string> dnsValues)
         {

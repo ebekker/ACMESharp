@@ -48,6 +48,11 @@
         public const string CHALLENGE_TYPE_PRIORKEY = "proofOfPossession-01";
 
 
+        public const string DNS_CHALLENGE_NAMEPREFIX = "_acme-challenge.";
+
+        public const string DNS_CHALLENGE_RECORDTYPE = "TXT";
+
+        public const string HTTP_CHALLENGE_PATHPREFIX = ".well-known/acme-challenge/";
 
 
         /// <summary>

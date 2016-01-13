@@ -7,7 +7,7 @@ namespace ACMESharp.PKI.Providers
     public class OpenSslLibProvider : CertificateProvider
     {
         private static Type _cpType;
-        private CertificateProvider _cp;
+        private readonly CertificateProvider _cp;
 
         static OpenSslLibProvider()
         {
@@ -441,13 +441,13 @@ namespace ACMESharp.PKI.Providers
         }
         */
 
-        public OpenSslLibProvider(IDictionary<string, string> newParams)
+        public OpenSslLibProvider(IReadOnlyDictionary<string, string> newParams)
             : base(newParams)
         {
             if (_cpType == null)
                 throw new InvalidOperationException("unresolved architecture-specific implementation");
 
-            var argTypes = new[] { typeof(IDictionary<string, string>) };
+            var argTypes = new[] { typeof(IReadOnlyDictionary<string, string>) };
             var cons = _cpType.GetConstructor(argTypes);
             if (cons == null)
                 throw new InvalidOperationException("unresolved paramterized constructor");
@@ -495,9 +495,9 @@ namespace ACMESharp.PKI.Providers
             _cp.ExportCertificate(cert, fmt, target);
         }
 
-        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target)
+        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "")
         {
-            _cp.ExportArchive(pk, certs, fmt, target);
+            _cp.ExportArchive(pk, certs, fmt, target, password);
         }
     }
 }

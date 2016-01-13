@@ -1,15 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using ACMESharp.ACME;
 using ACMESharp.JOSE;
+using ACMESharp.Messages;
 
 namespace ACMESharp
 {
     public class AuthorizeChallenge
     {
-        public const string DNS_CHALLENGE_NAMEPREFIX = "_acme-challenge.";
-        public const string DNS_CHALLENGE_RECORDTYPE = "TXT";
+        public ChallengePart ChallengePart
+        { get; set; }
 
-        public const string HTTP_CHALLENGE_PATHPREFIX = ".well-known/acme-challenge/";
+        public Challenge Challenge
+        { get; set; }
 
         public string Type
         { get; set; }
@@ -23,17 +27,29 @@ namespace ACMESharp
         public string Status
         { get; set; }
 
-        //public bool? Tls
-        //{ get; set; }
-
-        public KeyValuePair<string, string> ChallengeAnswer
+        public KeyValuePair<string, string> OldChallengeAnswer
         { get; set; }
 
         public object ChallengeAnswerMessage
         { get; set; }
 
-        public object ValidationRecord
+        public string HandlerName
         { get; set; }
+
+        public DateTime? HandlerHandleDate
+        { get; set; }
+
+        public DateTime? HandlerCleanUpDate
+        { get; set; }
+
+        public DateTime? SubmitDate
+        { get; set; }
+
+        public object SubmitResponse
+        { get; set; }
+
+        //public object ValidationRecord
+        //{ get; set; }
 
         /// <summary>
         /// Returns a key-value pair that represents the DNS domain name that needs
@@ -64,7 +80,7 @@ namespace ACMESharp
             */
 
             return new KeyValuePair<string, string>(
-                    $"{DNS_CHALLENGE_NAMEPREFIX}{dnsId}",
+                    $"{AcmeProtocol.DNS_CHALLENGE_NAMEPREFIX}{dnsId}",
                     signed.signature); /*sigFormatted);*/
         }
 
@@ -81,7 +97,7 @@ namespace ACMESharp
             var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, Token);
             
             return new KeyValuePair<string, string>(
-                    $"{HTTP_CHALLENGE_PATHPREFIX}{Token}", keyAuthz);
+                    $"{AcmeProtocol.HTTP_CHALLENGE_PATHPREFIX}{Token}", keyAuthz);
         }
     }
 }

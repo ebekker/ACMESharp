@@ -2,11 +2,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using ACMESharp.ACME;
+using ACMESharp.DNS;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
+using ACMESharp.Providers.AWS;
 using ACMESharp.WebServer;
 
 namespace ACMESharp
@@ -29,7 +33,7 @@ namespace ACMESharp
         //Uri _rootUrl = new Uri("https://acme-v01.api.letsencrypt.org/");
         //string _dirUrlBase = "https://acme-v01.api.letsencrypt.org/";
 
-        public const string TEST_CN1 = "acme-win.acmetesting.zyborg.io"; // "www.zyborg.io"; // 
+        public const string TEST_CN1 = "acme-win1.acmetesting.zyborg.io"; // "www.zyborg.io"; // 
         public const string TEST_EM1 = "mailto:letsencrypt@mailinator.com";
         public const string TEST_PH1 = "tel:+14109361212";
         public const string TEST_EM2 = "mailto:letsencrypt+update@mailinator.com";
@@ -39,30 +43,35 @@ namespace ACMESharp
 
         private static string _baseLocalStore = DEFAULT_BASE_LOCAL_STORE;
 
-        private static string _testRegister_AcmeSignerFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestRegister.acmeSigner";
-        private static string _testRegister_AcmeRegFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestRegister.acmeReg";
-        private static string _testRegisterUpdate_AcmeRegFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestRegisterUpdate.acmeReg";
+        private static string _testRegister_AcmeSignerFile = $"{DEFAULT_BASE_LOCAL_STORE}\\000-TestRegister.acmeSigner";
+        private static string _testRegister_AcmeRegFile = $"{DEFAULT_BASE_LOCAL_STORE}\\010-TestRegister.acmeReg";
+        private static string _testRegisterUpdate_AcmeRegFile = $"{DEFAULT_BASE_LOCAL_STORE}\\021-TestRegisterUpdate.acmeReg";
 
-        private static string _testAuthz_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz.acmeAuthz";
-        private static string _testAuthzRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-Refresh.acmeAuthz";
-        private static string _testAuthzChallengeDnsRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-DnsChallengeRefreshed.acmeAuthz";
-        private static string _testAuthzChallengeLegacyHttpRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-LegacyHttpChallengeRefreshed.acmeAuthz";
-        private static string _testAuthzChallengeHttpRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-HttpChallengeRefreshed.acmeAuthz";
-        private static string _testAuthzChallengeAnswers_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-ChallengeAnswers.acmeAuthz";
-        private static string _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
-        private static string _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-DnsChallengeAnswered.acmeAuthz";
-        private static string _testAuthzChallengeLegacyHttpHandled_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-ChallengeAnswersHandleLegacyHttp.acmeAuthz";
-        private static string _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
-        private static string _testAuthzChallengeLegacyHttpAnswered_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-LegacyHttpChallengeAnswered.acmeAuthz";
-        private static string _testAuthzChallengeHttpAnswered_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestAuthz-HttpChallengeAnswered.acmeAuthz";
+        private static string _testAuthz_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\100-TestAuthz.acmeAuthz";
+        private static string _testAuthzRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\101-TestAuthz-Refresh.acmeAuthz";
+        private static string _testAuthzChallengeDnsRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\110-TestAuthz-DnsChallengeRefreshed.acmeAuthz";
+        private static string _testAuthzChallengeHttpRefresh_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\111-TestAuthz-HttpChallengeRefreshed.acmeAuthz";
+        private static string _testAuthzChallengeAnswers_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\120-TestAuthz-ChallengeAnswers.acmeAuthz";
+        private static string _testAuthzChallengeDnsAnswers_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\121-TestAuthz-DnsChallengeAnswers.acmeAuthz";
+        private static string _testAuthzChallengeHttpAnswers_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\122-TestAuthz-HttpChallengeAnswers.acmeAuthz";
+        private static string _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\130-TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
+        private static string _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\131-TestAuthz-DnsChallengeAnswered.acmeAuthz";
+        private static string _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\140-TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
+        private static string _testAuthzChallengeHttpAnswered_AcmeAuthzFile = $"{DEFAULT_BASE_LOCAL_STORE}\\141-TestAuthz-HttpChallengeAnswered.acmeAuthz";
 
-        private static string _testGenCsr_RsaKeysFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestGenCsr-rsaKeys.txt";
-        private static string _testGenCsr_CsrDetailsFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestGenCsr-csrDetails.txt";
-        private static string _testGenCsr_CsrFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestGenCsr-csr.txt";
+        private static string _testGenCsr_RsaKeysFile = $"{DEFAULT_BASE_LOCAL_STORE}\\300-TestGenCsr-rsaKeys.txt";
+        private static string _testGenCsr_CsrDetailsFile = $"{DEFAULT_BASE_LOCAL_STORE}\\310-TestGenCsr-csrDetails.txt";
+        private static string _testGenCsr_CsrFile = $"{DEFAULT_BASE_LOCAL_STORE}\\350-TestGenCsr-csr.txt";
 
-        private static string _testCertRequ_AcmeCertRequFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestCertRequ.acmeCertRequ";
-        private static string _testCertRequRefreshed_AcmeCertRequFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestCertRequ-Refreshed.acmeCertRequ";
-        private static string _testCertRequRefreshed_CerFile = $"{DEFAULT_BASE_LOCAL_STORE}\\TestCertRequ-Refreshed.cer";
+        private static string _testCertRequ_AcmeCertRequFile = $"{DEFAULT_BASE_LOCAL_STORE}\\500-TestCertRequ.acmeCertRequ";
+        private static string _testCertRequRefreshed_AcmeCertRequFile = $"{DEFAULT_BASE_LOCAL_STORE}\\501-TestCertRequ-Refreshed.acmeCertRequ";
+        private static string _testCertRequRefreshed_CerFile = $"{DEFAULT_BASE_LOCAL_STORE}\\502-TestCertRequ-Refreshed.cer";
+
+        public static AcmeClient LastAcmeClient
+        { get; set; }
+
+        public TestContext TestContext
+        { get; set; }
 
         [ClassInitialize]
         public static void OneTimeSetup(TestContext tctx)
@@ -104,7 +113,24 @@ namespace ACMESharp
                     x.Headers.Add("X-ACME-TestTag", testTagHeader);
                 };
 
+            LastAcmeClient = c;
             return c;
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            var testOut = TestContext.CurrentTestOutcome;
+
+            if (testOut.HasFlag(UnitTestOutcome.Error)
+                    || testOut.HasFlag(UnitTestOutcome.Failed))
+            {
+                if (LastAcmeClient?.LastResponse != null)
+                {
+                    var lastResponse = LastAcmeClient.LastResponse.ContentAsString;
+                    Console.Error.WriteLine($"Failed Test:  Last Response = [{lastResponse}]");
+                }
+            }
         }
 
         [TestMethod]
@@ -176,7 +202,7 @@ namespace ACMESharp
                         signer.Load(fs);
                     }
                 }
-                _testRegister_AcmeSignerFile = $"{_baseLocalStore}\\TestRegister.acmeSigner";
+                _testRegister_AcmeSignerFile = $"{_baseLocalStore}\\000-TestRegister.acmeSigner";
                 using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Create))
                 {
                     signer.Save(fs);
@@ -195,7 +221,7 @@ namespace ACMESharp
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    _testRegister_AcmeRegFile = $"{_baseLocalStore}\\TestRegister.acmeReg";
+                    _testRegister_AcmeRegFile = $"{_baseLocalStore}\\010-TestRegister.acmeReg";
                     using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Create))
                     {
                         client.Registration.Save(fs);
@@ -243,7 +269,7 @@ namespace ACMESharp
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    _testRegisterUpdate_AcmeRegFile = $"{_baseLocalStore}\\TestRegisterEmptyUpdate.acmeReg";
+                    _testRegisterUpdate_AcmeRegFile = $"{_baseLocalStore}\\011-TestRegisterEmptyUpdate.acmeReg";
                     using (var fs = new FileStream(_testRegisterUpdate_AcmeRegFile, FileMode.Create))
                     {
                         client.Registration.Save(fs);
@@ -284,7 +310,7 @@ namespace ACMESharp
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    _testRegisterUpdate_AcmeRegFile = $"{_baseLocalStore}\\TestRegisterUpdate.acmeReg";
+                    _testRegisterUpdate_AcmeRegFile = $"{_baseLocalStore}\\021-TestRegisterUpdate.acmeReg";
                     using (var fs = new FileStream(_testRegisterUpdate_AcmeRegFile, FileMode.Create))
                     {
                         client.Registration.Save(fs);
@@ -325,7 +351,7 @@ namespace ACMESharp
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));
 
-                    _testRegisterUpdate_AcmeRegFile = $"{_baseLocalStore}\\TestRegisterUpdate.acmeReg";
+                    _testRegisterUpdate_AcmeRegFile = $"{_baseLocalStore}\\021-TestRegisterUpdate.acmeReg";
                     using (var fs = new FileStream(_testRegisterUpdate_AcmeRegFile, FileMode.Create))
                     {
                         client.Registration.Save(fs);
@@ -460,7 +486,7 @@ namespace ACMESharp
                         }
                     }
 
-                    _testAuthz_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz.acmeAuthz";
+                    _testAuthz_AcmeAuthzFile = $"{_baseLocalStore}\\100-TestAuthz.acmeAuthz";
                     using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Create))
                     {
                         authzState.Save(fs);
@@ -504,7 +530,7 @@ namespace ACMESharp
 
                     var authzRefreshState = client.RefreshIdentifierAuthorization(authzState, true);
 
-                    _testAuthzRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-Refresh.acmeAuthz";
+                    _testAuthzRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\101-TestAuthz-Refresh.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzRefresh_AcmeAuthzFile, FileMode.Create))
                     {
                         authzRefreshState.Save(fs);
@@ -548,7 +574,7 @@ namespace ACMESharp
         //
         //            client.RefreshAuthorizeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
         //
-        //            _testAuthzChallengeDnsRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-DnsChallengeRefreshed.acmeAuthz";
+        //            _testAuthzChallengeDnsRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\110-TestAuthz-DnsChallengeRefreshed.acmeAuthz";
         //            using (var fs = new FileStream(_testAuthzChallengeDnsRefresh_AcmeAuthzFile, FileMode.Create))
         //            {
         //                authzState.Save(fs);
@@ -592,7 +618,7 @@ namespace ACMESharp
 
                     client.RefreshAuthorizeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
-                    _testAuthzChallengeHttpRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-HttpChallengeRefreshed.acmeAuthz";
+                    _testAuthzChallengeHttpRefresh_AcmeAuthzFile = $"{_baseLocalStore}\\111-TestAuthz-HttpChallengeRefreshed.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpRefresh_AcmeAuthzFile, FileMode.Create))
                     {
                         authzState.Save(fs);
@@ -603,6 +629,7 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
+        [Ignore]
         public void Test0120_GenerateChallengeAnswers()
         {
             using (var signer = new RS256Signer())
@@ -634,12 +661,54 @@ namespace ACMESharp
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    //client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
-                    //client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_LEGACY_HTTP);
                     client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
 
-                    _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswers.acmeAuthz";
+                    _testAuthzChallengeAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\121-TestAuthz-ChallengeAnswers.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeAnswers_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        public void Test0122_DecodeHttpChallenge()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0122_DecodeHttpChallenge)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+
+                    _testAuthzChallengeHttpAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\122-TestAuthz-HttpChallengeAnswers.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeHttpAnswers_AcmeAuthzFile, FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
@@ -682,14 +751,14 @@ namespace ACMESharp
         //            }
         //
         //            var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
-        //            _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
+        //            _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{_baseLocalStore}\\130-TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
         //            using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Create))
         //            {
         //                authzState.Save(fs);
         //            }
         //
-        //            var dnsName = authzChallenge.ChallengeAnswer.Key;
-        //            var dnsValue = Regex.Replace(authzChallenge.ChallengeAnswer.Value, "\\s", "");
+        //            var dnsName = authzChallenge.OldChallengeAnswer.Key;
+        //            var dnsValue = Regex.Replace(authzChallenge.OldChallengeAnswer.Value, "\\s", "");
         //            var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
         //
         //            var dnsInfo = DnsInfo.Load(File.ReadAllText("config\\dnsInfo.json"));
@@ -736,7 +805,7 @@ namespace ACMESharp
         //            client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
         //            client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
         //
-        //            _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-DnsChallengeAnswered.acmeAuthz";
+        //            _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\131-TestAuthz-DnsChallengeAnswered.acmeAuthz";
         //            using (var fs = new FileStream(_testAuthzChallengeDnsAnswered_AcmeAuthzFile, FileMode.Create))
         //            {
         //                authzState.Save(fs);
@@ -755,6 +824,7 @@ namespace ACMESharp
         [TestMethod]
         [TestCategory("acmeServerInteg")]
         [Timeout(120 * 1000)]
+        [Ignore]
         public void Test0141_HandleHttpChallenge()
         {
             using (var signer = new RS256Signer())
@@ -786,15 +856,16 @@ namespace ACMESharp
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-                    _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
+                    var authzChallenge = client.GenerateAuthorizeChallengeAnswer(authzState,
+                            AcmeProtocol.CHALLENGE_TYPE_HTTP);
+                    _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{_baseLocalStore}\\140-TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpHandled_AcmeAuthzFile, FileMode.Create))
                     {
                         authzState.Save(fs);
                     }
 
-                    var wsFilePath = authzChallenge.ChallengeAnswer.Key;
-                    var wsFileBody = authzChallenge.ChallengeAnswer.Value;
+                    var wsFilePath = authzChallenge.OldChallengeAnswer.Key;
+                    var wsFileBody = authzChallenge.OldChallengeAnswer.Value;
 
                     var wsInfo = WebServerInfo.Load(File.ReadAllText("config\\webServerInfo.json"));
                     using (var s = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
@@ -810,7 +881,8 @@ namespace ACMESharp
 
         [TestMethod]
         [TestCategory("acmeServerInteg")]
-        public void Test0146_SubmitHttpChallengeAnswers()
+        [Timeout(120 * 1000)]
+        public void Test0142_HandleHttpChallenge()
         {
             using (var signer = new RS256Signer())
             {
@@ -826,7 +898,66 @@ namespace ACMESharp
                     reg = AcmeRegistration.Load(fs);
                 }
 
-                using (var client = BuildClient(testTagHeader: nameof(Test0146_SubmitHttpChallengeAnswers)))
+                using (var client = BuildClient(testTagHeader: nameof(Test0120_GenerateChallengeAnswers)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthzChallengeHttpAnswers_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    var wsInfo = WebServerInfo.Load(File.ReadAllText("config\\webServerInfo.json"));
+                    Assert.IsNotNull(wsInfo);
+                    var handlerConfig = wsInfo.Provider as AwsS3WebServerProvider;
+                    Assert.IsNotNull(handlerConfig);
+
+                    var handlerParams = new Dictionary<string, object>
+                    {
+                        [AwsCommonParams.ACCESS_KEY_ID.Name]             /**/ = handlerConfig.AccessKeyId,
+                        [AwsCommonParams.SECRET_ACCESS_KEY.Name]         /**/ = handlerConfig.SecretAccessKey,
+                        [AwsCommonParams.REGION.Name]                    /**/ = handlerConfig.Region,
+                        [AwsS3ChallengeHandlerProvider.BUCKET_NAME.Name] /**/ = handlerConfig.BucketName,
+                    };
+
+                    var authzChallenge = client.HandleChallenge(authzState,
+                            AcmeProtocol.CHALLENGE_TYPE_HTTP,
+                            "awsS3", handlerParams);
+
+                    _testAuthzChallengeHttpHandled_AcmeAuthzFile = $"{_baseLocalStore}\\140-TestAuthz-ChallengeAnswersHandleHttp.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeHttpHandled_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        public void Test0146_SubmitHttpChallengeAnswer()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0146_SubmitHttpChallengeAnswer)))
                 {
                     client.RootUrl = _rootUrl;
                     client.Signer = signer;
@@ -841,10 +972,9 @@ namespace ACMESharp
                         authzState = AuthorizationState.Load(fs);
                     }
 
-                    client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-                    client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
+                    client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
 
-                    _testAuthzChallengeHttpAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\TestAuthz-HttpChallengeAnswered.acmeAuthz";
+                    _testAuthzChallengeHttpAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\141-TestAuthz-HttpChallengeAnswered.acmeAuthz";
                     using (var fs = new FileStream(_testAuthzChallengeHttpAnswered_AcmeAuthzFile, FileMode.Create))
                     {
                         authzState.Save(fs);
@@ -858,6 +988,213 @@ namespace ACMESharp
         public void Test0148_RefreshAuthzHttpChallenge()
         {
             Test0111_RefreshAuthzHttpChallenge();
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        public void Test0150_AuthorizeIdentifier()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0150_AuthorizeIdentifier)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    var authzState = client.AuthorizeIdentifier(TEST_CN1);
+
+                    foreach (var c in authzState.Challenges)
+                    {
+                        if (c.Type == AcmeProtocol.CHALLENGE_TYPE_DNS)
+                        {
+                            var dnsResponse = c.GenerateDnsChallengeAnswer(
+                                    authzState.Identifier, signer);
+                        }
+                        else if (c.Type == AcmeProtocol.CHALLENGE_TYPE_HTTP)
+                        {
+                            var httpResponse = c.GenerateHttpChallengeAnswer(
+                                authzState.Identifier, signer);
+                        }
+                    }
+
+                    _testAuthz_AcmeAuthzFile = $"{_baseLocalStore}\\150-TestAuthz.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        public void Test0151_DecodeDnsChallenge()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0151_DecodeDnsChallenge)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthz_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+
+                    _testAuthzChallengeDnsAnswers_AcmeAuthzFile = $"{_baseLocalStore}\\151-TestAuthz-DnsChallengeAnswers.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeDnsAnswers_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        [Timeout(120 * 1000)]
+        public void Test0152_HandleDnsChallenge()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0152_HandleDnsChallenge)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthzChallengeDnsAnswers_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    var dnsInfo = DnsInfo.Load(File.ReadAllText("config\\dnsInfo.json"));
+                    Assert.IsNotNull(dnsInfo);
+                    var handlerConfig = dnsInfo.Provider as AwsRoute53DnsProvider;
+                    Assert.IsNotNull(handlerConfig);
+
+                    var handlerParams = new Dictionary<string, object>
+                    {
+                        [AwsCommonParams.ACCESS_KEY_ID.Name]                     /**/ = handlerConfig.AccessKeyId,
+                        [AwsCommonParams.SECRET_ACCESS_KEY.Name]                 /**/ = handlerConfig.SecretAccessKey,
+                        [AwsCommonParams.REGION.Name]                            /**/ = handlerConfig.Region,
+                        [AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name] /**/ = handlerConfig.HostedZoneId,
+                        [AwsRoute53ChallengeHandlerProvider.RR_TTL.Name]         /**/ = 30,
+                    };
+
+                    var authzChallenge = client.HandleChallenge(authzState,
+                            AcmeProtocol.CHALLENGE_TYPE_DNS,
+                            "awsRoute53", handlerParams);
+
+                    // Need to put in an artificial delay before we consider this "effective"
+                    // such that ACME Server can test it -- without this, the subsequent test
+                    // by the ACME Server was happening too fast before AWS R53 had propogated
+                    // the DNS record change and thus the validation was always failing
+                    Thread.Sleep(10 * 1000);  // 10s
+
+                    _testAuthzChallengeDnsHandled_AcmeAuthzFile = $"{_baseLocalStore}\\152-TestAuthz-ChallengeAnswersHandleDns.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("acmeServerInteg")]
+        public void Test0156_SubmitDnsChallengeAnswer()
+        {
+            using (var signer = new RS256Signer())
+            {
+                signer.Init();
+                using (var fs = new FileStream(_testRegister_AcmeSignerFile, FileMode.Open))
+                {
+                    signer.Load(fs);
+                }
+
+                AcmeRegistration reg;
+                using (var fs = new FileStream(_testRegister_AcmeRegFile, FileMode.Open))
+                {
+                    reg = AcmeRegistration.Load(fs);
+                }
+
+                using (var client = BuildClient(testTagHeader: nameof(Test0156_SubmitDnsChallengeAnswer)))
+                {
+                    client.RootUrl = _rootUrl;
+                    client.Signer = signer;
+                    client.Registration = reg;
+                    client.Init();
+
+                    client.GetDirectory(true);
+
+                    AuthorizationState authzState;
+                    using (var fs = new FileStream(_testAuthzChallengeDnsHandled_AcmeAuthzFile, FileMode.Open))
+                    {
+                        authzState = AuthorizationState.Load(fs);
+                    }
+
+                    client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+
+                    _testAuthzChallengeDnsAnswered_AcmeAuthzFile = $"{_baseLocalStore}\\156-TestAuthz-DnsChallengeAnswered.acmeAuthz";
+                    using (var fs = new FileStream(_testAuthzChallengeDnsAnswered_AcmeAuthzFile, FileMode.Create))
+                    {
+                        authzState.Save(fs);
+                    }
+                }
+            }
         }
 
         [TestMethod]
@@ -912,7 +1249,7 @@ namespace ACMESharp
                 var rsaKeyParams = new RsaPrivateKeyParams();
                 var rsaKey = cp.GeneratePrivateKey(rsaKeyParams);
 
-                _testGenCsr_RsaKeysFile = $"{_baseLocalStore}\\TestGenCsr-rsaKeys.txt";
+                _testGenCsr_RsaKeysFile = $"{_baseLocalStore}\\300-TestGenCsr-rsaKeys.txt";
                 using (var fs = new FileStream(_testGenCsr_RsaKeysFile, FileMode.Create))
                 {
                     cp.SavePrivateKey(rsaKey, fs);
@@ -927,12 +1264,12 @@ namespace ACMESharp
                 };
 
                 var csr = cp.GenerateCsr(csrParams, rsaKey, Crt.MessageDigest.SHA256);
-                _testGenCsr_CsrDetailsFile = $"{_baseLocalStore}\\TestGenCsr-csrDetails.txt";
+                _testGenCsr_CsrDetailsFile = $"{_baseLocalStore}\\310-TestGenCsr-csrDetails.txt";
                 using (var fs = new FileStream(_testGenCsr_CsrDetailsFile, FileMode.Create))
                 {
                     cp.SaveCsrParams(csrParams, fs);
                 }
-                _testGenCsr_CsrFile = $"{_baseLocalStore}\\TestGenCsr-csr.txt";
+                _testGenCsr_CsrFile = $"{_baseLocalStore}\\350-TestGenCsr-csr.txt";
                 using (var fs = new FileStream(_testGenCsr_CsrFile, FileMode.Create))
                 {
                     cp.SaveCsr(csr, fs);
@@ -1014,7 +1351,7 @@ namespace ACMESharp
 
                     var certRequ = client.RequestCertificate(csrB64u);
 
-                    _testCertRequAcmeCertRequ = $"{_baseLocalStore}\\TestCertRequ.acmeCertRequ"
+                    _testCertRequAcmeCertRequ = $"{_baseLocalStore}\\500-TestCertRequ.acmeCertRequ"
 					using (var fs = new FileStream(_testCertRequAcmeCertRequ, FileMode.Create))
                     {
                         certRequ.Save(fs);
@@ -1062,7 +1399,7 @@ namespace ACMESharp
 
                     client.RefreshCertificateRequest(certRequ, true);
 
-                    _testCertRequRefreshed_AcmeCertRequFile = $"{_baseLocalStore}\\TestCertRequ-Refreshed.acmeCertRequ";
+                    _testCertRequRefreshed_AcmeCertRequFile = $"{_baseLocalStore}\\501-TestCertRequ-Refreshed.acmeCertRequ";
                     using (var fs = new FileStream(_testCertRequRefreshed_AcmeCertRequFile, FileMode.Create))
                     {
                         certRequ.Save(fs);
@@ -1070,7 +1407,7 @@ namespace ACMESharp
 
                     if (!string.IsNullOrEmpty(certRequ.CertificateContent))
                     {
-                        _testCertRequRefreshed_CerFile = $"{_baseLocalStore}\\TestCertRequ-Refreshed.cer";
+                        _testCertRequRefreshed_CerFile = $"{_baseLocalStore}\\502-TestCertRequ-Refreshed.cer";
                         using (var fs = new FileStream(_testCertRequRefreshed_CerFile, FileMode.Create))
                         {
                             certRequ.SaveCertificate(fs);

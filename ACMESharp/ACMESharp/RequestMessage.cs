@@ -2,7 +2,7 @@
 {
     public abstract class RequestMessage
     {
-        public RequestMessage(string resource)
+        protected RequestMessage(string resource)
         {
             Resource = resource;
         }

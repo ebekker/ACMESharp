@@ -43,10 +43,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (GetInitialDirectory.HasValue)
                     v.GetInitialDirectory = GetInitialDirectory.Value;
@@ -73,7 +73,7 @@ namespace ACMESharp.POSH
                     }
                 }
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
             }
         }
 

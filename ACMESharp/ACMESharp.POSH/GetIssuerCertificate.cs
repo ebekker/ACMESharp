@@ -29,10 +29,10 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.IssuerCertificates == null || v.IssuerCertificates.Count < 1)
                     throw new InvalidOperationException("No issuer certificates found");
@@ -53,7 +53,7 @@ namespace ACMESharp.POSH
                     {
                         if (string.IsNullOrEmpty(ic.CrtPemFile))
                             throw new InvalidOperationException("Cannot export CRT; CRT hasn't been retrieved");
-                        GetCertificate.CopyTo(vp, Vault.VaultAssetType.IssuerPem, ic.CrtPemFile,
+                        GetCertificate.CopyTo(vlt, Vault.VaultAssetType.IssuerPem, ic.CrtPemFile,
                                 ExportCertificatePEM, mode);
                     }
 
@@ -62,7 +62,7 @@ namespace ACMESharp.POSH
                         if (string.IsNullOrEmpty(ic.CrtDerFile))
                             throw new InvalidOperationException("Cannot export CRT; CRT hasn't been retrieved");
 
-                        GetCertificate.CopyTo(vp, Vault.VaultAssetType.IssuerDer, ic.CrtDerFile,
+                        GetCertificate.CopyTo(vlt, Vault.VaultAssetType.IssuerDer, ic.CrtDerFile,
                                 ExportCertificateDER, mode);
                     }
 

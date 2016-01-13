@@ -18,7 +18,7 @@ namespace ACMESharp.PKI.Providers
         //    https://gallery.technet.microsoft.com/scriptcenter/Self-signed-certificate-5920a7c6
         //    https://msdn.microsoft.com/en-us/library/aa374850(v=vs.85).aspx
 
-        public CertEnrollProvider(IDictionary<string, string> initParams)
+        public CertEnrollProvider(IReadOnlyDictionary<string, string> initParams)
             : base(initParams)
         { }
 
@@ -340,7 +340,7 @@ namespace ACMESharp.PKI.Providers
             throw new NotImplementedException();
         }
 
-        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target)
+        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "")
         {
             throw new NotImplementedException();
         }

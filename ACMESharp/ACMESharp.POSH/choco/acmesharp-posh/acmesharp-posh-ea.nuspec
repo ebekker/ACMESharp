@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>acmesharp-posh-ea</id>
+    <title>ACMESharp PowerShell Module EA (Install)</title>
+    <version>0.8.0.0-EA</version>
+    <authors>ebekker</authors>
+    <owners>ebekker</owners>
+    <summary>PowerShell module to interoperate with Let's Encrypt CA.</summary>
+    <description>ACMESharp is a .NET library and PowerShell client for the ACME protocol, which is used to interopertate with the Let's Encrypt project's CA server.
+        
+        This package installs the PowerShell module client to allow requesting and retrieving PKI certificates (X.509 SSL/TLS) from the Let's Encrypt service, or any ACME-compatible CA server.  If you install this package with elevated privileges, the module will be installed to the system-wide PS modules directory.  Otherwise, it will be installed to the installing user's personal PS modules directory.
+        
+        ACMESharp implements an extensible provider model for various parts of its operation, including:
+        * **Vault** - handles storage of client-side state and artifacts ([other providers](https://chocolatey.org/packages?q=tag%3Aacmesharp-providers-vault))
+        * **Challenge Types** and Challenge Handlers** - used to verify domain ownership to the CA ([other providers](https://chocolatey.org/packages?q=tag%3Aacmesharp-providers-handler))
+        * **PKI** - handle PKI-related operations such as generating private keys and CSRs ([other providers](https://chocolatey.org/packages?q=tag%3Aacmesharp-providers-pki))
+        * **Installers** - install issued PKI certificates to target servers ([other providers](https://chocolatey.org/packages?q=tag%3Aacmesharp-providers-installer))
+        
+        In this base package, you get a default **local** Vault provider (stores to local disk), the **manual** Challenge Handler provider, an OpenSSL-based PKI provider and no Installers (i.e. you have to install the certificates manually).
+        
+        You can install additional provider sub-modules for each of these provider types to add different functionality in each of these areas.
+    </description>
+    <iconUrl>https://cdn.rawgit.com/ebekker/ACMESharp/49bf6524da8239ecf258ab3857dfbbf40366ecfd/artwork/ACMESharp-logo-square64.png</iconUrl>
+
+    <projectUrl>https://github.com/ebekker/ACMESharp</projectUrl>
+    <projectSourceUrl>https://github.com/ebekker/ACMESharp/tree/v0.8.0.0-EA</projectSourceUrl>
+    <packageSourceUrl>https://github.com/ebekker/ACMESharp/tree/v0.8.0.0-EA/ACMESharp/ACMESharp.POSH/choco</packageSourceUrl>
+
+    <docsUrl>https://github.com/ebekker/ACMESharp/wiki</docsUrl>
+    <mailingListUrl>http://groups.google.com/group/acmesharp</mailingListUrl>
+    <bugTrackerUrl>https://github.com/ebekker/ACMESharp/issues</bugTrackerUrl>
+
+    <tags>pki ssl tls security certificates letsencrypt acme powershell acmesharp</tags>
+
+    <copyright>Copyright &#169; 2016 Eugene Bekker</copyright>
+    <licenseUrl>https://raw.githubusercontent.com/ebekker/ACMESharp/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+    <dependencies>
+      <!--
+      <dependency id="chocolatey" version="0.9.9" />
+      -->
+      <dependency id="psget"      version="1.0.4.407" />
+    </dependencies>
+    <releaseNotes>Please see the release notes from the release distribution page:
+        
+        &gt; https://github.com/ebekker/ACMESharp/releases/tag/v0.8.0.0-EA
+    </releaseNotes>
+    <!--<provides></provides>-->
+  </metadata>
+  <files>
+    <file src="tools\**\*.ps1" target="tools" />
+    <file src="..\..\bin\Debug\**" target="source" />
+  </files>
+</package>

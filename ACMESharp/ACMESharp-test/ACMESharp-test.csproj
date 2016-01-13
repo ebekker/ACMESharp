@@ -69,12 +69,17 @@
     <Compile Include="..\shared\SharedAssemblyVersionInfo.cs">
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="AcmeClientUnitTests.cs" />
     <Compile Include="CertificateProviderTests.cs" />
+    <Compile Include="ChallengeHandlerTests.cs" />
+    <Compile Include="JsonTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="JwsUnitTests.cs" />
     <Compile Include="JwsHelperUnitTests.cs" />
-    <Compile Include="AcmeUnitTest.cs" />
+    <Compile Include="AcmeUnitTests.cs" />
     <Compile Include="DnsUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +132,10 @@
     <ProjectReference Include="..\ACMESharp.PKI.Providers.OpenSslLib64\ACMESharp.PKI.Providers.OpenSslLib64.csproj">
       <Project>{98b532b3-805b-4d81-918e-5a76cc66d40d}</Project>
       <Name>ACMESharp.PKI.Providers.OpenSslLib64</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ACMESharp.Providers.AWS\ACMESharp.Providers.AWS.csproj">
+      <Project>{cd8842f7-5cbd-4db1-b2b9-387a095ab91f}</Project>
+      <Name>ACMESharp.Providers.AWS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
       <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>

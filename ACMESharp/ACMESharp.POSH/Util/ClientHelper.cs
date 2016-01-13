@@ -1,13 +1,13 @@
-﻿using ACMESharp.POSH.Vault;
-using System;
+﻿using System;
 using System.IO;
 using ACMESharp.JOSE;
+using ACMESharp.Vault.Model;
 
 namespace ACMESharp.POSH.Util
 {
     public static class ClientHelper
     {
-        public static AcmeClient GetClient(VaultConfig Config)
+        public static AcmeClient GetClient(VaultInfo Config)
         {
             var p = Config.Proxy;
             var _Client = new AcmeClient();
@@ -21,7 +21,7 @@ namespace ACMESharp.POSH.Util
             return _Client;
         }
 
-        public static AcmeClient GetClient(VaultConfig config, RegistrationInfo reg)
+        public static AcmeClient GetClient(VaultInfo config, RegistrationInfo reg)
         {
             var c = GetClient(config);
 
@@ -49,7 +49,7 @@ namespace ACMESharp.POSH.Util
             return c;
         }
 
-        public static void Init(VaultConfig config, AcmeClient client)
+        public static void Init(VaultInfo config, AcmeClient client)
         {
             client.Init();
 

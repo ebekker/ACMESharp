@@ -1,16 +1,19 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using ACMESharp.ACME;
 using ACMESharp.HTTP;
 using ACMESharp.JOSE;
 using ACMESharp.JSON;
 using ACMESharp.Messages;
+using ACMESharp.Util;
 
 namespace ACMESharp
 {
@@ -22,7 +25,7 @@ namespace ACMESharp
     {
         #region -- Fields --
 
-        JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
+        JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
             ContractResolver = new AcmeJsonContractResolver(),
@@ -73,6 +76,9 @@ namespace ACMESharp
         { get; private set; }
 
         public string NextNonce
+        { get; private set; }
+
+        public AcmeHttpResponse LastResponse
         { get; private set; }
 
         #endregion -- Properties --
@@ -270,6 +276,7 @@ namespace ACMESharp
 
             var authzState = new AuthorizationState
             {
+                IdentifierPart = respMsg.Identifier,
                 IdentifierType = respMsg.Identifier.Type,
                 Identifier = respMsg.Identifier.Value,
                 Uri = uri,
@@ -280,11 +287,11 @@ namespace ACMESharp
                 // Simple copy/conversion from one form to another
                 Challenges = respMsg.Challenges.Select(x => new AuthorizeChallenge
                 {
+                    ChallengePart = x,
                     Type = x.Type,
                     Status = x.Status,
                     Uri = x.Uri,
                     Token = x.Token,
-                    ValidationRecord = x.ValidationRecord,
                 }),
             };
 
@@ -312,6 +319,7 @@ namespace ACMESharp
 
             var authzStatusState = new AuthorizationState
             {
+                IdentifierPart = respMsg.Identifier,
                 IdentifierType = respMsg.Identifier.Type,
                 Identifier = respMsg.Identifier.Value,
                 Status = respMsg.Status,
@@ -319,11 +327,11 @@ namespace ACMESharp
 
                 Challenges = respMsg.Challenges.Select(x => new AuthorizeChallenge
                 {
+                    ChallengePart = x,
                     Type = x.Type,
                     Status = x.Status,
                     Uri = x.Uri,
                     Token = x.Token,
-                    ValidationRecord = x.ValidationRecord,
                 }),
             };
 
@@ -337,7 +345,8 @@ namespace ACMESharp
 
             var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
             if (c == null)
-                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+                throw new ArgumentOutOfRangeException(nameof(type), "no challenge found matching requested type")
+                        .With(nameof(type), type);
 
             var requUri = new Uri(c.Uri);
             if (useRootUrl)
@@ -352,6 +361,7 @@ namespace ACMESharp
             c.Status = cp.Status;
         }
 
+        [Obsolete]
         public AuthorizeChallenge GenerateAuthorizeChallengeAnswer(AuthorizationState authzState, string type)
         {
             AssertInit();
@@ -359,33 +369,24 @@ namespace ACMESharp
 
             var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
             if (c == null)
-                throw new ArgumentOutOfRangeException("no challenge found matching requested type");
+                throw new ArgumentOutOfRangeException(nameof(type),
+                        "no challenge found matching requested type");
 
             switch (type)
             {
                 case AcmeProtocol.CHALLENGE_TYPE_DNS:
-                    c.ChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
+                    c.OldChallengeAnswer = c.GenerateDnsChallengeAnswer(authzState.Identifier, Signer);
                     c.ChallengeAnswerMessage = new AnswerDnsChallengeRequest
                     {
-                        ClientPublicKey = Signer.ExportJwk(),
-                        Validation = new
-                        {
-                            header = new { alg = Signer.JwsAlg },
-                            payload = JwsHelper.Base64UrlEncode(JsonConvert.SerializeObject(new
-                            {
-                                type = type,
-                                token = c.Token
-                            })),
-                            signature = c.ChallengeAnswer.Value,
-                        }
+                        KeyAuthorization = c.OldChallengeAnswer.Value,
                     };
                     break;
 
                 case AcmeProtocol.CHALLENGE_TYPE_HTTP:
-                    c.ChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer);
+                    c.OldChallengeAnswer = c.GenerateHttpChallengeAnswer(authzState.Identifier, Signer);
                     c.ChallengeAnswerMessage = new AnswerHttpChallengeRequest
                     {
-                        KeyAuthorization = c.ChallengeAnswer.Value,
+                        KeyAuthorization = c.OldChallengeAnswer.Value,
                     };
                     break;
 
@@ -400,24 +401,99 @@ namespace ACMESharp
             return c;
         }
 
-        public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState,
+        public AuthorizeChallenge DecodeChallenge(AuthorizationState authzState, string challengeType)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
+            if (authzChallenge == null)
+                throw new ArgumentOutOfRangeException(nameof(challengeType),
+                        "no challenge found matching requested type")
+                        .With("challengeType", challengeType);
+
+            var provider = ChallengeDecoderExtManager.GetProvider(challengeType);
+            if (provider == null)
+                throw new NotSupportedException("no provider exists for requested challenge type")
+                        .With("challengeType", challengeType);
+
+            using (var decoder = provider.GetDecoder(authzState.IdentifierPart, authzChallenge.ChallengePart))
+            {
+                authzChallenge.Challenge = decoder.Decode(authzState.IdentifierPart, authzChallenge.ChallengePart, Signer);
+
+                if (authzChallenge.Challenge == null)
+                    throw new InvalidDataException("challenge decoder produced no output");
+            }
+
+            return authzChallenge;
+        }
+
+        public AuthorizeChallenge HandleChallenge(AuthorizationState authzState,
+                string challengeType,
+                string handlerName, IReadOnlyDictionary<string, object> handlerParams,
+                bool cleanUp = false)
+        {
+            var provider = ChallengeHandlerExtManager.GetProvider(handlerName);
+            if (provider == null)
+                throw new InvalidOperationException("unable to resolve Challenge Handler provider")
+                        .With("handlerName", handlerName);
+
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
+            if (authzChallenge == null)
+                throw new ArgumentOutOfRangeException(nameof(challengeType),
+                        "no challenge found matching requested type")
+                        .With("challengeType", challengeType);
+
+            if (!provider.IsSupported(authzChallenge.Challenge))
+                throw new InvalidOperationException("Challenge Handler does not support given Challenge")
+                        .With("handlerName", handlerName)
+                        .With("challengeType", authzChallenge.Challenge.Type);
+
+            var handler = provider.GetHandler(authzChallenge.Challenge, handlerParams);
+            if (handler == null)
+                throw new InvalidOperationException("no Challenge Handler provided for given Challenge")
+                        .With("handlerName", handlerName)
+                        .With("challengeType", authzChallenge.Challenge.Type);
+
+            authzChallenge.HandlerName = handlerName;
+
+            if (cleanUp)
+            {
+                handler.CleanUp(authzChallenge.Challenge);
+                authzChallenge.HandlerCleanUpDate = DateTime.Now;
+            }
+            else
+            {
+                handler.Handle(authzChallenge.Challenge);
+                authzChallenge.HandlerHandleDate = DateTime.Now;
+            }
+
+            handler.Dispose();
+
+            return authzChallenge;
+        }
+
+        public AuthorizeChallenge SubmitChallengeAnswer(AuthorizationState authzState,
                 string type, bool useRootUrl = false)
         {
             AssertInit();
             AssertRegistration();
 
-            var c = authzState.Challenges.FirstOrDefault(x => x.Type == type);
-            if (c == null)
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == type);
+            if (authzChallenge == null)
                 throw new ArgumentException("no challenge found matching requested type");
 
-            if (c.ChallengeAnswer.Key == null || c.ChallengeAnswer.Value == null || c.ChallengeAnswerMessage == null)
+            if (authzChallenge.Challenge == null)
+                throw new InvalidOperationException("challenge has not been decoded");
+            if (authzChallenge.Challenge.Answer == null)
                 throw new InvalidOperationException("challenge answer has not been generated");
 
-            var requUri = new Uri(c.Uri);
+            var requUri = new Uri(authzChallenge.Uri);
             if (useRootUrl)
                 requUri = new Uri(RootUrl, requUri.PathAndQuery);
 
-            var resp = RequestHttpPost(requUri, c.ChallengeAnswerMessage);
+            var requ = ChallengeAnswerRequest.CreateRequest(authzChallenge.Challenge.Answer);
+            var resp = RequestHttpPost(requUri, requ);
 
             if (resp.IsError)
             {
@@ -425,7 +501,43 @@ namespace ACMESharp
                         "Unexpected error", resp);
             }
 
-            return c;
+            authzChallenge.SubmitResponse = resp;
+            authzChallenge.SubmitDate = DateTime.Now;
+
+            return authzChallenge;
+        }
+
+        [Obsolete]
+        public AuthorizeChallenge SubmitAuthorizeChallengeAnswer(AuthorizationState authzState,
+                string challengeType, bool useRootUrl = false)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var authzChallenge = authzState.Challenges.FirstOrDefault(x => x.Type == challengeType);
+            if (authzChallenge == null)
+                throw new ArgumentException("no challenge found matching requested type");
+
+            if (authzChallenge.OldChallengeAnswer.Key == null
+                    || authzChallenge.OldChallengeAnswer.Value == null
+                    || authzChallenge.ChallengeAnswerMessage == null)
+                throw new InvalidOperationException("challenge answer has not been generated");
+
+            var requUri = new Uri(authzChallenge.Uri);
+            if (useRootUrl)
+                requUri = new Uri(RootUrl, requUri.PathAndQuery);
+
+            var resp = RequestHttpPost(requUri, authzChallenge.ChallengeAnswerMessage);
+
+            if (resp.IsError)
+            {
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+            }
+
+            authzChallenge.HandlerHandleDate = DateTime.Now;
+
+            return authzChallenge;
         }
 
         public CertificateRequest RequestCertificate(string csrContent)
@@ -517,7 +629,9 @@ namespace ACMESharp
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);
-                    return new AcmeHttpResponse(resp);
+                    var acmeResp = new AcmeHttpResponse(resp);
+                    LastResponse = acmeResp;
+                    return acmeResp;
                 }
             }
             catch (WebException ex) when (ex.Response != null)
@@ -529,6 +643,7 @@ namespace ACMESharp
                         IsError = true,
                         Error = ex,
                     };
+                    LastResponse = acmeResp;
 
                     if (ProblemDetailResponse.CONTENT_TYPE == resp.ContentType
                             && !string.IsNullOrEmpty(acmeResp.ContentAsString))
@@ -576,7 +691,9 @@ namespace ACMESharp
                 using (var resp = (HttpWebResponse)requ.GetResponse())
                 {
                     ExtractNonce(resp);
-                    return new AcmeHttpResponse(resp);
+                    var acmeResp = new AcmeHttpResponse(resp);
+                    LastResponse = acmeResp;
+                    return acmeResp;
                 }
             }
             catch (WebException ex) when (ex.Response != null)
@@ -588,12 +705,14 @@ namespace ACMESharp
                         IsError = true,
                         Error = ex,
                     };
+                    LastResponse = acmeResp;
 
                     if (ProblemDetailResponse.CONTENT_TYPE == resp.ContentType
                             && !string.IsNullOrEmpty(acmeResp.ContentAsString))
                     {
                         acmeResp.ProblemDetail = JsonConvert.DeserializeObject<ProblemDetailResponse>(
                                 acmeResp.ContentAsString);
+                        acmeResp.ProblemDetail.OrignalContent = acmeResp.ContentAsString;
                     }
 
                     return acmeResp;
@@ -719,6 +838,9 @@ namespace ACMESharp
                     AcmeHttpResponse response = null) : base(message, innerException)
             {
                 Response = response;
+                if (Response?.ProblemDetail?.OrignalContent != null)
+                    this.With(nameof(Response.ProblemDetail),
+                            Response.ProblemDetail.OrignalContent);
             }
 
             protected AcmeWebException(SerializationInfo info, StreamingContext context) : base(info, context)

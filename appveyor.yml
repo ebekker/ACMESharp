@@ -1,20 +1,38 @@
-version: 0.7.1.{build}
+version: 0.8.0.{build}
 pull_requests:
   do_not_increment_build_number: true
+skip_tags: true
 environment:
   secureInfoPassword:
     secure: r5xGVtj4yCfOX7QUsgBCq9IIK2/99/JrSfhmspffhzU=
+  ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp
 install:
 - ps: .\ci\av-install.ps1
 nuget:
+  account_feed: true
+  project_feed: true
   disable_publish_on_pr: true
 build_script:
 - ps: .\ci\av-build.ps1
+before_test:
+- ps: >-
+    $doPester = ((wget http://acmesharp.zyborg.io/appveyor-pester.txt).Content -eq 1)
+    if ($doPester) {
+      echo ACME_POSH_PATH = $ENV:ACME_POSH_PATH
+      choco install pester
+    }
 test:
   categories:
     except:
     - skipCI
     - acmeServerIntegXXX
+after_test:
+- ps: >-
+    $doPester = ((wget http://acmesharp.zyborg.io/appveyor-pester.txt).Content -eq 1)
+    if ($doPester) {
+      $env:ACME_POSH_PATH = 'C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp'
+      Invoke-Pester
+    }
 artifacts:
 - path: ACMESharp\ACMESharp\bin
   name: ACME-lib
@@ -22,11 +40,31 @@ artifacts:
 - path: ACMESharp\ACMESharp.POSH\bin
   name: ACME-posh
   type: zip
+- path: ACMESharp\ACMESharp.POSH-test\Pester
+  name: ACME-posh-pester
+  type: zip
+- path: ACMESharp\ACMESharp.POSH-test\bin
+  name: ACME-posh-pester-bin
+  type: zip
 - path: ACMESharp\dist\nuget\*.nupkg
   name: ACME-lib-nuget
+- path: ACMESharp\ACMESharp.POSH\choco\**\*.nupkg
+  name: ACME-posh-choco
+- path: ACMESharp\ACMESharp.POSH-test\choco\**\*.nupkg
+  name: ACME-posh-all-choco
 - path: cov-int
   name: ACMESharp-coverity
   type: zip
+deploy:
+- provider: S3
+  access_key_id: AKIAIU2XOHJ3HOICE4NA
+  secret_access_key:
+    secure: SFUn+5KMSOZJunA0RgHcztIE1O3mSv2gVgSBJnBwWV/miBevC9/CB+GWpSJ2XBjn
+  region: us-east-1
+  bucket: acmesharp.zyborg.io
+  folder: appveyor-deploy
+  artifact: ACME-lib,ACME-posh,ACME-posh-pester,ACME-posh-pester-bin
+  set_public: true
 notifications:
 - provider: Webhook
   url: https://webhooks.gitter.im/e/dc0dd42c91579a605d09

@@ -2,11 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ACMESharp.Messages;
+using ACMESharp.Util;
 
 namespace ACMESharp
 {
     public class AuthorizationState
     {
+        public IdentifierPart IdentifierPart
+        { get; set; }
+
         public string IdentifierType
         { get; set; }
 
@@ -30,18 +35,12 @@ namespace ACMESharp
 
         public void Save(Stream s)
         {
-            using (var w = new StreamWriter(s))
-            {
-                w.Write(JsonConvert.SerializeObject(this, Formatting.Indented));
-            }
+            JsonHelper.Save(s, this);
         }
 
         public static AuthorizationState Load(Stream s)
         {
-            using (var r = new StreamReader(s))
-            {
-                return JsonConvert.DeserializeObject<AuthorizationState>(r.ReadToEnd());
-            }
+            return JsonHelper.Load<AuthorizationState>(s);
         }
     }
 }

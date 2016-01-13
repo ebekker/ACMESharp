@@ -22,7 +22,7 @@ namespace ACMESharp.PKI.Providers
 
         public delegate int RsaKeyGeneratorCallback(int p, int n, object cbArg);
 
-        public OpenSslLib64Provider(IDictionary<string, string> initParams)
+        public OpenSslLib64Provider(IReadOnlyDictionary<string, string> initParams)
             : base(initParams)
         { }
 
@@ -285,7 +285,7 @@ namespace ACMESharp.PKI.Providers
             }
         }
 
-        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target)
+        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "")
         {
             var rsaPk = pk as RsaPrivateKey;
             if (rsaPk == null)
@@ -308,7 +308,7 @@ namespace ACMESharp.PKI.Providers
                     for (int i = 1; i < x509Arr.Length; ++i)
                         caStack.Add(x509Arr[i]);
 
-                    using (var pfx = new PKCS12(null, key, x509Arr[0], caStack))
+                    using (var pfx = new PKCS12(password == string.Empty ? null : password, key, x509Arr[0], caStack))
                     {
                         using (var bio = BIO.MemoryBuffer())
                         {

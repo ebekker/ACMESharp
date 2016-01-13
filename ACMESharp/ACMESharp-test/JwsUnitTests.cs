@@ -44,12 +44,12 @@ namespace ACMESharp
                     "{\"typ\":\"JWT\",\r\n" +
                     " \"alg\":\"HS256\"}";
           
-            byte[] protectedBytesExpected = new byte[] // From the RFC example
+            var protectedBytesExpected = new byte[] // From the RFC example
             {
                 123, 34, 116, 121, 112, 34, 58, 34, 74, 87, 84, 34, 44, 13, 10,
                 32, 34, 97, 108, 103, 34, 58, 34, 72, 83, 50, 53, 54, 34, 125
             };
-            byte[] protectedBytesActual = Encoding.UTF8.GetBytes(protectedSample);
+            var protectedBytesActual = Encoding.UTF8.GetBytes(protectedSample);
             CollectionAssert.AreEqual(protectedBytesExpected, protectedBytesActual);
            
             string protectedB64uExpected = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9"; // From the RFC example

@@ -1,0 +1,650 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>XmlDoc2CmdletDoc.Core</name>
+    </assembly>
+    <members>
+        <member name="T:XmlDoc2CmdletDoc.Core.Comments.CachingCommentReader">
+            <summary>
+            Implementation of <see cref="T:XmlDoc2CmdletDoc.Core.Comments.ICommentReader"/> that decorates a proxy instance by caching comment lookups.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.CachingCommentReader.#ctor(XmlDoc2CmdletDoc.Core.Comments.ICommentReader)">
+            <summary>
+            Creates a new instances that delegates to the specified <paramref name="proxy"/>.
+            </summary>
+            <param name="proxy">The decorated comment reader.</param>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Comments.ICommentReader">
+            <summary>
+            Abstracts the mechanism for retrieving the XML Doc comments for types, fields and properties.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.ICommentReader.GetComments(System.Type)">
+            <summary>
+            Retrieves the XML Doc comment for a type.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>The type's XML Doc comment, or <em>null</em> if the type doesn't have a comment.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.ICommentReader.GetComments(System.Reflection.FieldInfo)">
+            <summary>
+            Retrieves the XML Doc comment for a field.
+            </summary>
+            <param name="fieldInfo">The field.</param>
+            <returns>The field's XML Doc comment, or <em>null</em> if the field doesn't have a comment.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.ICommentReader.GetComments(System.Reflection.PropertyInfo)">
+            <summary>
+            Retrieves the XML Doc comment for a property.
+            </summary>
+            <param name="propertyInfo">The property.</param>
+            <returns>The property's XML Doc comment, or <em>null</em> if the property doesn't have a comment.</returns>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Comments.LoggingCommentReader">
+            <summary>
+            <see cref="T:XmlDoc2CmdletDoc.Core.Comments.ICommentReader"/> implementation that decorates an existing instance, reporting a warning whenever a comment lookup occurs and an XML Doc comment
+            cannot be found.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.LoggingCommentReader.#ctor(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Creates a new instance that decorates the specified <paramref name="proxy"/>.
+            </summary>
+            <param name="proxy">The decorated proxy.</param>
+            <param name="reportWarning">Used to report failed comment lookups.</param>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Comments.RewritingCommentReader">
+            <summary>
+            Implementation of <see cref="T:XmlDoc2CmdletDoc.Core.Comments.ICommentReader"/> that decorates an existing reader, typically <see cref="T:XmlDoc2CmdletDoc.Core.Comments.JoltCommentReader"/>,
+            and performs simple modifications to the XML Doc comments. Modifications include expanding &lt;see cref="xxxx"&gt; elements.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.RewritingCommentReader.#ctor(XmlDoc2CmdletDoc.Core.Comments.ICommentReader)">
+            <summary>
+            Creates a new instance that decorates the specified <paramref name="proxy"/>.
+            </summary>
+            <param name="proxy">The proxy source of comments.</param>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.RewritingCommentReader.GetTextForCrefValue(System.String)">
+            <summary>
+            Returns a text representation of a reflection item referenced in a &lt;see cref=&quot;xxx&quot;/&gt; element.
+            </summary>
+            <param name="cref">The cref attribute value.</param>
+            <returns>A text representation of the referenced item.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.RewritingCommentReader.GetType(System.String)">
+            <summary>
+            Obtains a <see cref="T:System.Type"/> having the specified <paramref name="typeName"/>. The type is found by
+            searching the assemblies loaded in the current app domain.
+            </summary>
+            <param name="typeName">The name of the type.</param>
+            <returns>The corresponding type, or <em>null</em> if the type could not be found.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.RewritingCommentReader.GetCustomAttribute``1(System.Type)">
+            <summary>
+            Retrieves a single custom attribute from a type.
+            </summary>
+            <typeparam name="T">The type of the required custom attribute.</typeparam>
+            <param name="type">The target type.</param>
+            <returns>A single custom attribute of type <typeparamref name="T"/> for the target <paramref name="type"/>,
+            or <em>null</em> if none could be found.</returns>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Comments.JoltCommentReader">
+            <summary>
+            Implementation of <see cref="T:XmlDoc2CmdletDoc.Core.Comments.ICommentReader"/> that's based on an instance of <see cref="T:Jolt.XmlDocCommentReader"/> from the Jolt.Net library.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Comments.JoltCommentReader.#ctor(System.String)">
+            <summary>
+            Creates a new instances that reads comments from the specified XML Doc comments file.
+            </summary>
+            <param name="docCommentsFullPath">The full path of the XML Doc comments file.</param>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Domain.Command">
+            <summary>
+            Represents a single cmdlet.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Domain.Command.#ctor(System.Type)">
+            <summary>
+            Creates a new instance based on the specified cmdlet type.
+            </summary>
+            <param name="cmdletType">The type of the cmdlet. Must be a sub-class of <see cref="T:System.Management.Automation.Cmdlet"/>
+            and have a <see cref="T:System.Management.Automation.CmdletAttribute"/>.</param>
+        </member>
+        <member name="F:XmlDoc2CmdletDoc.Core.Domain.Command.CmdletType">
+            <summary>
+            The type of the cmdlet for this command.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Command.Verb">
+            <summary>
+            The cmdlet verb.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Command.Noun">
+            <summary>
+            The cmdlet noun.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Command.Name">
+            <summary>
+            The cmdlet name, of the form verb-noun.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Command.OutputTypes">
+            <summary>
+            The output types declared by the command.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Command.Parameters">
+            <summary>
+            The parameters belonging to the command.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Command.ParameterSetNames">
+            <summary>
+            The names of the parameter sets that the parameters belongs to.
+            </summary>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Domain.Parameter">
+            <summary>
+            Represents a single parameter of a cmdlet.
+            </summary>
+        </member>
+        <member name="F:XmlDoc2CmdletDoc.Core.Domain.Parameter.MemberInfo">
+            <summary>
+            The <see cref="T:System.Reflection.PropertyInfo"/> or <see cref="T:System.Reflection.FieldInfo"/> that defines the property.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Domain.Parameter.#ctor(System.Type,System.Reflection.MemberInfo)">
+            <summary>
+            Creates a new instance.
+            </summary>
+            <param name="cmdletType">The type of the cmdlet the parameter belongs to.</param>
+            <param name="memberInfo">The parameter member of the cmdlet. May represent either a field or property.</param>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Parameter.Name">
+            <summary>
+            The name of the parameter.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Parameter.ParameterType">
+            <summary>
+            The type of the parameter.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Parameter.ParameterSetNames">
+            <summary>
+            The names of the parameter sets that the parameter belongs to.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Domain.Parameter.IsRequired(System.String)">
+            <summary>
+            Indicates whether or not the parameter is mandatory.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Domain.Parameter.SupportsGlobbing(System.String)">
+            <summary>
+            Indicates whether or not the parameter supports globbing. Currently always returns false.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Domain.Parameter.IsPipeline(System.String)">
+            <summary>
+            Indicates whether or not the parameter takes its value from the pipeline input.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Domain.Parameter.GetIsPipelineAttribute(System.String)">
+            <summary>
+            Indicates whether or not the parameter takes its value from the pipeline input.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Domain.Parameter.GetPosition(System.String)">
+            <summary>
+            The position of the parameter, or <em>null</em> if no position is defined.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Parameter.DefaultValue">
+            <summary>
+            The default value of the parameter. This is obtained by instantiating the cmdlet and accessing the parameter
+            property or field to determine its initial value.
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Parameter.EnumValues">
+            <summary>
+            The list of enumerated value names. Returns an empty sequence if there are no enumerated values
+            (normally because the parameter type is not an Enum type).
+            </summary>
+        </member>
+        <member name="P:XmlDoc2CmdletDoc.Core.Domain.Parameter.Aliases">
+            <summary>
+            The list of parameter aliases.
+            </summary>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.ReportWarning">
+            <summary>
+            Delegate used when reporting a warning against a reflected member.
+            </summary>
+            <param name="target">The reflected meber to which the warning pertains.</param>
+            <param name="warningText">The warning message.</param>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Engine">
+            <summary>
+            <para>Does all the work of generating the XML help file for an assembly. See <see cref="M:XmlDoc2CmdletDoc.Core.Engine.GenerateHelp(XmlDoc2CmdletDoc.Core.Options)"/>.</para>
+            <para>This class is stateless, so you can call <see cref="M:XmlDoc2CmdletDoc.Core.Engine.GenerateHelp(XmlDoc2CmdletDoc.Core.Options)"/> multitple times on multiple threads.</para>
+            </summary>
+            <remarks>
+            A lot of the detailed help generation is also delegated to <see cref="!:XmlDocCommentReaderExtensions"/>.
+            This class is generally responsible for generating the overall structure of the XML help file, whilst
+            <see cref="!:XmlDocCommentReaderExtensions"/> is resonsible for generating specific items of documentation,
+            such as command synopses, and command and parameter descriptions.
+            </remarks>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateHelp(XmlDoc2CmdletDoc.Core.Options)">
+            <summary>
+            Public entry point that triggers the creation of the cmdlet XML help file for a single assembly.
+            </summary>
+            <param name="options">Defines the locations of the input assembly, the input XML doc comments file for the
+            assembly, and where the cmdlet XML help file should be written to.</param>
+            <returns>A code indicating the result of the help generation.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.HandleWarnings(XmlDoc2CmdletDoc.Core.Options,System.Collections.Generic.IEnumerable{System.Tuple{System.Reflection.MemberInfo,System.String}},System.Reflection.Assembly)">
+            <summary>
+            Handles the list of warnings generated once the cmdlet help XML document has been generated.
+            </summary>
+            <param name="options">The options.</param>
+            <param name="warnings">The warnings generated during the creation of the cmdlet help XML document. Each tuple
+            consists of the type to which the warning pertains, and the text of the warning.</param>
+            <param name="targetAssembly">The assembly of the PowerShell module being documented.</param>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GetFullyQualifiedName(System.Reflection.MemberInfo)">
+            <summary>
+            Returns the fully-qualified name of a type, property or field.
+            </summary>
+            <param name="memberInfo">The member.</param>
+            <returns>The fully qualified name of the mamber.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.LoadAssembly(XmlDoc2CmdletDoc.Core.Options)">
+            <summary>
+            Loads the assembly indicated in the specified <paramref name="options"/>.
+            </summary>
+            <param name="options">The options.</param>
+            <returns>The assembly indicated in the <paramref name="options"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.LoadComments(XmlDoc2CmdletDoc.Core.Options,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains an XML Doc comment reader for the assembly in the specified <paramref name="options"/>.
+            </summary>
+            <param name="options">The options.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A comment reader for the assembly in the <paramref name="options"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GetCommands(System.Reflection.Assembly)">
+            <summary>
+            Retrieves a sequence of <see cref="T:XmlDoc2CmdletDoc.Core.Domain.Command"/> instances, one for each cmdlet defined in the specified <paramref name="assembly"/>.
+            </summary>
+            <param name="assembly">The assembly.</param>
+            <returns>A sequence of commands, one for each cmdlet defined in the <paramref name="assembly"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateHelpItemsElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,System.Collections.Generic.IEnumerable{XmlDoc2CmdletDoc.Core.Domain.Command},XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the root-level <em>&lt;helpItems&gt;</em> element.
+            </summary>
+            <param name="commentReader"></param>
+            <param name="commands">All of the commands in the module being documented.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>The root-level <em>helpItems</em> element.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateCommandElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates a <em>&lt;command:command&gt;</em> element for the specified command.
+            </summary>
+            <param name="commentReader"></param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:command&gt;</em> element that represents the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateDetailsElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:details&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader"></param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:details&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateDescriptionElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;maml:description&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader"></param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;maml:description&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateSyntaxElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:syntax&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:syntax&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateSyntaxItemElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,System.String,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:syntaxItem&gt;</em> element for a specific parameter set of a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="parameterSetName">The parameter set name.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:syntaxItem&gt;</em> element for the specific <paramref name="parameterSetName"/> of the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateParametersElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:parameters&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:parameters&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateParameterElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Parameter,System.String,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates a <em>&lt;command:parameter&gt;</em> element for a single parameter.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="parameter">The parameter.</param>
+            <param name="parameterSetName">The specific parameter set name, or <see cref="F:System.Management.Automation.ParameterAttribute.AllParameterSets"/>.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:parameter&gt;</em> element for the <paramref name="parameter"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateDescriptionElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Parameter,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Fetch the description from the ICommentReader.
+            If the parameter is an Enum, add to the description a list of its legal values.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GetParameterEnumeratedValuesElement(XmlDoc2CmdletDoc.Core.Domain.Parameter)">
+            <summary>
+            Generates a <em>&lt;command:parameterValueGroup&gt;</em> element for a parameter
+            in order to display enum choices in the cmdlet's syntax section.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateParameterEnumeratedValueElement(System.String)">
+            <summary>
+            Generates a <em>&lt;command:parameterValue&gt;</em> element for a single enum value.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateInputTypesElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:inputTypes&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:inputTypes&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateInputTypeElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Parameter,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:inputType&gt;</em> element for a pipeline parameter.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="parameter">The parameter.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:inputType&gt;</em> element for the <paramref name="parameter"/>'s type.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateReturnValuesElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:returnValues&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:returnValues&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateAlertSetElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;maml:alertSet&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;maml:alertSet&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateExamplesElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;command:examples&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;command:examples&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateRelatedLinksElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates the <em>&lt;maml:relatedLinks&gt;</em> element for a command.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;maml:relatedLinks&gt;</em> element for the <paramref name="command"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateTypeElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,System.Type,System.Boolean,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Generates a <em>&lt;dev:type&gt;</em> element for a type.
+            </summary>
+            <param name="commentReader">Provides access to the XML Doc comments.</param>
+            <param name="type">The type for which a corresopnding <em>&lt;dev:type&gt;</em> element is required.</param>
+            <param name="includeMamlDescription">Indicates whether or not a <em>&lt;maml:description&gt;</em> element should be
+            included for the type. A description can be obtained from the type's XML Doc comment, but it is useful to suppress it if
+            a more context-specific description is available where the <em>&lt;dev:type&gt;</em> element is actually used.</param>
+            <param name="reportWarning">Function used to log warnings.</param>
+            <returns>A <em>&lt;dev:type&gt;</em> element for the specified <paramref name="type"/>.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Engine.GenerateComment(System.String)">
+            <summary>
+            Creates a comment.
+            </summary>
+            <param name="text">The text of the comment.</param>
+            <returns>An <see cref="T:System.Xml.Linq.XComment"/> instance based on the specified <paramref name="text"/>.</returns>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.EngineExitCode">
+            <summary>
+            Exit codes for the <see cref="T:XmlDoc2CmdletDoc.Core.Engine"/>.
+            </summary>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Extensions.EnumerableExtensions">
+            <summary>
+            Extension methods for <see cref="T:System.Collections.Generic.IEnumerable`1"/>.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.EnumerableExtensions.Distinct``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+            <summary>
+            Returns elements having distinct values of a specified property.
+            </summary>
+            <typeparam name="TElement">The types of the element in the sequence.</typeparam>
+            <typeparam name="TProperty">The type of the property selected from each element.</typeparam>
+            <param name="enumerable">The sequence of elements.</param>
+            <param name="selector">The function used to select the property from each item in the sequence.</param>
+            <returns>Those items in the sequence which have a unique property. If multiple items share the same property, only the
+            first item is returned.</returns>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions">
+            <summary>
+            Extension methods for <see cref="T:XmlDoc2CmdletDoc.Core.Comments.ICommentReader"/>.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetCommandSynopsisElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;maml:description&gt;</em> element for a cmdlet's synopsis.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Used to record warnings.</param>
+            <returns>A description element for the cmdlet's synopsis.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetCommandDescriptionElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;maml:description&gt;</em> element for a cmdlet's full description.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Used to record warnings.</param>
+            <returns>A description element for the cmdlet's full description.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetCommandExamplesElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;command:examples&gt;</em> element for a cmdlet's examples.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>An examples element for the cmdlet.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetCommandExampleElement(System.Xml.Linq.XElement,System.Int32,System.Action{System.String})">
+            <summary>
+            Obtains a <em>&lt;command:example&gt;</em> element based on an <em>&lt;example&gt;</em> XML doc comment element.
+            </summary>
+            <param name="exampleElement">The XML doc comment example element.</param>
+            <param name="exampleNumber">The number of the example.</param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>An example element.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetCommandRelatedLinksElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;command:relatedLinks&gt;</em> element for a cmdlet's related links.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>An relatedLinks element for the cmdlet.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetCommandAlertSetElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Command,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;maml:alertSet&gt;</em> element for a cmdlet's notes.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="command">The command.</param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>A <em>&lt;maml:alertSet&gt;</em> element for the cmdlet's notes.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetParameterDescriptionElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Parameter,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;maml:description&gt;</em> element for a parameter.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="parameter">The parameter.</param>
+            <param name="reportWarning">Used to record warnings.</param>
+            <returns>A description element for the parameter.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetParameterValueElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Parameter,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="parameter">The parameter.</param>
+            <param name="reportWarning">Used to record warnings.</param>
+            <returns>A description element for the parameter.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetParameterDefaultValueElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Parameter)">
+            <summary>
+            Obtains a <em>&lt;dev:defaultValue&gt;</em> element for a parameter.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="parameter">The parameter.</param>
+            <returns>A default value element for the parameter's default value, or <em>null</em> if a default value could not be obtained.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetInputTypeDescriptionElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,XmlDoc2CmdletDoc.Core.Domain.Parameter,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;maml:description&gt;</em> for an <em>&lt;command:inputType&gt;</em> coresponding to a specified parameter that accepts pipeline input.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="parameter">The parameter.</param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>A <em>&lt;maml:description&gt;</em> for an <em>&lt;command:inputType&gt;</em> for the parameter, or null if no explicit description is available
+            for the input type.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetTypeDescriptionElement(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,System.Type,XmlDoc2CmdletDoc.Core.ReportWarning)">
+            <summary>
+            Obtains a <em>&lt;maml:description&gt;</em> element for a type.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="type">The type for which a description is required.</param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>A description for the type, or null if no description is available.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetComments(XmlDoc2CmdletDoc.Core.Comments.ICommentReader,System.Reflection.MemberInfo)">
+            <summary>
+            Helper method to retrieve the XML doc commments from a <see cref="T:System.Reflection.MemberInfo"/> that represents either a property or a field.
+            </summary>
+            <param name="commentReader">The comment reader.</param>
+            <param name="memberInfo">The member whose comments are to be retrieved.</param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>The XML doc commments for the <paramref name="memberInfo"/>, or<em>null</em> if they are not available.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.GetMamlDescriptionElementFromXmlDocComment(System.Xml.Linq.XElement,System.String,System.Action{System.String})">
+            <summary>
+            Obtains a <em>&lt;maml:description&gt;</em> from an XML doc comment.
+            </summary>
+            <param name="commentsElement">The XML doc comments element as retrieved from an <see cref="T:XmlDoc2CmdletDoc.Core.Comments.ICommentReader"/>. May be <c>null</c>.</param>
+            <param name="typeAttribute">
+            <para>An identifier used to select specific content from the XML doc comment.</para>
+            <para>The first <em>&lt;maml:description&gt;</em> element with a <em>type=&quot;&lt;<paramref name="typeAttribute"/>&gt;&quot;</em>
+            attribute will be used to provide the description (where <em>&lt;<paramref name="typeAttribute"/>&gt;</em> is the value of the
+            <paramref name="typeAttribute"/> parameter).</para>
+            <para>Alternatively, the XML Doc comments may contain multiple <em>&lt;para&gt;</em> elements. Those
+            with the <em>type=&quot;&lt;<paramref name="typeAttribute"/>&gt;&quot;</em> attribute will be used to provide content for the description.</para>
+            </param>
+            <param name="reportWarning">Used to log any warnings.</param>
+            <returns>A description element derived from the XML doc comment, or null if a description could not be obtained.</returns>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Extensions.CommentReaderExtensions.Tidy(System.String)">
+            <summary>
+            Tidies up the text retrieved from an XML doc comment. Multiple whitespace characters, including CR/LF,
+            are replaced with a single space, and leading and trailing whitespace is removed.
+            </summary>
+            <param name="value">The string to tidy.</param>
+            <returns>The tidied string.</returns>
+        </member>
+        <member name="T:XmlDoc2CmdletDoc.Core.Options">
+            <summary>
+            Represents the settings neccesary for generating the cmdlet XML help file for a single assembly.
+            </summary>
+        </member>
+        <member name="F:XmlDoc2CmdletDoc.Core.Options.AssemblyPath">
+            <summary>
+            The absolute path of the cmdlet assembly.
+            </summary>
+        </member>
+        <member name="F:XmlDoc2CmdletDoc.Core.Options.OutputHelpFilePath">
+            <summary>
+            The absolute path of the output <c>.dll-Help.xml</c> help file.
+            </summary>
+        </member>
+        <member name="F:XmlDoc2CmdletDoc.Core.Options.DocCommentsPath">
+            <summary>
+            The absolute path of the assembly's XML Doc comments file.
+            </summary>
+        </member>
+        <member name="F:XmlDoc2CmdletDoc.Core.Options.TreatWarningsAsErrors">
+            <summary>
+            Indicates whether or not the presence of warnings should be treated as a failure condition.
+            </summary>
+        </member>
+        <member name="M:XmlDoc2CmdletDoc.Core.Options.#ctor(System.Boolean,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new instance with the specified settings.
+            </summary>
+            <param name="treatWarningsAsErrors">Indicates whether or not the presence of warnings should be treated as a failure condition.</param>
+            <param name="assemblyPath">The path of the taget assembly whose XML Doc comments file is to be converted
+            into a cmdlet XML Help file.</param>
+            <param name="outputHelpFilePath">The output path of the cmdlet XML Help file.
+            If <c>null</c>, an appropriate default is selected based on <paramref name="assemblyPath"/>.</param>
+            <param name="docCommentsPath">The path of the XML Doc comments file for the target assembly.
+            If <c>null</c>, an appropriate default is selected based on <paramref name="assemblyPath"/></param>
+        </member>
+    </members>
+</doc>

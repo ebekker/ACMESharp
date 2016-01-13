@@ -54,6 +54,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -68,11 +69,26 @@
     <Compile Include="..\shared\SharedAssemblyVersionInfo.cs">
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="AcmeClient.cs" />
     <Compile Include="AcmeProtocol.cs" />
     <Compile Include="AcmeException.cs" />
     <Compile Include="AcmeRegistration.cs" />
     <Compile Include="AcmeServerDirectory.cs" />
+    <Compile Include="ACME\Challenge.cs" />
+    <Compile Include="ACME\ChallengeHandlerExtManager.cs" />
+    <Compile Include="ACME\ChallengeDecoderExtManager.cs" />
+    <Compile Include="ACME\ChallengeAnswer.cs" />
+    <Compile Include="ACME\Providers\DnsChallengeDecoder.cs" />
+    <Compile Include="ACME\IChallengeHandler.cs" />
+    <Compile Include="ACME\IChallengeDecoder.cs" />
+    <Compile Include="ACME\Providers\DnsChallengeDecoderProvider.cs" />
+    <Compile Include="ACME\Providers\HttpChallengeDecoder.cs" />
+    <Compile Include="ACME\Providers\HttpChallengeDecoderProvider.cs" />
+    <Compile Include="ACME\Providers\ManualChallengeHandler.cs" />
+    <Compile Include="ACME\Providers\ManualChallengeHandlerProvider.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
     <Compile Include="CertificateRequest.cs" />
@@ -80,15 +96,19 @@
     <Compile Include="DNS\DnsInfo.cs" />
     <Compile Include="DNS\IDnsProvider.cs" />
     <Compile Include="DNS\ManualDnsProvider.cs" />
+    <Compile Include="Ext\ExtCommon.cs" />
+    <Compile Include="Ext\IExtDetail.cs" />
+    <Compile Include="Ext\NamedInfo.cs" />
+    <Compile Include="Ext\ParameterDetail.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />
-    <Compile Include="IChallengeHandlingProvider.cs" />
     <Compile Include="JOSE\ISigner.cs" />
     <Compile Include="JOSE\JwsHeaders.cs" />
     <Compile Include="JOSE\JwsHelper.cs" />
     <Compile Include="JOSE\RS256Signer.cs" />
     <Compile Include="JSON\AcmeJsonContractResolver.cs" />
     <Compile Include="Messages\AnswerDnsChallengeRequest.cs" />
+    <Compile Include="Messages\ChallengeAnswerRequest.cs" />
     <Compile Include="Messages\ChallengePart.cs" />
     <Compile Include="Messages\IdentifierPart.cs" />
     <Compile Include="Messages\NewAuthzRequest.cs" />
@@ -113,6 +133,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AuthorizeChallenge.cs" />
     <Compile Include="Util\BaseManualProvider.cs" />
+    <Compile Include="Util\ExceptionExtensions.cs" />
+    <Compile Include="Util\JsonHelper.cs" />
+    <Compile Include="Util\StringHelper.cs" />
+    <Compile Include="Util\SysHelper.cs" />
     <Compile Include="WebServer\AwsS3WebServerProvider.cs" />
     <Compile Include="WebServer\IWebServerProvider.cs" />
     <Compile Include="WebServer\ManualWebServerProvider.cs" />

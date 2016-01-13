@@ -1,0 +1,27 @@
+try
+{
+    $coPath = '%system.teamcity.build.checkoutDir%'
+    $ACME_POSH_PATH = "$coPath\ACME-posh\Debug\ACMESharp"
+
+
+    ## TODO:  This is temporary
+    $pesterTestUri = "https://raw.githubusercontent.com/ebekker/ACMESharp/cleanup-providers/ACMESharp/ACMESharp.POSH-test/Pester/Vault.Tests.ps1"
+    $pesterTestPath = "$coPath\Vault.Tests.ps1"
+    Invoke-WebRequest -Uri $pesterTestUri -OutFile $pesterTestPath
+
+
+    Import-Module Pester -ErrorAction Stop
+
+    $xml = Join-Path $coPath Test.v4.xml
+    $result = Invoke-Pester -Path $coPath -OutputFile $xml -OutputFormat NUnitXml -PassThru -Strict -ErrorAction Stop
+
+    if ($result.FailedCount -gt 0)
+    {
+        throw "$($result.FailedCount) tests did not pass."
+    }
+}
+catch
+{
+    Write-Error -ErrorRecord $_
+    exit 1
+}

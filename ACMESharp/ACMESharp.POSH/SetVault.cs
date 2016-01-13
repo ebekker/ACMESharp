@@ -1,4 +1,5 @@
 ﻿using ACMESharp.POSH.Util;
+using ACMESharp.Util;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
@@ -49,22 +50,26 @@ namespace ACMESharp.POSH
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage(Force);
-                var v = vp.LoadVault();
+                vlt.OpenStorage(Force);
+                var v = vlt.LoadVault();
 
                 var baseUri = BaseUri;
                 if (string.IsNullOrEmpty(baseUri) && !string.IsNullOrEmpty(BaseService))
+                {
                     baseUri = InitializeVault.WELL_KNOWN_BASE_SERVICES[BaseService];
+                    WriteVerbose($"Updating Base URI from Well Known Base Service [{baseUri}]");
+                }
 
+                WriteVerbose("Updating Vault settings");
                 v.Alias = StringHelper.IfNullOrEmpty(Alias, v.Alias);
                 v.Label = StringHelper.IfNullOrEmpty(Label, v.Label);
                 v.Memo = StringHelper.IfNullOrEmpty(Memo, v.Memo);
                 v.BaseService = StringHelper.IfNullOrEmpty(BaseService, v.BaseService);
                 v.BaseUri = StringHelper.IfNullOrEmpty(baseUri, v.BaseUri);
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
             }
         }
     }

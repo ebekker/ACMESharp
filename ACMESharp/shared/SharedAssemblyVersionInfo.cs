@@ -18,10 +18,10 @@
 [assembly: AssemblyInformationalVersion(ASMINFO.VERSION)]
 
 // ReSharper disable once InconsistentNaming
-internal class ASMINFO
+internal static class ASMINFO
 {
 
     // DON'T FORGET TO UPDATE APPVEYOR.YML
     // ReSharper disable once InconsistentNaming
-    public const string VERSION = "0.7.1";
+    public const string VERSION = "0.8.0";
 }

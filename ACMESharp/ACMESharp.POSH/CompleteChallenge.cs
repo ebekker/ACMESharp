@@ -7,50 +7,153 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ACMESharp.DNS;
 using ACMESharp.WebServer;
+using System.Collections;
+using ACMESharp.Vault.Profile;
+using ACMESharp.Util;
+using ACMESharp.ACME;
 
 namespace ACMESharp.POSH
 {
+    /// <summary>
+    /// <para type="synopsis">Completes a Challenge using a prescribed Handler.</para>
+    /// <para type="description">
+    ///   Use this cmdlet to complete a Challenge associated with an Identifier
+    ///   defined in an ACMESharp Vault that has been submitted for verification
+    ///   to an ACME CA Server.
+    /// </para>
+    /// <para type="link">Get-ChallengeHandlerProfile</para>
+    /// <para type="link">Set-ChallengeHandlerProfile</para>
+    /// </summary>
     [Cmdlet(VerbsLifecycle.Complete, "Challenge")]
     public class CompleteChallenge : Cmdlet
     {
-        [Parameter(Mandatory = true)]
-        public string Ref
+        public const string PSET_CHALLENGE_HANDLER_INLINE = "ChallengeHandlerInline";
+        public const string PSET_CHALLENGE_HANDLER_PROFILE = "ChallengeHandlerProfile";
+
+        /// <summary>
+        /// <para type="description">
+        ///     A reference (ID or alias) to a previously defined Identifier submitted
+        ///     to the ACME CA Server for verification.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0)]
+        [Alias("Ref")]
+        public string IdentifierRef
         { get; set; }
 
-        [Parameter(Mandatory = true)]
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a reference (ID or alias) to a previously defined Challenge
+        ///     Handler profile in the associated Vault that defines the Handler
+        ///     provider and associated instance parameters that should be used to
+        ///     resolve the Challenge.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = PSET_CHALLENGE_HANDLER_PROFILE)]
+        public string HandlerProfileRef
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies the ACME Challenge type that should be handled.  This type
+        ///     is expected to be found in the list of Challenges returned by the
+        ///     ACME CA Server for the associated Identifier.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 1, ParameterSetName = PSET_CHALLENGE_HANDLER_INLINE)]
         [ValidateSet(
                 AcmeProtocol.CHALLENGE_TYPE_DNS,
                 AcmeProtocol.CHALLENGE_TYPE_HTTP,
                 IgnoreCase = true)]
-        public string Challenge
+        public string ChallengeType
         { get; set; }
 
-        [Parameter(Mandatory = true)]
-        public string ProviderConfig
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies the Challenge Handler instance provider that will be used to
+        ///     handle the associated Challenge.
+        /// </para>
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = PSET_CHALLENGE_HANDLER_INLINE)]
+        public string Handler
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies the parameters that will be passed to the Challenge Handler
+        ///     instance that will be used to handle the associated Challenge.
+        /// </para>
+        /// <para type="description">
+        ///     If this cmdlet is invoked *in-line*, then these are the only parameters
+        ///     that will be passed to the handler.  If this cmdlet is invoked with a
+        ///     handler profile reference, then these parameters are merged with, and
+        ///     override, whatever parameters are already defined within the profile.
+        /// </para>
+        /// </summary>
+        [Parameter]
+        public Hashtable HandlerParameters
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        ///     When specified, executes the <i>clean up</i> operation associated with
+        ///     the resolved Challenge Handler.  This is typcially invoked after the
+        ///     challenge has been previously successfully completed and submitted to
+        ///     the ACME server, and is used to remove any residual resources or traces
+        ///     of the steps that were needed during the challenge-handling process.
+        /// </para>
+        /// </summary>
+        [Parameter]
+        public SwitchParameter CleanUp
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        ///     When specified, will force the decoding and regeneration of any ACME-defined
+        ///     heuristics and parameters for the given Challenge type.
+        /// </para>
+        /// </summary>
         [Parameter]
         public SwitchParameter Regenerate
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     When specified, forces the resolved Handler to repeat the process of
+        ///     handling the given Challenge, even if the process has already been
+        ///     completed previously.
+        /// </para>
+        /// </summary>
         [Parameter]
         public SwitchParameter Repeat
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Overrides the base URI associated with the target Registration and used
+        ///     for subsequent communication with the associated ACME CA Server.
+        /// </para>
+        /// </summary>
         [Parameter]
         public SwitchParameter UseBaseUri
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a Vault profile name that will resolve to the Vault instance to be
+        ///     used for all related operations and storage/retrieval of all related assets.
+        /// </para>
+        /// </summary>
         [Parameter]
         public string VaultProfile
         { get; set; }
 
         protected override void ProcessRecord()
         {
-            using (var vp = InitializeVault.GetVaultProvider(VaultProfile))
+            using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
             {
-                vp.OpenStorage();
-                var v = vp.LoadVault();
+                vlt.OpenStorage();
+                var v = vlt.LoadVault();
 
                 if (v.Registrations == null || v.Registrations.Count < 1)
                     throw new InvalidOperationException("No registrations found");
@@ -61,7 +164,7 @@ namespace ACMESharp.POSH
                 if (v.Identifiers == null || v.Identifiers.Count < 1)
                     throw new InvalidOperationException("No identifiers found");
 
-                var ii = v.Identifiers.GetByRef(Ref);
+                var ii = v.Identifiers.GetByRef(IdentifierRef);
                 if (ii == null)
                     throw new Exception("Unable to find an Identifier for the given reference");
 
@@ -73,17 +176,80 @@ namespace ACMESharp.POSH
                 if (ii.ChallengeCompleted == null)
                     ii.ChallengeCompleted = new Dictionary<string, DateTime?>();
 
-                if (v.ProviderConfigs == null || v.ProviderConfigs.Count < 1)
-                    throw new InvalidOperationException("No provider configs found");
+                if (ii.ChallengeCleanedUp == null)
+                    ii.ChallengeCleanedUp = new Dictionary<string, DateTime?>();
 
-                var pc = v.ProviderConfigs.GetByRef(ProviderConfig);
-                if (pc == null)
-                    throw new InvalidOperationException("Unable to find a Provider Config for the given reference");
+                // Resolve details from inline or profile attributes
+                string challengeType = null;
+                string handlerName = null;
+                IReadOnlyDictionary<string, object> handlerParams = null;
+                IReadOnlyDictionary<string, object> cliHandlerParams = null;
+
+                if (HandlerParameters?.Count > 0)
+                    cliHandlerParams = (IReadOnlyDictionary<string, object>
+                                    )PoshHelper.Convert<string, object>(HandlerParameters);
+
+                if (!string.IsNullOrEmpty(HandlerProfileRef))
+                {
+                    var ppi = v.ProviderProfiles.GetByRef(HandlerProfileRef);
+                    if (ppi == null)
+                        throw new ItemNotFoundException("no Handler profile found for the given reference")
+                                .With(nameof(HandlerProfileRef), HandlerProfileRef);
+
+                    var ppAsset = vlt.GetAsset(Vault.VaultAssetType.ProviderConfigInfo,
+                            ppi.Id.ToString());
+                    ProviderProfile pp;
+                    using (var s = vlt.LoadAsset(ppAsset))
+                    {
+                        pp = JsonHelper.Load<ProviderProfile>(s);
+                    }
+                    if (pp.ProviderType != ProviderType.CHALLENGE_HANDLER)
+                        throw new InvalidOperationException("referenced profile does not resolve to a Challenge Handler")
+                                .With(nameof(HandlerProfileRef), HandlerProfileRef)
+                                .With("actualProfileProviderType", pp.ProviderType.ToString());
+
+                    if (!pp.ProfileParameters.ContainsKey(nameof(ChallengeType)))
+                        throw new InvalidOperationException("handler profile is incomplete; missing Challenge Type")
+                                .With(nameof(HandlerProfileRef), HandlerProfileRef);
+
+                    challengeType = (string)pp.ProfileParameters[nameof(ChallengeType)];
+                    handlerName = pp.ProviderName;
+                    handlerParams = pp.InstanceParameters;
+                    if (cliHandlerParams != null)
+                    {
+                        WriteVerbose("Override Handler parameters specified");
+                        if (handlerParams == null || handlerParams.Count == 0)
+                        {
+                            WriteVerbose("Profile does not define any parameters, using override parameters only");
+                            handlerParams = cliHandlerParams;
+                        }
+                        else
+                        {
+                            WriteVerbose("Merging Handler override parameters with profile");
+                            var mergedParams = new Dictionary<string, object>();
+
+                            foreach (var kv in pp.InstanceParameters)
+                                mergedParams[kv.Key] = kv.Value;
+                            foreach (var kv in cliHandlerParams)
+                                mergedParams[kv.Key] = kv.Value;
+
+                            handlerParams = mergedParams;
+                        }
+                    }
+                }
+                else
+                {
+                    challengeType = ChallengeType;
+                    handlerName = Handler;
+                    handlerParams = cliHandlerParams;
+                }
 
                 AuthorizeChallenge challenge = null;
-                DateTime? challengCompleted = null;
-                ii.Challenges.TryGetValue(Challenge, out challenge);
-                ii.ChallengeCompleted.TryGetValue(Challenge, out challengCompleted);
+                DateTime? challengeCompleted = null;
+                DateTime? challengeCleanedUp = null;
+                ii.Challenges.TryGetValue(challengeType, out challenge);
+                ii.ChallengeCompleted.TryGetValue(challengeType, out challengeCompleted);
+                ii.ChallengeCleanedUp.TryGetValue(challengeType, out challengeCleanedUp);
 
                 if (challenge == null || Regenerate)
                 {
@@ -92,60 +258,37 @@ namespace ACMESharp.POSH
                         c.Init();
                         c.GetDirectory(true);
 
-                        challenge = c.GenerateAuthorizeChallengeAnswer(authzState, Challenge);
-                        ii.Challenges[Challenge] = challenge;
+                        challenge = c.DecodeChallenge(authzState, challengeType);
+                        ii.Challenges[challengeType] = challenge;
                     }
                 }
 
-                if (Repeat || challengCompleted == null)
+                if (CleanUp && (Repeat || challengeCleanedUp == null))
                 {
-                    var pcFilePath = $"{pc.Id}.json";
-                    var pcAsset = vp.GetAsset(Vault.VaultAssetType.ProviderConfigInfo, pcFilePath);
-
-                    // TODO:  There's *way* too much logic buried in here
-                    // this needs to be refactored and extracted out to be
-                    // more manageble and more reusable
-
-                    if (Challenge == AcmeProtocol.CHALLENGE_TYPE_DNS)
+                    using (var c = ClientHelper.GetClient(v, ri))
                     {
-                        if (string.IsNullOrEmpty(pc.DnsProvider))
-                            throw new InvalidOperationException("Referenced Provider Configuration does not support the selected Challenge");
+                        c.Init();
+                        c.GetDirectory(true);
 
-                        var dnsName = challenge.ChallengeAnswer.Key;
-                        var dnsValue = Regex.Replace(challenge.ChallengeAnswer.Value, "\\s", "");
-                        var dnsValues = Regex.Replace(dnsValue, "(.{100,100})", "$1\n").Split('\n');
-
-                        using (var s = vp.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
-                        {
-                            var dnsInfo = DnsInfo.Load(s);
-                            dnsInfo.Provider.EditTxtRecord(dnsName, dnsValues);
-                            ii.ChallengeCompleted[Challenge] = DateTime.Now;
-                        }
+                        challenge = c.HandleChallenge(authzState, challengeType,
+                                handlerName, handlerParams, CleanUp);
+                        ii.ChallengeCleanedUp[challengeType] = DateTime.Now;
                     }
-                    else if (Challenge == AcmeProtocol.CHALLENGE_TYPE_HTTP)
+                }
+                else if (Repeat || challengeCompleted == null)
+                {
+                    using (var c = ClientHelper.GetClient(v, ri))
                     {
-                        if (string.IsNullOrEmpty(pc.WebServerProvider))
-                            throw new InvalidOperationException("Referenced Provider Configuration does not support the selected Challenge");
+                        c.Init();
+                        c.GetDirectory(true);
 
-                        var wsFilePath = challenge.ChallengeAnswer.Key;
-                        var wsFileBody = challenge.ChallengeAnswer.Value;
-                        var wsFileUrl = new Uri($"http://{authzState.Identifier}/{wsFilePath}");
-
-
-
-                        using (var s = vp.LoadAsset(pcAsset)) // new FileStream(pcFilePath, FileMode.Open))
-                        {
-                            var webServerInfo = WebServerInfo.Load(s);
-                            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(wsFileBody)))
-                            {
-                                webServerInfo.Provider.UploadFile(wsFileUrl, ms);
-                                ii.ChallengeCompleted[Challenge] = DateTime.Now;
-                            }
-                        }
+                        challenge = c.HandleChallenge(authzState, challengeType,
+                                handlerName, handlerParams);
+                        ii.ChallengeCompleted[challengeType] = DateTime.Now;
                     }
                 }
 
-                vp.SaveVault(v);
+                vlt.SaveVault(v);
 
                 WriteObject(authzState);
             }

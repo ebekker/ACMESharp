@@ -1,0 +1,44 @@
+$coPath = '%system.teamcity.build.checkoutDir%'
+
+function Unzip-File {
+    param(
+        [string]$Zip,
+        [string]$Dir
+    )
+    
+    ## Extract the ZIP (based on http://serverfault.com/a/201604)
+    $shellApp = New-Object -ComObject shell.application
+    $zipFile = $shellApp.namespace($Zip)
+    mkdir $Dir
+    $shellApp.namespace($Dir).Copyhere($zipFile.items())
+}
+
+
+## We don't need this anymore because the Pester test project includes the bin dependencies
+#### Retrieve the PS Module from S3
+##$s3FileUri = "http://acmesharp.zyborg.io.s3.amazonaws.com/appveyor-deploy/ACMESharp/ACMESharp.POSH/ACME-posh.zip"
+##$zipFilePath = "$coPath\ACME-posh.zip"
+##$destDir = "$coPath\ACME-posh"
+
+#Invoke-WebRequest -Uri $s3FileUri -OutFile $zipFilePath
+#Unblock-File -Path $zipFilePath
+#Unzip-File -Zip $zipFilePath -Dir $destDir
+
+
+## Retrieve the PS Pester tests from S3
+$s3FileUri = "http://acmesharp.zyborg.io.s3.amazonaws.com/appveyor-deploy/ACMESharp/ACMESharp.POSH-test/ACME-posh-pester.zip"
+$zipFilePath = "$coPath\ACME-posh-pester.zip"
+$destDir = "$coPath\ACME-posh-pester"
+
+Invoke-WebRequest -Uri $s3FileUri -OutFile $zipFilePath
+Unblock-File -Path $zipFilePath
+Unzip-File -Zip $zipFilePath -Dir $destDir
+
+## Retrieve the PS Pester binaries from S3
+$s3FileUri = "http://acmesharp.zyborg.io.s3.amazonaws.com/appveyor-deploy/ACMESharp/ACMESharp.POSH-test/ACME-posh-pester-bin.zip"
+$zipFilePath = "$coPath\ACME-posh-pester-bin.zip"
+$destDir = "$coPath\ACME-posh-pester"
+
+Invoke-WebRequest -Uri $s3FileUri -OutFile $zipFilePath
+Unblock-File -Path $zipFilePath
+Unzip-File -Zip $zipFilePath -Dir $destDir

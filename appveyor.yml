@@ -17,6 +17,7 @@ build_script:
 before_test:
 - ps: >-
     $doPester = ((wget http://acmesharp.zyborg.io/appveyor-pester.txt).Content -eq 1)
+    
     if ($doPester) {
       echo ACME_POSH_PATH = $ENV:ACME_POSH_PATH
       choco install pester
@@ -29,6 +30,7 @@ test:
 after_test:
 - ps: >-
     $doPester = ((wget http://acmesharp.zyborg.io/appveyor-pester.txt).Content -eq 1)
+    
     if ($doPester) {
       $env:ACME_POSH_PATH = 'C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp'
       Invoke-Pester

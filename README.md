@@ -2,6 +2,11 @@
 
 An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .NET platform.
 
+--
+
+For announcements and discussions please see go to the **[Community Forums](http://groups.google.com/group/acmesharp)**.
+
+---
 
 [![Build status](https://ci.appveyor.com/api/projects/status/0knwrhni528xi2rs?svg=true)](https://ci.appveyor.com/project/ebekker/acmesharp)
 [![Join the chat at https://gitter.im/ebekker/letsencrypt-win](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ebekker/letsencrypt-win?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -10,11 +15,15 @@ An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .
        src="https://scan.coverity.com/projects/7030/badge.svg"/>
 </a>
 
+
+| PS3 | PS4 | PS5 |
+------|-----|------
+[![PS3 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs3\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp) | [![PS4 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs4\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp) | [![PS5 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs5\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp)
+
+
 ---
 
-Please note, this project was formerly named **`letsencrypt-win`**.
-
----
+*Please note, this project was formerly named* **`letsencrypt-win`**.
 
 ## Related
 

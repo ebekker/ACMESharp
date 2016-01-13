@@ -7,6 +7,12 @@ $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $sourceDir = "$(Split-Path -parent $toolsDir)\source"
 
 $isAdmin = Test-ProcessAdminRights
+$psCurVer = $PSVersionTable.PSVersion.Major
+$psMinVer = 3
+
+if ($psCurVer -lt $psMinVer) {
+    throw "Minimum PS version required is $psMinVer; $current PS version detected is $psCurVer"
+}
 
 $localInstallPathSave = "$($env:LOCALAPPDATA)\acmesharp-installpath.txt"
 $globalInstallPathSave = "$toolsDir\acmesharp-installpath.txt"

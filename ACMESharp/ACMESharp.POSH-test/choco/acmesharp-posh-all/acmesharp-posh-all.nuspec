@@ -12,6 +12,11 @@
         
         This package installs the PowerShell module client to allow requesting and retrieving PKI certificates (X.509 SSL/TLS) from an ACME-compatible CA server.  If you install this package with elevated privileges, the module will be installed to the system-wide PS modules directory.  Otherwise, it will be installed to the installing user's personal PS modules directory.
         
+        **Please Note:** This package has the following installation requirements:
+          * minimum of **Windows 2008R2**
+          * minimum of **PowerShell v3**
+          * minimum of **.NET Framework 4.5**
+        
         ACMESharp implements an extensible provider model for various parts of its operation, including:
         * **Vault** - handles storage of client-side state and artifacts
         * **Challenge Types** and Challenge Handlers** - used to verify domain ownership to the CA
@@ -24,7 +29,7 @@
         * `awsRoute53` - DNS Challenge Handler for AWS Route 53 service
         * `awsS3` - HTTP Challenge Handler for AWS S3 service in combination with CloudFront front-end
 
-        This package currently includes **no automated installers**, therefore you need to manually install the generated certificates.  By exporting them first into an appropriate format.
+        This package currently includes **no automated installers**, therefore you need to manually install the generated certificates by exporting them first into an appropriate format.
     </description>
     <iconUrl>https://cdn.rawgit.com/ebekker/ACMESharp/49bf6524da8239ecf258ab3857dfbbf40366ecfd/artwork/ACMESharp-logo-square64.png</iconUrl>
 

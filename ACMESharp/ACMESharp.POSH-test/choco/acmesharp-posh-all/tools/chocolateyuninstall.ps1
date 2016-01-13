@@ -13,7 +13,7 @@ $globalInstallPathSave = "$toolsDir\acmesharp-installpath.txt"
 if (-not (Test-Path $localInstallPathSave -PathType Leaf) -and
         -not (Test-Path $globalInstallPathSave -PathType Leaf)) {
     Write-Warning "Could not find module in either LOCAL or GLOBAL modules path"
-    throw "Unable to resolve module installation path"
+    return
 }
 
 if (Test-Path $localInstallPathSave) {

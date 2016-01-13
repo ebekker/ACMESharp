@@ -14,7 +14,7 @@
     <description>$description$</description>
     <releaseNotes>Initial nuget package early-access release of nuget package.</releaseNotes>
     <copyright>Copyright &#169; 2016 Eugene Bekker</copyright>
-    <tags>pki ssl tls security certificates letsencrypt acme</tags>
+    <tags>pki ssl tls security certificates letsencrypt acme acmesharp</tags>
 
     <dependencies>
       <dependency id="ACMESharp.PKI.Providers.OpenSslLib32" version="$version$.$buildNum$$versionLabel$" />

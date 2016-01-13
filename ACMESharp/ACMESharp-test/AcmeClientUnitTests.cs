@@ -33,7 +33,7 @@ namespace ACMESharp
         //Uri _rootUrl = new Uri("https://acme-v01.api.letsencrypt.org/");
         //string _dirUrlBase = "https://acme-v01.api.letsencrypt.org/";
 
-        public const string TEST_CN1 = "acme-win1.acmetesting.zyborg.io"; // "www.zyborg.io"; // 
+        public const string TEST_CN1 = "acme-win1.acmetesting.moxy.onl"; // zyborg.io"; // "www.zyborg.io"; // 
         public const string TEST_EM1 = "mailto:letsencrypt@mailinator.com";
         public const string TEST_PH1 = "tel:+14109361212";
         public const string TEST_EM2 = "mailto:letsencrypt+update@mailinator.com";
@@ -1130,7 +1130,7 @@ namespace ACMESharp
                         [AwsCommonParams.ACCESS_KEY_ID.Name]                     /**/ = handlerConfig.AccessKeyId,
                         [AwsCommonParams.SECRET_ACCESS_KEY.Name]                 /**/ = handlerConfig.SecretAccessKey,
                         [AwsCommonParams.REGION.Name]                            /**/ = handlerConfig.Region,
-                        [AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name] /**/ = handlerConfig.HostedZoneId,
+                        [AwsRoute53ChallengeHandlerProvider.HOSTED_ZONE_ID.Name] /**/ = "Z22XSEEY1HD3C4", // handlerConfig.HostedZoneId,
                         [AwsRoute53ChallengeHandlerProvider.RR_TTL.Name]         /**/ = 30,
                     };
 

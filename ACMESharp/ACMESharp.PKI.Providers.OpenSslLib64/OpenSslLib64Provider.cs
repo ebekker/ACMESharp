@@ -351,6 +351,19 @@ namespace ACMESharp.PKI.Providers
             if (!string.IsNullOrEmpty(csrDetails.UniqueIdentifier   /**/)) xn.UniqueIdentifier = csrDetails.UniqueIdentifier; // UID;
 
             var xr = new X509Request(0, xn, rsaKeys);
+            if (csrDetails.AlternativeNames.Count > 0)
+            {
+                OpenSSL.Core.Stack<X509Extension> extensions = new OpenSSL.Core.Stack<X509Extension>();
+                // Add the common name as the first alternate
+                string altNames = "DNS:" + xn.Common;
+                foreach (var name in csrDetails.AlternativeNames)
+                {
+                    altNames += ", DNS:" + name;
+                }
+                extensions.Add(new X509Extension(xr, "subjectAltName", false, altNames));
+
+                xr.AddExtensions(extensions);
+            }
             var md = MessageDigest.CreateByName(messageDigest);
             xr.Sign(rsaKeys, md);
             using (var bio = BIO.MemoryBuffer())

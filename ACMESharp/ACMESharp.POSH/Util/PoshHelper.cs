@@ -19,8 +19,7 @@ namespace ACMESharp.POSH.Util
             // directory happens to be where the PowerShell binary is
             // running from, not where the ACMESharp PS Module lives
 
-            var baseUri = new Uri(typeof(VaultExtManager).Assembly.CodeBase);
-            var baseDir = Path.GetDirectoryName(baseUri.AbsolutePath);
+            var baseDir = Path.GetDirectoryName(typeof(VaultExtManager).Assembly.Location);
 
             ExtCommon.BaseDirectoryOverride = baseDir;
             ExtCommon.RelativeSearchPathOverride = string.Empty;

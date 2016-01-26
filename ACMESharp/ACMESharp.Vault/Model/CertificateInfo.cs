@@ -19,6 +19,12 @@ namespace ACMESharp.Vault.Model
         public Guid IdentifierRef
         { get; set; }
 
+        public string IdentifierDns
+        { get; set; }
+
+        public string[] AlternativeIdentifierDns
+        { get; set; }
+
         public string KeyPemFile
         { get; set; }
 

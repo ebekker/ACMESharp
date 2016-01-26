@@ -169,6 +169,7 @@ namespace ACMESharp.POSH
                     Label = Label,
                     Memo = Memo,
                     IdentifierRef = ii.Id,
+                    IdentifierDns = ii.Dns,
                 };
 
                 if (Generate)

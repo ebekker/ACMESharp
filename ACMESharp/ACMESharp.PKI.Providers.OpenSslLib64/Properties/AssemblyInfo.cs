@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ACMESharp PKI Providers - OpenSslLib32")]
+[assembly: AssemblyTitle("ACMESharp PKI Providers - OpenSslLib64")]
 [assembly: AssemblyDescription("CertificateProvider for ACMESharp using OpenSSL WinLib64")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCulture("")]

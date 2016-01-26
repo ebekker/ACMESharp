@@ -315,15 +315,24 @@ namespace ACMESharp
                         "Unexpected error", resp);
             }
 
+            var uri = authzState.Uri;
+            if (resp.Headers.AllKeys.Contains(AcmeProtocol.HEADER_LOCATION))
+                uri = resp.Headers[AcmeProtocol.HEADER_LOCATION];
+
             var respMsg = JsonConvert.DeserializeObject<AuthzStatusResponse>(resp.ContentAsString);
 
             var authzStatusState = new AuthorizationState
             {
+                // This is computed above
+                Uri = uri,
+
+                // These are updated
                 IdentifierPart = respMsg.Identifier,
                 IdentifierType = respMsg.Identifier.Type,
                 Identifier = respMsg.Identifier.Value,
                 Status = respMsg.Status,
                 Expires = respMsg.Expires,
+                Combinations = respMsg.Combinations,
 
                 Challenges = respMsg.Challenges.Select(x => new AuthorizeChallenge
                 {

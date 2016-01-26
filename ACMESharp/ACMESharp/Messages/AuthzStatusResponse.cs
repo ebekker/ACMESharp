@@ -16,5 +16,8 @@ namespace ACMESharp.Messages
 
         public IEnumerable<ChallengePart> Challenges
         { get; set; }
+
+        public IEnumerable<IEnumerable<int>> Combinations
+        { get; set; }
     }
 }

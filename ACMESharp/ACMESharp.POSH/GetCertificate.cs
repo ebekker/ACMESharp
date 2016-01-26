@@ -33,7 +33,7 @@ namespace ACMESharp.POSH
         ///     A reference (ID or alias) to a previously defined Certificate request.
         /// </para>
         /// </summary>
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = PSET_GET)]
         [Alias("Ref")]
         public string CertificateRef
         { get; set; }
@@ -158,11 +158,15 @@ namespace ACMESharp.POSH
                     WriteObject(v.Certificates.Values.Select(x => new
                     {
                         Seq = seq++,
-                        Certificate = x,
-                        //Id = x.Id,
-                        //Alias = x.Alias,
-                        //Label = x.Label,
-                        //StatusCode = x.CertificateRequest.StatusCode
+                        x.Id,
+                        x.Alias,
+                        x.Label,
+                        x.IdentifierDns,
+                        x.Thumbprint,
+                        x.SerialNumber,
+                        x.IssuerSerialNumber,
+                        x.CertificateRequest,
+                        x.CertificateRequest?.StatusCode,
                     }), true);
                 }
                 else

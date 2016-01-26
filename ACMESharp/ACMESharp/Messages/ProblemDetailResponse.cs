@@ -3,11 +3,11 @@
     /// <summary>
     /// Defines a server response message that conforms to the "Problem Details"
     /// JSON structure as specified in
-    /// <see cref="http://tools.ietf.org/html/draft-ietf-appsawg-http-problem-00"
+    /// <see cref="http://tools.ietf.org/html/draft-ietf-appsawg-http-problem-02"
     /// >[I-D.ietf-appsawg-http-problem]</see>.
     /// This structure is used by ACME to provide further details of a reported
     /// error as described in the
-    /// <see cref="https://letsencrypt.github.io/acme-spec/#rfc.section.5.4"
+    /// <see cref="https://ietf-wg-acme.github.io/acme/#rfc.section.5.4"
     /// >ACME spec 5.4</see>.
     /// </summary>
     public class ProblemDetailResponse

@@ -89,13 +89,21 @@ namespace ACMESharp.POSH
 
                 var authzState = ii.Authorization;
 
-                using (var c = ClientHelper.GetClient(v, ri))
+                try
                 {
-                    c.Init();
-                    c.GetDirectory(true);
+                    using (var c = ClientHelper.GetClient(v, ri))
+                    {
+                        c.Init();
+                        c.GetDirectory(true);
 
-                    var challenge = c.SubmitChallengeAnswer(authzState, ChallengeType, UseBaseUri);
-                    ii.Challenges[ChallengeType] = challenge;
+                        var challenge = c.SubmitChallengeAnswer(authzState, ChallengeType, UseBaseUri);
+                        ii.Challenges[ChallengeType] = challenge;
+                    }
+                }
+                catch (AcmeClient.AcmeWebException ex)
+                {
+                    ThrowTerminatingError(PoshHelper.CreateErrorRecord(ex, ii));
+                    return;
                 }
 
                 vlt.SaveVault(v);

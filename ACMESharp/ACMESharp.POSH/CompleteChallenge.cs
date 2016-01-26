@@ -251,41 +251,49 @@ namespace ACMESharp.POSH
                 ii.ChallengeCompleted.TryGetValue(challengeType, out challengeCompleted);
                 ii.ChallengeCleanedUp.TryGetValue(challengeType, out challengeCleanedUp);
 
-                if (challenge == null || Regenerate)
+                try
                 {
-                    using (var c = ClientHelper.GetClient(v, ri))
+                    if (challenge == null || Regenerate)
                     {
-                        c.Init();
-                        c.GetDirectory(true);
+                        using (var c = ClientHelper.GetClient(v, ri))
+                        {
+                            c.Init();
+                            c.GetDirectory(true);
 
-                        challenge = c.DecodeChallenge(authzState, challengeType);
-                        ii.Challenges[challengeType] = challenge;
+                            challenge = c.DecodeChallenge(authzState, challengeType);
+                            ii.Challenges[challengeType] = challenge;
+                        }
+                    }
+
+                    if (CleanUp && (Repeat || challengeCleanedUp == null))
+                    {
+                        using (var c = ClientHelper.GetClient(v, ri))
+                        {
+                            c.Init();
+                            c.GetDirectory(true);
+
+                            challenge = c.HandleChallenge(authzState, challengeType,
+                                    handlerName, handlerParams, CleanUp);
+                            ii.ChallengeCleanedUp[challengeType] = DateTime.Now;
+                        }
+                    }
+                    else if (Repeat || challengeCompleted == null)
+                    {
+                        using (var c = ClientHelper.GetClient(v, ri))
+                        {
+                            c.Init();
+                            c.GetDirectory(true);
+
+                            challenge = c.HandleChallenge(authzState, challengeType,
+                                    handlerName, handlerParams);
+                            ii.ChallengeCompleted[challengeType] = DateTime.Now;
+                        }
                     }
                 }
-
-                if (CleanUp && (Repeat || challengeCleanedUp == null))
+                catch (AcmeClient.AcmeWebException ex)
                 {
-                    using (var c = ClientHelper.GetClient(v, ri))
-                    {
-                        c.Init();
-                        c.GetDirectory(true);
-
-                        challenge = c.HandleChallenge(authzState, challengeType,
-                                handlerName, handlerParams, CleanUp);
-                        ii.ChallengeCleanedUp[challengeType] = DateTime.Now;
-                    }
-                }
-                else if (Repeat || challengeCompleted == null)
-                {
-                    using (var c = ClientHelper.GetClient(v, ri))
-                    {
-                        c.Init();
-                        c.GetDirectory(true);
-
-                        challenge = c.HandleChallenge(authzState, challengeType,
-                                handlerName, handlerParams);
-                        ii.ChallengeCompleted[challengeType] = DateTime.Now;
-                    }
+                    ThrowTerminatingError(PoshHelper.CreateErrorRecord(ex, ii));
+                    return;
                 }
 
                 vlt.SaveVault(v);

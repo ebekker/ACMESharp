@@ -138,21 +138,28 @@ namespace ACMESharp.POSH
 
                 if (!LocalOnly)
                 {
-                    using (var c = ClientHelper.GetClient(v, ri))
-                    {
-                        c.Init();
-                        c.GetDirectory(true);
+                    try {
+                        using (var c = ClientHelper.GetClient(v, ri))
+                        {
+                            c.Init();
+                            c.GetDirectory(true);
 
-                        if (string.IsNullOrEmpty(ChallengeType))
-                        {
-                            authzState = c.RefreshIdentifierAuthorization(authzState, UseBaseUri);
-                            ii.AuthorizationUpdate = authzState;
+                            if (string.IsNullOrEmpty(ChallengeType))
+                            {
+                                authzState = c.RefreshIdentifierAuthorization(authzState, UseBaseUri);
+                            }
+                            else
+                            {
+                                c.RefreshAuthorizeChallenge(authzState, ChallengeType, UseBaseUri);
+                            }
                         }
-                        else
-                        {
-                            c.RefreshAuthorizeChallenge(authzState, ChallengeType, UseBaseUri);
-                            ii.Authorization = authzState;
-                        }
+
+                        ii.Authorization = authzState;
+                    }
+                    catch (AcmeClient.AcmeWebException ex)
+                    {
+                        ThrowTerminatingError(PoshHelper.CreateErrorRecord(ex, ii));
+                        return;
                     }
                 }
 

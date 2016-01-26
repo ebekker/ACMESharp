@@ -95,18 +95,26 @@ namespace ACMESharp.POSH
                     Dns = Dns,
                 };
 
-                using (var c = ClientHelper.GetClient(v, ri))
+                try
                 {
-                    c.Init();
-                    c.GetDirectory(true);
+                    using (var c = ClientHelper.GetClient(v, ri))
+                    {
+                        c.Init();
+                        c.GetDirectory(true);
 
-                    authzState = c.AuthorizeIdentifier(Dns);
-                    ii.Authorization = authzState;
+                        authzState = c.AuthorizeIdentifier(Dns);
+                        ii.Authorization = authzState;
 
-                    if (v.Identifiers == null)
-                        v.Identifiers = new EntityDictionary<IdentifierInfo>();
+                        if (v.Identifiers == null)
+                            v.Identifiers = new EntityDictionary<IdentifierInfo>();
 
-                    v.Identifiers.Add(ii);
+                        v.Identifiers.Add(ii);
+                    }
+                }
+                catch (AcmeClient.AcmeWebException ex)
+                {
+                    ThrowTerminatingError(PoshHelper.CreateErrorRecord(ex, ii));
+                    return;
                 }
 
                 vlt.SaveVault(v);

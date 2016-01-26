@@ -56,21 +56,29 @@ namespace ACMESharp.POSH
                     SignerProvider = Signer,
                 };
 
-                using (var c = ClientHelper.GetClient(v, ri))
+                try
                 {
-                    c.Init();
-                    c.GetDirectory(true);
+                    using (var c = ClientHelper.GetClient(v, ri))
+                    {
+                        c.Init();
+                        c.GetDirectory(true);
 
-                    r = c.Register(Contacts);
-                    if (AcceptTos)
-                        r = c.UpdateRegistration(agreeToTos: true);
+                        r = c.Register(Contacts);
+                        if (AcceptTos)
+                            r = c.UpdateRegistration(agreeToTos: true);
 
-                    ri.Registration = r;
+                        ri.Registration = r;
 
-                    if (v.Registrations == null)
-                        v.Registrations = new EntityDictionary<RegistrationInfo>();
+                        if (v.Registrations == null)
+                            v.Registrations = new EntityDictionary<RegistrationInfo>();
 
-                    v.Registrations.Add(ri);
+                        v.Registrations.Add(ri);
+                    }
+                }
+                catch (AcmeClient.AcmeWebException ex)
+                {
+                    ThrowTerminatingError(PoshHelper.CreateErrorRecord(ex, ri));
+                    return;
                 }
 
                 vlt.SaveVault(v);

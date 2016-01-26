@@ -141,12 +141,20 @@ namespace ACMESharp.POSH
 
                     var derB64u = JwsHelper.Base64UrlEncode(derRaw);
 
-                    using (var c = ClientHelper.GetClient(v, ri))
+                    try
                     {
-                        c.Init();
-                        c.GetDirectory(true);
+                        using (var c = ClientHelper.GetClient(v, ri))
+                        {
+                            c.Init();
+                            c.GetDirectory(true);
 
-                        ci.CertificateRequest = c.RequestCertificate(derB64u);
+                            ci.CertificateRequest = c.RequestCertificate(derB64u);
+                        }
+                    }
+                    catch (AcmeClient.AcmeWebException ex)
+                    {
+                        ThrowTerminatingError(PoshHelper.CreateErrorRecord(ex, ci));
+                        return;
                     }
 
                     if (!string.IsNullOrEmpty(ci.CertificateRequest.CertificateContent))

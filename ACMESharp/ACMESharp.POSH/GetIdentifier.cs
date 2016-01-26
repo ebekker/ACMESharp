@@ -52,6 +52,9 @@ namespace ACMESharp.POSH
                 vlt.OpenStorage();
                 var v = vlt.LoadVault();
 
+                if (v.Identifiers == null || v.Identifiers.Count < 1)
+                    throw new InvalidOperationException("No identifiers found");
+
                 if (string.IsNullOrEmpty(IdentifierRef))
                 {
                     int seq = 0;
@@ -67,9 +70,6 @@ namespace ACMESharp.POSH
                 }
                 else
                 {
-                    if (v.Identifiers == null || v.Identifiers.Count < 1)
-                        throw new InvalidOperationException("No identifiers found");
-
                     var ii = v.Identifiers.GetByRef(IdentifierRef);
                     if (ii == null)
                         throw new ItemNotFoundException("Unable to find an Identifier for the given reference");

@@ -53,6 +53,7 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
+    <Compile Include="OpenSslLibBaseProvider.cs" />
     <Compile Include="OpenSslLib32Provider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

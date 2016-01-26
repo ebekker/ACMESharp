@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ACMESharp.PKI.Providers.OpenSslLib32\OpenSslLibBaseProvider.cs">
+      <Link>OpenSslLibBaseProvider.cs</Link>
+    </Compile>
     <Compile Include="..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>

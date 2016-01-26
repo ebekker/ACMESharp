@@ -42,7 +42,8 @@ namespace ACMESharp.Vault
     
         IEnumerable<VaultAsset> ListAssets(string nameRegex = null, params VaultAssetType[] type);
     
-        VaultAsset CreateAsset(VaultAssetType type, string name, bool isSensitive = false);
+        VaultAsset CreateAsset(VaultAssetType type, string name, bool isSensitive = false,
+                bool getOrCreate = false);
     
         VaultAsset GetAsset(VaultAssetType type, string name);
     

@@ -35,6 +35,10 @@ namespace ACMESharp.POSH
         //public Hashtable KeyParams
         //{ get; set; }
 
+        [Parameter]
+        public SwitchParameter Force
+        { get; set; }
+
         /// <summary>
         /// <para type="description">
         ///     Specifies a Vault profile name that will resolve to the Vault instance to be
@@ -87,10 +91,10 @@ namespace ACMESharp.POSH
                         var csrGenFile = $"{ci.Id}-gen-csr.json";
                         var csrPemFile = $"{ci.Id}-csr.pem";
 
-                        var keyGenAsset = vlt.CreateAsset(VaultAssetType.KeyGen, keyGenFile);
-                        var keyPemAsset = vlt.CreateAsset(VaultAssetType.KeyPem, keyPemFile);
-                        var csrGenAsset = vlt.CreateAsset(VaultAssetType.CsrGen, csrGenFile);
-                        var csrPemAsset = vlt.CreateAsset(VaultAssetType.CsrPem, csrPemFile);
+                        var keyGenAsset = vlt.CreateAsset(VaultAssetType.KeyGen, keyGenFile, getOrCreate: Force);
+                        var keyPemAsset = vlt.CreateAsset(VaultAssetType.KeyPem, keyPemFile, getOrCreate: Force);
+                        var csrGenAsset = vlt.CreateAsset(VaultAssetType.CsrGen, csrGenFile, getOrCreate: Force);
+                        var csrPemAsset = vlt.CreateAsset(VaultAssetType.CsrPem, csrPemFile, getOrCreate: Force);
 
                         var genKeyParams = new RsaPrivateKeyParams();
 

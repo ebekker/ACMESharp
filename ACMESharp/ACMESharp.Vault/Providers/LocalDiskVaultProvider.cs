@@ -264,20 +264,23 @@ namespace ACMESharp.Vault.Providers
             return assets;
         }
 
-        public VaultAsset CreateAsset(VaultAssetType type, string name, bool isSensitive = false)
+        public VaultAsset CreateAsset(VaultAssetType type, string name, bool isSensitive = false,
+                bool getOrCreate = false)
         {
             var path = Path.Combine(RootPath, TYPE_PATHS[type], name);
 
-            if (File.Exists(path))
+            if (!File.Exists(path))
+            {
+                // Make sure the asset root dir is there
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+                // Create a placeholder file to reserve and represent the created file
+                using (var fs = File.Create(path, 100,
+                        isSensitive ? FileOptions.Encrypted : FileOptions.None))
+                { }
+            }
+            else if (!getOrCreate)
                 throw new IOException("asset file already exists");
-
-            // Make sure the asset root dir is there
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-
-            // Create a placeholder file to reserve and represent the created file
-            using (var fs = File.Create(path, 100,
-                    isSensitive ? FileOptions.Encrypted : FileOptions.None))
-            { }
 
             return new FileVaultAsset(path, name, type, isSensitive);
         }

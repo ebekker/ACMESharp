@@ -1,10 +1,15 @@
-﻿namespace ACMESharp.PKI
+﻿using System.Collections.Generic;
+
+namespace ACMESharp.PKI
 {
 
     public class CsrDetails
     {
         /// <summary>X509 'CN'</summary>
         public string CommonName { get; set; }
+
+        // <summary>X509 SAN extension</summary>
+        public IEnumerable<string> AlternativeNames { get; set; }
 
         /// <summary>X509 'C'</summary>
         public string Country { get; set; }

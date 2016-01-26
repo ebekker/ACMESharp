@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ManagedOpenSsl, Version=0.6.1.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\lib\net20\ManagedOpenSsl.dll</HintPath>
+      <HintPath>..\packages\ManagedOpenSsl32.0.6.1.3\lib\net20\ManagedOpenSsl.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -53,6 +53,7 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
+    <Compile Include="OpenSslLibBaseProvider.cs" />
     <Compile Include="OpenSslLib32Provider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -67,11 +68,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\libeay32.dll">
+    <Content Include="..\packages\ManagedOpenSsl32.0.6.1.3\content\x86\libeay32.dll">
       <Link>x86\libeay32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\packages\ManagedOpenSsl32.0.6.1.1\content\x86\ssleay32.dll">
+    <Content Include="..\packages\ManagedOpenSsl32.0.6.1.3\content\x86\ssleay32.dll">
       <Link>x86\ssleay32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

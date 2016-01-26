@@ -26,9 +26,6 @@ namespace ACMESharp.Vault.Model
         public AuthorizationState Authorization
         { get; set; }
 
-        public AuthorizationState AuthorizationUpdate
-        { get; set; }
-
         public Dictionary<string, AuthorizeChallenge> Challenges
         { get; set; }
 

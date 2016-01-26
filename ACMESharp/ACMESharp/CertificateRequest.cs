@@ -9,9 +9,6 @@ namespace ACMESharp
 {
     public class CertificateRequest
     {
-        public string Identifier
-        { get; set; }
-
         public string CsrContent
         { get; set; }
 

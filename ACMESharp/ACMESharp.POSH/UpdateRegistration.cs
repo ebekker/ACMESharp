@@ -60,13 +60,21 @@ namespace ACMESharp.POSH
 
                 if (!LocalOnly)
                 {
-                    using (var c = ClientHelper.GetClient(v, ri))
+                    try
                     {
-                        c.Init();
-                        c.GetDirectory(true);
+                        using (var c = ClientHelper.GetClient(v, ri))
+                        {
+                            c.Init();
+                            c.GetDirectory(true);
 
-                        r = c.UpdateRegistration(UseBaseUri, AcceptTos, Contacts);
-                        ri.Registration = r;
+                            r = c.UpdateRegistration(UseBaseUri, AcceptTos, Contacts);
+                            ri.Registration = r;
+                        }
+                    }
+                    catch (AcmeClient.AcmeWebException ex)
+                    {
+                        ThrowTerminatingError(PoshHelper.CreateErrorRecord(ex, ri));
+                        return;
                     }
 
                     vlt.SaveVault(v);

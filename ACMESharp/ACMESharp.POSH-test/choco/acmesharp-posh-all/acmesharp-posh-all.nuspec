@@ -4,7 +4,7 @@
   <metadata>
     <id>acmesharp-posh-all</id>
     <title>ACMESharp PowerShell Module - ALL (Install)</title>
-    <version>0.8.0.0</version>
+    <version>0.8.1.0</version>
     <authors>ACMESharp</authors>
     <owners>ebekker</owners>
     <summary>PowerShell module to talk to Let's Encrypt CA and other ACME servers (includes ALL extensions).</summary>

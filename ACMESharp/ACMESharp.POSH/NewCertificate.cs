@@ -8,6 +8,9 @@ using ACMESharp.PKI;
 using ACMESharp.Vault.Util;
 using ACMESharp.Util;
 using System.Collections;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ACMESharp.POSH
 {
@@ -33,8 +36,8 @@ namespace ACMESharp.POSH
 
         /// <summary>
         /// <para type="description">
-        ///     A reference (ID or alias) to a previously defined and authorized
-        ///     Identifier verified by the ACME CA Server.
+        ///   A reference (ID or alias) to a previously defined and authorized
+        ///   Identifier verified by the ACME CA Server.
         /// </para>
         /// </summary>
         [Parameter(Mandatory = true, Position = 0)]
@@ -96,10 +99,32 @@ namespace ACMESharp.POSH
         ///       *  Title;            // T;
         ///       *  SerialNumber;     // SN;
         ///       *  UniqueIdentifier; // UID;
+        ///       *  AlternativeNames; // X509 SAN Extension (manually overridden)
+        /// </para>
+        /// <para type="description">
+        ///   For any elements that except multiple values (such as SAN), specify
+        ///   a string of values separated by space, comma or semicolon
         /// </para>
         /// </summary>
         [Parameter(ParameterSetName = PSET_GENERATE, Mandatory = false)]
         public Hashtable CsrDetails
+        { get; set; }
+
+        /// <summary>
+        /// <para type="description">
+        ///   A collection of one or more references (ID or alias) to previously
+        ///   defined and authorized Identifiers verified by the ACME CA Server
+        ///   which will be included in the X509 extension for the list of
+        ///   Subject Alternative Names (SAN).
+        /// </para>
+        /// <para type="description">
+        ///   There is no need to repeat the reference to the primary common name
+        ///   Identifier as it will be automatically included at the start of this list.
+        /// </para>
+        /// </summary>
+        [Parameter(ParameterSetName = PSET_GENERATE, Mandatory = false)]
+        [Alias("AltIdentifiers", "AltRefs")]
+        public IEnumerable<object> AlternativeIdentifierRefs
         { get; set; }
 
         /// <summary>
@@ -169,13 +194,21 @@ namespace ACMESharp.POSH
                     Label = Label,
                     Memo = Memo,
                     IdentifierRef = ii.Id,
+                    IdentifierDns = ii.Dns,
                 };
 
                 if (Generate)
                 {
-                    Func<string, string> csrDtl = x => null;
+                    Func<string, string> csrDtlValue = x => null;
+                    Func<string, IEnumerable<string>> csrDtlValues = x => null;
+
                     if (CsrDetails != null)
-                        csrDtl = x => CsrDetails.ContainsKey(x) ? x as string : null;
+                    {
+                        csrDtlValue = x => CsrDetails.ContainsKey(x)
+                                ? CsrDetails[x] as string : null;
+                        csrDtlValues = x => !string.IsNullOrEmpty(csrDtlValue(x))
+                                ? Regex.Split(csrDtlValue(x).Trim(), "[\\s,;]+") : null;
+                    }
 
                     var csrDetails = new CsrDetails
                     {
@@ -183,20 +216,42 @@ namespace ACMESharp.POSH
                         CommonName = ii.Dns,
 
                         // Remaining elements will be used if defined
-                        Country          /**/ = csrDtl(nameof(PKI.CsrDetails.Country          )),
-                        Description      /**/ = csrDtl(nameof(PKI.CsrDetails.Description      )),
-                        Email            /**/ = csrDtl(nameof(PKI.CsrDetails.Email            )),
-                        GivenName        /**/ = csrDtl(nameof(PKI.CsrDetails.GivenName        )),
-                        Initials         /**/ = csrDtl(nameof(PKI.CsrDetails.Initials         )),
-                        Locality         /**/ = csrDtl(nameof(PKI.CsrDetails.Locality         )),
-                        Organization     /**/ = csrDtl(nameof(PKI.CsrDetails.Organization     )),
-                        OrganizationUnit /**/ = csrDtl(nameof(PKI.CsrDetails.OrganizationUnit )),
-                        SerialNumber     /**/ = csrDtl(nameof(PKI.CsrDetails.SerialNumber     )),
-                        StateOrProvince  /**/ = csrDtl(nameof(PKI.CsrDetails.StateOrProvince  )),
-                        Surname          /**/ = csrDtl(nameof(PKI.CsrDetails.Surname          )),
-                        Title            /**/ = csrDtl(nameof(PKI.CsrDetails.Title            )),
-                        UniqueIdentifier /**/ = csrDtl(nameof(PKI.CsrDetails.UniqueIdentifier )),
+                        AlternativeNames /**/ = csrDtlValues(nameof(PKI.CsrDetails.AlternativeNames)),
+                        Country          /**/ = csrDtlValue(nameof(PKI.CsrDetails.Country          )),
+                        Description      /**/ = csrDtlValue(nameof(PKI.CsrDetails.Description      )),
+                        Email            /**/ = csrDtlValue(nameof(PKI.CsrDetails.Email            )),
+                        GivenName        /**/ = csrDtlValue(nameof(PKI.CsrDetails.GivenName        )),
+                        Initials         /**/ = csrDtlValue(nameof(PKI.CsrDetails.Initials         )),
+                        Locality         /**/ = csrDtlValue(nameof(PKI.CsrDetails.Locality         )),
+                        Organization     /**/ = csrDtlValue(nameof(PKI.CsrDetails.Organization     )),
+                        OrganizationUnit /**/ = csrDtlValue(nameof(PKI.CsrDetails.OrganizationUnit )),
+                        SerialNumber     /**/ = csrDtlValue(nameof(PKI.CsrDetails.SerialNumber     )),
+                        StateOrProvince  /**/ = csrDtlValue(nameof(PKI.CsrDetails.StateOrProvince  )),
+                        Surname          /**/ = csrDtlValue(nameof(PKI.CsrDetails.Surname          )),
+                        Title            /**/ = csrDtlValue(nameof(PKI.CsrDetails.Title            )),
+                        UniqueIdentifier /**/ = csrDtlValue(nameof(PKI.CsrDetails.UniqueIdentifier )),
                     };
+
+                    if (AlternativeIdentifierRefs != null)
+                    {
+                        if (csrDetails.AlternativeNames != null)
+                            throw new Exception("Alternative names already specified manually")
+                                    .With(nameof(csrDetails.AlternativeNames),
+                                            string.Join(",", csrDetails.AlternativeNames));
+
+                        csrDetails.AlternativeNames = AlternativeIdentifierRefs.Select(alternativeIdentifierRef =>
+                        {
+                            var altId = v.Identifiers.GetByRef($"{alternativeIdentifierRef}");
+                            if (altId == null)
+                                throw new Exception("Unable to find an Identifier for the given Alternative Identifier reference")
+                                        .With(nameof(alternativeIdentifierRef), alternativeIdentifierRef)
+                                        .With(nameof(AlternativeIdentifierRefs),
+                                                string.Join(",", AlternativeIdentifierRefs));
+                            return altId.Dns;
+                        });
+
+                        ci.AlternativeIdentifierDns = csrDetails.AlternativeNames.ToArray();
+                    }
 
                     ci.GenerateDetailsFile = $"{ci.Id}-gen.json";
                     var asset = vlt.CreateAsset(VaultAssetType.CsrDetails, ci.GenerateDetailsFile);

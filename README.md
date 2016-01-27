@@ -4,6 +4,8 @@ An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .
 
 --
 
+For documentation and getting started, go to the [wiki](https://github.com/ebekker/ACMESharp/wiki).
+
 For announcements and discussions please see go to the **[Community Forums](http://groups.google.com/group/acmesharp)**.
 
 ---
@@ -27,7 +29,7 @@ For announcements and discussions please see go to the **[Community Forums](http
 
 ## Related
 
-Also check out these other related projects:
+Check out these other related projects:
 
 * An [alternative simple ACME client for Windows](https://github.com/Lone-Coder/letsencrypt-win-simple) which features:
   * simple usage for common scenarios
@@ -36,6 +38,7 @@ Also check out these other related projects:
 * A [GUI interface](http://webprofusion.com/apps/certify) to this project's PowerShell module
 * The official [python ACME client](https://github.com/letsencrypt/letsencrypt) of the [Let's Encrypt] project
 * The [ACME specification](https://github.com/ietf-wg-acme/acme) which brings this all together (under development)
+* See other [contributions](https://github.com/ebekker/ACMESharp/wiki/Contributions)
 
 ---
 

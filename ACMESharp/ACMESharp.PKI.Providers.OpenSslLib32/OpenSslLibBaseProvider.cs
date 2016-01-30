@@ -50,7 +50,12 @@ namespace ACMESharp.PKI.Providers
 
             if (rsaPkParams != null)
             {
-                int bits = RSA_BITS_DEFAULT;
+                int bits;
+                // Bits less than 1024 are weak Ref: http://openssl.org/docs/manmaster/crypto/RSA_generate_key_ex.html
+                if (rsaPkParams.NumBits < 1024)
+                    bits = RSA_BITS_DEFAULT;
+                else
+                    bits = rsaPkParams.NumBits;
 
                 BigNumber e;
                 if (string.IsNullOrEmpty(rsaPkParams.PubExp))

@@ -16,7 +16,7 @@
         public delegate int RsaKeyGeneratorCallback(int p, int n, object cbArg);
 
         /// <summary>
-        /// The number of bits in the generated key. If not specified 1024 is used.
+        /// The number of bits in the generated key. If not specified 2048 is used.
         /// </summary>
         public int NumBits
         { get; set; }

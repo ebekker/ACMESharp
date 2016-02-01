@@ -58,6 +58,6 @@
   </metadata>
   <files>
     <file src="tools\**\*.ps1" target="tools" />
-    <file src="..\..\bin\**" target="source" />
+    <file src="..\..\bin\**" target="source" exclude="**\*.xml" />
   </files>
 </package>

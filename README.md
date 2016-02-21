@@ -45,7 +45,7 @@ Check out these other related projects:
 Jump To:
 * [Overview](#overview)
 * [Current State](#current-state)
-* [Example Usage](#example-usage)
+* [Quick Start](https://github.com/ebekker/ACMESharp/wiki/Quick-Start)
 
 This project implements an ACME client library and PowerShell modules interoperable with the [Let's Encrypt](https://letsencrypt.org/) ACME [CA server](https://github.com/letsencrypt/boulder) reference implemention and includes features comparable to the Let's Encrypt [client](https://github.com/letsencrypt/letsencrypt) reference implementation.
 

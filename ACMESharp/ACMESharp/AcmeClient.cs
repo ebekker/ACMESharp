@@ -163,7 +163,7 @@ namespace ACMESharp
                             "Conflict due to previously registered public key", resp);
                 else if (resp.IsError)
                     throw new AcmeWebException(resp.Error as WebException,
-                            "Unexpected error"/* + resp.StatusCode + ", " + resp.ToString()*/, resp);
+                            "Unexpected error", resp);
             }
 
             var regUri = resp.Headers[AcmeProtocol.HEADER_LOCATION];

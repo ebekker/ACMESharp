@@ -278,7 +278,7 @@ namespace ACMESharp.POSH
                     {
                         fs.CopyTo(s);
                     }
-                    using (Stream fs = new FileStream(KeyPemFile, FileMode.Open),
+                    using (Stream fs = new FileStream(CsrPemFile, FileMode.Open),
                             s = vlt.SaveAsset(csrAsset))
                     {
                         fs.CopyTo(s);

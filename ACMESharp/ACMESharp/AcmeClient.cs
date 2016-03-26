@@ -862,6 +862,17 @@ namespace ACMESharp
 
             public AcmeHttpResponse Response
             { get; private set; }
+
+            public override string Message
+            {
+                get
+                {
+                    if (Response != null)
+                        return base.Message + "\n +Response from server:\n\t+ Code: " + Response.StatusCode.ToString() + "\n\t+ Content: " + Response.ContentAsString;
+                    else
+                        return base.Message + "\n +No response from server";
+                }
+            }
         }
 
         public class AcmeProtocolException : AcmeException
@@ -877,6 +888,17 @@ namespace ACMESharp
 
             public AcmeHttpResponse Response
             { get; private set; }
+
+            public override string Message
+            {
+                get
+                {
+                    if (Response != null)
+                        return base.Message + "\n +Response from server:\n\t+ Code: " + Response.StatusCode.ToString() + "\n\t+ Content: " + Response.ContentAsString;
+                    else
+                        return base.Message + "\n +No response from server";
+                }
+            }
         }
 
 

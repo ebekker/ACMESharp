@@ -92,7 +92,7 @@ namespace ACMESharp.POSH
                         var csrPemFile = $"{ci.Id}-csr.pem";
 
                         var keyGenAsset = vlt.CreateAsset(VaultAssetType.KeyGen, keyGenFile, getOrCreate: Force);
-                        var keyPemAsset = vlt.CreateAsset(VaultAssetType.KeyPem, keyPemFile, getOrCreate: Force);
+                        var keyPemAsset = vlt.CreateAsset(VaultAssetType.KeyPem, keyPemFile, isSensitive: true, getOrCreate: Force);
                         var csrGenAsset = vlt.CreateAsset(VaultAssetType.CsrGen, csrGenFile, getOrCreate: Force);
                         var csrPemAsset = vlt.CreateAsset(VaultAssetType.CsrPem, csrPemFile, getOrCreate: Force);
 

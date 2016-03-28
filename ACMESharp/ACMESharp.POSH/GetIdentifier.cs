@@ -52,31 +52,46 @@ namespace ACMESharp.POSH
                 vlt.OpenStorage();
                 var v = vlt.LoadVault();
 
-                if (v.Identifiers == null || v.Identifiers.Count < 1)
-                    throw new InvalidOperationException("No identifiers found");
-
+                // branch based on whether an ID ref was specified
                 if (string.IsNullOrEmpty(IdentifierRef))
                 {
-                    int seq = 0;
-                    WriteObject(v.Identifiers.Values.Select(x => new
+                    if (v.Identifiers == null || v.Identifiers.Count < 1)
                     {
-                        Seq = seq++,
-                        x.Id,
-                        x.Alias,
-                        x.Label,
-                        x.Dns,
-                        x.Authorization.Status
-                    }), true);
+                        // just return null if there are no IDs
+                        WriteObject(null);
+                    }
+                    else
+                    {
+                        // otherwise, return all IDs
+                        int seq = 0;
+                        WriteObject(v.Identifiers.Values.Select(x => new
+                        {
+                            Seq = seq++,
+                            x.Id,
+                            x.Alias,
+                            x.Label,
+                            x.Dns,
+                            x.Authorization.Status
+                        }), true);
+                    }
                 }
                 else
                 {
-                    var ii = v.Identifiers.GetByRef(IdentifierRef);
-                    if (ii == null)
+                    if (v.Identifiers == null || v.Identifiers.Count < 1)
+                    {
+                        // throw because none exist (and thus, we couldn't find the one specified)
                         throw new ItemNotFoundException("Unable to find an Identifier for the given reference");
+                    }
+                    else
+                    {
+                        var ii = v.Identifiers.GetByRef(IdentifierRef);
+                        if (ii == null)
+                            throw new ItemNotFoundException("Unable to find an Identifier for the given reference");
 
-                    var authzState = ii.Authorization;
+                        var authzState = ii.Authorization;
 
-                    WriteObject(authzState);
+                        WriteObject(authzState);
+                    }
                 }
             }
         }

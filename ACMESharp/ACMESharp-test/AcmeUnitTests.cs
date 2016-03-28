@@ -48,7 +48,8 @@ namespace ACMESharp
                 contact = new string[]
                 {
                     "mailto:cert-admin@example.com",
-                    "tel:+12025551212"
+                    // Tel contact method is no longer supported by Boulder
+                    //"tel:+12025551212"
                 },
             };
             var newRegSer = JsonConvert.SerializeObject(newReg);

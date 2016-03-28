@@ -35,7 +35,8 @@ namespace ACMESharp
 
         public const string TEST_CN1 = "acme-win1.acmetesting.moxy.onl"; // zyborg.io"; // "www.zyborg.io"; // 
         public const string TEST_EM1 = "mailto:letsencrypt@mailinator.com";
-        public const string TEST_PH1 = "tel:+14109361212";
+        // Tel contact method is no longer supported by Boulder
+        //public const string TEST_PH1 = "tel:+14109361212";
         public const string TEST_EM2 = "mailto:letsencrypt+update@mailinator.com";
 
         private static WebProxyConfig _wpConfig;

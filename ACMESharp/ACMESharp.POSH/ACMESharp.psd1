@@ -46,7 +46,7 @@
 			ProjectUri = 'https://github.com/ebekker/ACMESharp'
 
 			# A URL to an icon representing this module.
-			IconUri = 'https://cdn.rawgit.com/ebekker/ACMESharp/49bf6524da8239ecf258ab3857dfbbf40366ecfd/artwork/ACMESharp-logo-square64.png'
+			IconUri = 'https://cdn.rawgit.com/ebekker/ACMESharp/master/artwork/ACMESharp-logo-square64.png'
 
 			# ReleaseNotes of this module
 			ReleaseNotes = 'Please see the release notes from the release distribution page: https://github.com/ebekker/ACMESharp/releases'

@@ -386,7 +386,8 @@ namespace ACMESharp
                         client.Register(new string[]
                                 {
                                     "mailto:letsencrypt+dup@mailinator.com",
-                                    "tel:+14105551212",
+                                    // Tel contact method is no longer supported by Boulder
+                                    //"tel:+14105551212",
                                 });
                         Assert.Fail("WebException expected");
                     }

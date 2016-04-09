@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{A6084888-8C82-
 		..\ci\av-build.ps1 = ..\ci\av-build.ps1
 		..\ci\av-install.ps1 = ..\ci\av-install.ps1
 		..\ci\av-onfinish.ps1 = ..\ci\av-onfinish.ps1
+		..\ci\version-bump.md = ..\ci\version-bump.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.POSH-test", "ACMESharp.POSH-test\ACMESharp.POSH-test.csproj", "{B3A8DDD2-527E-4A65-AA57-127F2A2D6276}"

@@ -4,7 +4,7 @@ An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .
 
 --
 
-For documentation and getting started, go to the [wiki](https://github.com/ebekker/ACMESharp/wiki).
+For documentation and getting started, go to the [wiki](https://github.com/ebekker/ACMESharp/wiki) which includes the [FAQ](https://github.com/ebekker/ACMESharp/wiki/FAQ).
 
 For announcements and discussions please see go to the **[Community Forums](http://groups.google.com/group/acmesharp)**.
 

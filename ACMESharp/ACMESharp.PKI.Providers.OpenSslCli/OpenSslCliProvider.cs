@@ -223,6 +223,7 @@ namespace ACMESharp.PKI.Providers
 
             if (rsaPk != null)
             {
+                var tempCfgFile = Path.GetTempFileName();
                 var tempKeyFile = Path.GetTempFileName();
                 var tempCsrFile = Path.GetTempFileName();
 
@@ -231,7 +232,7 @@ namespace ACMESharp.PKI.Providers
                     var mdVal = Enum.GetName(typeof(Crt.MessageDigest), md);
 
                     var args = $"req -batch -new -keyform PEM -key {tempKeyFile} -{mdVal}";
-                    args += $" -outform PEM -out {tempCsrFile} -subj \"";
+                    args += $" -config {tempCfgFile} -outform PEM -out {tempCsrFile} -subj \"";
 
                     var subjParts = new[]
                     {
@@ -257,13 +258,21 @@ namespace ACMESharp.PKI.Providers
                     args += "\"";
 
                     File.WriteAllText(tempKeyFile, rsaPk.Pem);
-                    RunCli(args);
+                    using (Stream source = Assembly.GetExecutingAssembly()
+                            .GetManifestResourceStream(typeof(OpenSslCliProvider),
+                                    "OpenSslCliProvider_Config.txt"),
+                            target = new FileStream(tempCfgFile, FileMode.Create))
+                    {
+                        source.CopyTo(target);
+                    }
 
+                    RunCli(args);
                     var csr = new Csr(File.ReadAllText(tempCsrFile));
                     return csr;
                 }
                 finally
                 {
+                    File.Delete(tempCfgFile);
                     File.Delete(tempKeyFile);
                     File.Delete(tempCsrFile);
                 }

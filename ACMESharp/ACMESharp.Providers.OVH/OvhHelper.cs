@@ -1,6 +1,7 @@
 ﻿using Ovh.Api;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace ACMESharp.Providers.OVH
 {
@@ -11,7 +12,7 @@ namespace ACMESharp.Providers.OVH
         private string _zone;
 
         private string _subDomain;
-        
+
         public OvhHelper(string endpoint, string applicationKey, string applicationSecret, string consumerKey)
         {
             _client = new Client(endpoint, applicationKey, applicationSecret, consumerKey);
@@ -37,6 +38,10 @@ namespace ACMESharp.Providers.OVH
             {
                 AddRecords(value);
             }
+
+            Refresh();
+
+            Thread.Sleep(10000);
         }
 
         internal void DeleteDnsRecord(string recordName)
@@ -55,11 +60,17 @@ namespace ACMESharp.Providers.OVH
             return _client.Get<long[]>(string.Format("/domain/zone/{0}/record?fieldType=TXT&subDomain={1}", _zone, _subDomain));
         }
 
+        private void Refresh()
+        {
+            _client.Post(string.Format("/domain/zone/{0}/refresh", _zone), null);
+        }
+
         private void AddRecords(string value)
         {
             Dictionary<string, object> payload = new Dictionary<string, object>();
             payload.Add("fieldType", "TXT");
             payload.Add("subDomain", _subDomain);
+            payload.Add("ttl", 60);
             payload.Add("target", value);
 
             _client.Post(string.Format("/domain/zone/{0}/record", _zone), payload);

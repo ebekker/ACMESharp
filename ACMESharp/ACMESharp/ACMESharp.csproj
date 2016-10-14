@@ -33,22 +33,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Core.3.1.1.0\lib\net45\AWSSDK.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.Route53, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Route53.3.1.0.1\lib\net45\AWSSDK.Route53.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.S3, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.S3.3.1.2.1\lib\net45\AWSSDK.S3.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -92,10 +76,6 @@
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
     <Compile Include="CertificateRequest.cs" />
-    <Compile Include="DNS\AwsRoute53DnsProvider.cs" />
-    <Compile Include="DNS\DnsInfo.cs" />
-    <Compile Include="DNS\IDnsProvider.cs" />
-    <Compile Include="DNS\ManualDnsProvider.cs" />
     <Compile Include="Ext\ExtCommon.cs" />
     <Compile Include="Ext\IExtDetail.cs" />
     <Compile Include="Ext\NamedInfo.cs" />
@@ -138,18 +118,10 @@
     <Compile Include="Util\JsonHelper.cs" />
     <Compile Include="Util\StringHelper.cs" />
     <Compile Include="Util\SysHelper.cs" />
-    <Compile Include="WebServer\AwsS3WebServerProvider.cs" />
-    <Compile Include="WebServer\IWebServerProvider.cs" />
-    <Compile Include="WebServer\ManualWebServerProvider.cs" />
-    <Compile Include="WebServer\IisSitePathProvider.cs" />
-    <Compile Include="WebServer\WebServerInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ACMESharp.nuspec" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="WebServer\IisSitePathProvider-WebConfig" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

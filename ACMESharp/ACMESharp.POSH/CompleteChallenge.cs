@@ -1,16 +1,10 @@
 ﻿using ACMESharp.POSH.Util;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Management.Automation;
-using System.Text;
-using System.Text.RegularExpressions;
-using ACMESharp.DNS;
-using ACMESharp.WebServer;
-using System.Collections;
-using ACMESharp.Vault.Profile;
 using ACMESharp.Util;
-using ACMESharp.ACME;
+using ACMESharp.Vault.Profile;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
@@ -187,7 +181,7 @@ namespace ACMESharp.POSH
 
                 if (HandlerParameters?.Count > 0)
                     cliHandlerParams = (IReadOnlyDictionary<string, object>
-                                    )PoshHelper.Convert<string, object>(HandlerParameters);
+                                    ) PoshHelper.Convert<string, object>(HandlerParameters);
 
                 if (!string.IsNullOrEmpty(HandlerProfileRef))
                 {
@@ -212,7 +206,7 @@ namespace ACMESharp.POSH
                         throw new InvalidOperationException("handler profile is incomplete; missing Challenge Type")
                                 .With(nameof(HandlerProfileRef), HandlerProfileRef);
 
-                    challengeType = (string)pp.ProfileParameters[nameof(ChallengeType)];
+                    challengeType = (string) pp.ProfileParameters[nameof(ChallengeType)];
                     handlerName = pp.ProviderName;
                     handlerParams = pp.InstanceParameters;
                     if (cliHandlerParams != null)

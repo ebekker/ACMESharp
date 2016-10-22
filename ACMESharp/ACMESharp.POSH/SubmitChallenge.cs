@@ -5,7 +5,9 @@ using System.Management.Automation;
 namespace ACMESharp.POSH
 {
     /// <summary>
-    /// <para type="synopsis">Submits a completed Challenge for verification by ACME CA Server.</paratype>
+    /// <para type="synopsis">
+    ///     Submits a completed Challenge for verification by ACME CA Server.
+    /// </para>
     /// <para type="description">
     ///   After a Challenge has been handled and completed, it needs to be submitted to the
     ///   ACME CA Server that issued the Challenge.  This cmdlet submits the Challenge of a

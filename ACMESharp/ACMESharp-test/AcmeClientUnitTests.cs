@@ -35,7 +35,8 @@ namespace ACMESharp
 
         public const string TEST_CN1 = "acme-win1.acmetesting.moxy.onl"; // zyborg.io"; // "www.zyborg.io"; // 
         public const string TEST_EM1 = "mailto:letsencrypt@mailinator.com";
-        // Tel contact method is no longer supported by Boulder
+        // Apparently Tel contact method is no longer supported by Boulder --
+        //    keep getting a 400 error with message "Contact method tel is not supported"
         //public const string TEST_PH1 = "tel:+14109361212";
         public const string TEST_EM2 = "mailto:letsencrypt+update@mailinator.com";
 
@@ -217,7 +218,8 @@ namespace ACMESharp
 
                     client.GetDirectory(true);
 
-                    client.Register(new string[] { TEST_EM1, TEST_PH1, });
+                    // Tel contact no longer supported by Boulder?  (see above)
+                    client.Register(new string[] { TEST_EM1, /*TEST_PH1,*/ });
 
                     Assert.IsNotNull(client.Registration);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(client.Registration.RegistrationUri));

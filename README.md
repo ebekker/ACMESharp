@@ -35,7 +35,7 @@ Check out these other related projects:
   * simple usage for common scenarios
   * IIS support
   * automatic renewals
-* A [GUI interface](http://webprofusion.com/apps/certify) to this project's PowerShell module
+* A [GUI interface](https://github.com/webprofusion/Certify) to this project's PowerShell module
 * The official [python ACME client](https://github.com/letsencrypt/letsencrypt) of the [Let's Encrypt] project
 * The [ACME specification](https://github.com/ietf-wg-acme/acme) which brings this all together (under development)
 * See other [contributions](https://github.com/ebekker/ACMESharp/wiki/Contributions)

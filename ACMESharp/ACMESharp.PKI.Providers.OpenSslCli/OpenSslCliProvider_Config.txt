@@ -11,7 +11,7 @@
 ## If set to the value no this disables prompting of certificate fields and just takes values
 ## from the config file directly. It also changes the expected format of the distinguished_name
 ## and attributes sections.
-prompt = no
+prompt = yes
 
 ## This specifies the section containing the distinguished name fields to prompt for when
 ## generating a certificate or certificate request. The format is described in the next section.

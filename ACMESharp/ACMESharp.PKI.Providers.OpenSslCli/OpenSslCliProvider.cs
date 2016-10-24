@@ -266,7 +266,7 @@ namespace ACMESharp.PKI.Providers
                         source.CopyTo(target);
                     }
 
-                        RunCli(args);
+                    RunCli(args);
                     var csr = new Csr(File.ReadAllText(tempCsrFile));
                     return csr;
                 }

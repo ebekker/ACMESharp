@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ACMESharp.Providers</RootNamespace>
     <AssemblyName>ACMESharp.Providers-test</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,6 +70,7 @@
     <Compile Include="Config\AwsS3HandlerParams.cs" />
     <Compile Include="Config\IisHandlerParams.cs" />
     <Compile Include="IisProviderTests.cs" />
+    <Compile Include="OvhTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCommon.cs" />
   </ItemGroup>
@@ -93,6 +95,10 @@
     <ProjectReference Include="..\ACMESharp.Providers.IIS\ACMESharp.Providers.IIS.csproj">
       <Project>{944ec9bd-81a1-484e-ba29-360bc155bf51}</Project>
       <Name>ACMESharp.Providers.IIS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ACMESharp.Providers.OVH\ACMESharp.Providers.OVH.csproj">
+      <Project>{51cc643b-5a4a-4920-b71a-28e1f618b52e}</Project>
+      <Name>ACMESharp.Providers.OVH</Name>
     </ProjectReference>
     <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">
       <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>

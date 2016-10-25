@@ -1,8 +1,10 @@
 ﻿using ACMESharp.ACME;
 using ACMESharp.Providers.CloudFlare;
+using ACMESharp.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ACMESharp.Providers
@@ -10,15 +12,34 @@ namespace ACMESharp.Providers
     [TestClass]
     public class CloudFlareTests
     {
-        private Dictionary<string, object> GetParams()
+        public static readonly IReadOnlyDictionary<string, object> EMPTY_PARAMS =
+                new Dictionary<string, object>()
         {
-            return new Dictionary<string, object>()
-            {
-                {"DomainName", "" },
-                {"AuthKey", "" },
-                {"EmailAddress", "" }
-            };
+            ["DomainName"] = "",
+            ["AuthKey"] = "",
+            ["EmailAddress"] = "",
+        };
+
+        private static IReadOnlyDictionary<string, object> _handlerParams = EMPTY_PARAMS;
+
+        private static IReadOnlyDictionary<string, object> GetParams()
+        {
+            return _handlerParams;
         }
+
+        [ClassInitialize]
+        public static void Init(TestContext tctx)
+        {
+            var file = new FileInfo("Config\\CloudFlareHandlerParams.json");
+            if (file.Exists)
+            {
+                using (var fs = new FileStream(file.FullName, FileMode.Open))
+                {
+                    _handlerParams = JsonHelper.Load<Dictionary<string, object>>(fs);
+                }
+            }
+        }
+
         public static CloudFlareChallengeHandlerProvider GetProvider()
         {
             return new CloudFlareChallengeHandlerProvider();

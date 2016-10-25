@@ -13,8 +13,8 @@ if (-not $Secret) {
 	$Secret = $cred.GetNetworkCredential().Password
 }
 
-if (-not $cred) {
-    Write-Warning "Aborted."
+if (-not $Secret) {
+    Write-Warning "No Secret resolved.  Aborted."
 }
 
 foreach ($t in (Get-ChildItem $Targets)) {

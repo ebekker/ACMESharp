@@ -50,6 +50,16 @@ namespace ACMESharp.Providers
             return (CloudFlareChallengeHandler)GetProvider().GetHandler(challenge, null);
         }
 
+        public static CloudFlareHelper GetHelper()
+        {
+            var p = GetParams();
+            var h = new CloudFlareHelper(
+                    (string)p["AuthKey"],
+                    (string)p["EmailAddress"],
+                    (string)p["DomainName"]
+                );
+            return h;
+        }
 
         [TestMethod]
         public void TestParameterDescriptions()
@@ -104,6 +114,35 @@ namespace ACMESharp.Providers
 
             h.Dispose();
             h.Handle(null);
+        }
+
+        [TestMethod]
+        public void TestAddDnsRecord()
+        {
+            var h = GetHelper();
+            var rrName = "acmesharp-test." + GetParams()["DomainName"];
+            var rrValue = "testrr-" + DateTime.Now.ToString("yyyyMMddHHmmss #1");
+
+            h.AddOrUpdateDnsRecord(rrName, rrValue);
+        }
+
+        [TestMethod]
+        public void TestUpdateDnsRecord()
+        {
+            var h = GetHelper();
+            var rrName = "acmesharp-test." + GetParams()["DomainName"];
+            var rrValue = "testrr-" + DateTime.Now.ToString("yyyyMMddHHmmss #2");
+
+            h.AddOrUpdateDnsRecord(rrName, rrValue);
+        }
+
+        [TestMethod]
+        public void TestDeleteDnsRecord()
+        {
+            var h = GetHelper();
+            var rrName = "acmesharp-test." + GetParams()["DomainName"];
+
+            h.DeleteDnsRecord(rrName);
         }
     }
 }

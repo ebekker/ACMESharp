@@ -7,6 +7,13 @@ using System.Net.Http;
 
 namespace ACMESharp.Providers.CloudFlare
 {
+    /// <summary>
+    /// Helper class to interface with the CloudFlare API endpoint.
+    /// </summary>
+    /// <remarks>
+    /// See <see cref="https://api.cloudflare.com/#getting-started-endpoints"/>
+    /// for more details.
+    /// </remarks>
     public class CloudFlareHelper
     {
         private readonly string _authKey;

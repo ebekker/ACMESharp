@@ -21,6 +21,13 @@ namespace ACMESharp.Ext
         public static string RelativeSearchPathOverride
         { get; set; }
 
+        /// <summary>
+        /// When true, includes the immediate children of the extension folder
+        /// as extension locations to be included in the aggregate catalog.
+        /// </summary>
+        public static bool IncludeExtPathFolders
+        { get; set; } = true;
+
         public static string GetExtPath()
         {
             var thisAsm = Assembly.GetExecutingAssembly().Location;
@@ -48,7 +55,18 @@ namespace ACMESharp.Ext
             // Add the local extension folder if it exists
             var thisExt = ExtCommon.GetExtPath();
             if (Directory.Exists(thisExt))
+            {
                 aggCat.Catalogs.Add(new DirectoryCatalog(thisExt));
+
+                if (IncludeExtPathFolders)
+                {
+                    // Add each immediate child directory as well
+                    foreach (var d in Directory.GetDirectories(thisExt))
+                    {
+                        aggCat.Catalogs.Add(new DirectoryCatalog(d));
+                    }
+                }
+            }
 
             // Other possible folders to include:
             //    * Application CWD

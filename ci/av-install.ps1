@@ -15,5 +15,5 @@ nuget install secure-file -ExcludeVersion
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\dnsInfo.json.enc
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\webServerInfo.json.enc
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
-secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp.Providers-test\Config\AwsS3HandlerParams.json.enc
-secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp.Providers-test\Config\AwsR53HandlerParams.json.enc
+
+& .\ACMESharp\ACMESharp.Providers-test\Config\secure-AllParamsJson.ps1 -Decrypt -Secret $env:secureInfoPassword

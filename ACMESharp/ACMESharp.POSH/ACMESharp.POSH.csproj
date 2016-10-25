@@ -149,6 +149,7 @@
     <StartProgram>C:\Windows\syswow64\WindowsPowerShell\v1.0\powershell.exe</StartProgram>
     <StartArguments>-ExecutionPolicy RemoteSigned -NoExit -Command "ipmo .\$(Configuration)\ACMESharp; if (-not (Test-Path TestVault)) { mkdir TestVault }; cd .\TestVault"</StartArguments>
     <StartWorkingDirectory>..\..</StartWorkingDirectory>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   <Target Name="XmlDoc2CmdletDoc" AfterTargets="Build">
     <Exec Command="$(ProjectDir)..\..\tools\XmlDoc2CmdletDoc\XmlDoc2CmdletDoc.exe $(TargetPath)" />

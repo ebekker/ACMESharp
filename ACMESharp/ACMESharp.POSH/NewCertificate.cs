@@ -17,7 +17,7 @@ namespace ACMESharp.POSH
     /// <summary>
     /// <para type="synopsis">
     ///   Initiates a request to issue a request for previously authorized Identifier.
-    /// </paratype>
+    /// </para>
     /// <para type="description">
     ///   This cmdlet is used to request a new certificate for a DNS Identifier
     ///   that has already been verified by the ACME CA Server.  It is also used

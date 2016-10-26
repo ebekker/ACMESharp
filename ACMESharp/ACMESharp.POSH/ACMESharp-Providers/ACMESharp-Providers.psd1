@@ -9,9 +9,9 @@
 ##    %SystemRoot%\syswow64\WindowsPowerShell\v1.0\powershell.exe
 
 @{
-	RootModule = 'ACMESharp.POSH.dll'
+	RootModule = 'ACMESharp-Providers.psm1'
 	ModuleVersion = '0.8.1'
-	GUID = '244FAB9A-D367-4C0E-A088-FF3D34EDF713'
+	GUID = 'D404364B-EBEF-4FB9-BB5A-F30F912D876C'
 	
 	Author = 'https://github.com/ebekker'
 
@@ -21,8 +21,9 @@
 
 	Description = "Client library for the ACME protocol, which is used to interopertate with the Let's Encrypt project's CA server and any other ACME-compliant server."
 
+	## As a nested module, this will inherit the prefix of the outer root module
 	# Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
-	DefaultCommandPrefix = 'ACME'
+	# DefaultCommandPrefix = 'ACME'
 
 	## Minimum version of the Windows PowerShell engine required by this module
 	## This does not appear to be enforce for versions > 2.0 as per
@@ -55,9 +56,6 @@
 
 	} # End of PrivateData hashtable
 
-	# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-	NestedModules = @( "ACMESharp-Providers\ACMESharp-Providers.psd1" )
-
 
 	############################################################
 	## Unused manifest elements reserved for possible future use
@@ -80,6 +78,9 @@
 
 	# Format files (.ps1xml) to be loaded when importing this module
 	# FormatsToProcess = @()
+
+	# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+	# NestedModules = @()
 
 	# Functions to export from this module
 	# FunctionsToExport = '*'

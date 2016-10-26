@@ -9,9 +9,11 @@
 ##    %SystemRoot%\syswow64\WindowsPowerShell\v1.0\powershell.exe
 
 @{
-	RootModule = 'ACMESharp.POSH.dll'
-	ModuleVersion = '0.8.1'
-	GUID = '244FAB9A-D367-4C0E-A088-FF3D34EDF713'
+	## This is a manifest-only module so we don't define any root
+	#RootModule = ''
+
+	ModuleVersion = '0.8.0'
+	GUID = '7F6533CB-B35A-4E08-BD31-7561D0CC2A7B'
 	
 	Author = 'https://github.com/ebekker'
 
@@ -19,7 +21,7 @@
 
 	Copyright = '(c) 2016 Eugene Bekker. All rights reserved.'	
 
-	Description = "Client library for the ACME protocol, which is used to interopertate with the Let's Encrypt project's CA server and any other ACME-compliant server."
+	Description = "CloudFlare Provider extension library for ACMESharp Client."
 
 	# Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 	DefaultCommandPrefix = 'ACME'
@@ -37,7 +39,7 @@
 		PSData = @{
 
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags = @('pki','ssl','tls','security','certificates','letsencrypt','acme','powershell','acmesharp')
+			Tags = @('pki','ssl','tls','security','certificates','letsencrypt','acme','powershell','acmesharp','cloudflare')
 
 			# A URL to the license for this module.
 			LicenseUri = 'https://raw.githubusercontent.com/ebekker/ACMESharp/master/LICENSE'
@@ -55,9 +57,6 @@
 
 	} # End of PrivateData hashtable
 
-	# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-	NestedModules = @( "ACMESharp-Providers\ACMESharp-Providers.psd1" )
-
 
 	############################################################
 	## Unused manifest elements reserved for possible future use
@@ -67,7 +66,7 @@
 	# HelpInfoURI = ''
 
 	# Modules that must be imported into the global environment prior to importing this module
-	# RequiredModules = @()
+	# RequiredModules = @('ACMESharp')
 
 	# Assemblies that must be loaded prior to importing this module
 	# RequiredAssemblies = @()
@@ -80,6 +79,9 @@
 
 	# Format files (.ps1xml) to be loaded when importing this module
 	# FormatsToProcess = @()
+
+	# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+	# NestedModules = @()
 
 	# Functions to export from this module
 	# FunctionsToExport = '*'

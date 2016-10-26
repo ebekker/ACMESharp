@@ -7,5 +7,5 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyCompany("github.com/ebekker/ACMESharp")]
 [assembly: AssemblyProduct("ACMESharp")]
-[assembly: AssemblyCopyright("Copyright © 2016 Eugene Bekker")]
+[assembly: AssemblyCopyright("Copyright © 2016 Eugene Bekker. All rights reserved.")]
 [assembly: AssemblyTrademark("")]

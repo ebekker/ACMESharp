@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ACMESharp.Providers.CloudFlare")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("ACMESharp CloudFlare Provider")]
+[assembly: AssemblyDescription("CloudFlare Provider extension for ACMESharp")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("github.com/ebekker/ACMESharp")]
 [assembly: AssemblyProduct("ACMESharp.Providers.CloudFlare")]
-[assembly: AssemblyCopyright("Copyright © Jan-Pieter Zoutewelle 2016")]
+[assembly: AssemblyCopyright("Copyright © 2016 Jan-Pieter Zoutewelle. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.8.0.0")]
+[assembly: AssemblyFileVersion("0.8.0.0")]

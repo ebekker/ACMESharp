@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ACMESharp.Util;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -26,6 +27,9 @@ namespace ACMESharp.Ext
         /// as extension locations to be included in the aggregate catalog.
         /// </summary>
         public static bool IncludeExtPathFolders
+        { get; set; } = true;
+
+        public static bool IncludeExtPathLinks
         { get; set; } = true;
 
         public static string GetExtPath()
@@ -64,6 +68,24 @@ namespace ACMESharp.Ext
                     foreach (var d in Directory.GetDirectories(thisExt))
                     {
                         aggCat.Catalogs.Add(new DirectoryCatalog(d));
+                    }
+                }
+
+                if (IncludeExtPathLinks)
+                {
+                    // Add each folder that's defined in ExtPathLink definition file
+                    foreach (var f in Directory.GetFiles(thisExt, "*.extlnk"))
+                    {
+                        try
+                        {
+                            var epl = JsonHelper.Load<ExtPathLink>(File.ReadAllText(f));
+                            aggCat.Catalogs.Add(new DirectoryCatalog(epl.Path));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("failed to resolve extension link", ex)
+                                    .With(nameof(ExtPathLink), f);
+                        }
                     }
                 }
             }
@@ -134,6 +156,12 @@ namespace ACMESharp.Ext
 
             public string RelativeSearchPath
             { get; }
+        }
+
+        public class ExtPathLink
+        {
+            public string Path
+            { get; set; }
         }
     }
 }

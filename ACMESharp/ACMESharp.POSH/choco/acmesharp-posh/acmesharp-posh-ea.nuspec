@@ -4,7 +4,7 @@
   <metadata>
     <id>acmesharp-posh-ea</id>
     <title>ACMESharp PowerShell Module EA (Install)</title>
-    <version>0.8.1.0-EA</version>
+    <version>0.8.5.0-EA</version>
     <authors>ebekker</authors>
     <owners>ebekker</owners>
     <summary>PowerShell module to interoperate with Let's Encrypt CA.</summary>

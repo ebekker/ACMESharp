@@ -17,3 +17,23 @@ secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
 
 & .\ACMESharp\ACMESharp.Providers-test\Config\secure-AllParamsJson.ps1 -Decrypt -Secret $env:secureInfoPassword
+
+Write-Output "Installed Software:"
+$x64items = @(Get-ChildItem "HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall")
+$x64items + @(Get-ChildItem "HKLM:SOFTWARE\wow6432node\Microsoft\Windows\CurrentVersion\Uninstall") `
+   | ForEach-object { Get-ItemProperty Microsoft.PowerShell.Core\Registry::$_ } `
+   | Sort-Object -Property DisplayName `
+   | Select-Object -Property DisplayName,DisplayVersion
+$x64items
+
+Write-Output "PowerShell Versions:"
+$PSVersionTable
+
+Write-Output "Updating to the latest PSGet module"
+Write-Output "  * Mod Info BEFORE install:"
+Get-Module PowerShellGet -ListAvailable
+
+Install-Module -Name PowerShellGet -Force
+
+Write-Output "  * Mod Info AFTER install:"
+Get-Module PowerShellGet -ListAvailable

@@ -36,8 +36,6 @@ else {
 	.\ACMESharp\ACMESharp.POSH-test\choco\acmesharp-posh-all\choco-pack.cmd
 
     Write-Output "Publishing POSH modules to staging repo:"
-    Write-Output "  * Update and import the latest PSGet module"
-    Install-Module -Name PowerShellGet -Force
     Import-Module PowerShellGet -Force
     Write-Output "  * Registering STAGING repo"
     Register-PSRepository -Name STAGING -PackageManagementProvider NuGet -InstallationPolicy Trusted `

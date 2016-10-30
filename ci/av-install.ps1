@@ -27,13 +27,13 @@ $x64items + @(Get-ChildItem "HKLM:SOFTWARE\wow6432node\Microsoft\Windows\Current
 $x64items
 
 Write-Output "PowerShell Versions:"
-$PSVersionTable
+Write-Output ($PSVersionTable | ConvertTo-Json)
 
 Write-Output "Updating to the latest PSGet module"
 Write-Output "  * Mod Info BEFORE install:"
-Get-Module PowerShellGet -ListAvailable
+Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json)
 
 Install-Module -Name PowerShellGet -Force
 
 Write-Output "  * Mod Info AFTER install:"
-Get-Module PowerShellGet -ListAvailable
+Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json)

@@ -36,6 +36,9 @@ else {
 	.\ACMESharp\ACMESharp.POSH-test\choco\acmesharp-posh-all\choco-pack.cmd
 
     Write-Output "Publishing POSH modules to staging repo:"
+    Write-Output "  * Update and import the latest PSGet module"
+    Install-Module -Name PowerShellGet -Force
+    Import-Module PowerShellGet -Force
     Write-Output "  * Registering STAGING repo"
     Register-PSRepository -Name STAGING -PackageManagementProvider NuGet -InstallationPolicy Trusted `
             -SourceLocation https://int.nugettest.org/api/v2 `
@@ -45,10 +48,11 @@ else {
     ## First we need to publish the module which will force the packaging process of the PSGet module
     Write-Output "  * Publishing CloudFlare Provider module [$modName]"
     Publish-Module -Path ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)" `
-            -Repository STAGING -NuGetApiKey $env:STAGING_NUGET_APIKEY -Force
+            -Repository STAGING -NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
     ## Then we pull the module back down from the STAGING repo 
     #$modPkgWeb = Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" -MaximumRedirection 0 -ErrorAction Ignore
     #$modPkgUri = New-Object uri($modPkgWeb.Headers.Location)
     #$modPkg = $modPkgUri.Segments[-1]
-    Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" -OutFile ".\ACMESharp\$($modName)\bin\$($modName).nupkg"
+    Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" `
+            -OutFile ".\ACMESharp\$($modName)\bin\$($modName).$($env:APPVEYOR_BUILD_VERSION).nupkg"
 }

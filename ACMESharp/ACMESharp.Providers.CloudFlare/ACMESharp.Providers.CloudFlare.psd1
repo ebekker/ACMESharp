@@ -57,6 +57,9 @@
 
 	} # End of PrivateData hashtable
 
+	# Modules that must be imported into the global environment prior to importing this module
+	RequiredModules = @(@{ModuleName="ACMESharp";ModuleVersion="0.8.5.0"})
+
 
 	############################################################
 	## Unused manifest elements reserved for possible future use
@@ -64,9 +67,6 @@
 
 	# HelpInfo URI of this module for updateable help
 	# HelpInfoURI = ''
-
-	# Modules that must be imported into the global environment prior to importing this module
-	# RequiredModules = @('ACMESharp')
 
 	# Assemblies that must be loaded prior to importing this module
 	# RequiredAssemblies = @()

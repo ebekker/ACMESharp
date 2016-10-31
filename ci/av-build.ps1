@@ -44,6 +44,10 @@ else {
 
     $modName = "ACMESharp.Providers.CloudFlare"
     ## First we need to publish the module which will force the packaging process of the PSGet module
+    $modVer = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+    Write-Output "  * Updating Module Manifest Version [$modVer]"
+    Update-ModuleManifest -Path ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)\$($modName).psd1" `
+            -ModuleVersion $modVer
     Write-Output "  * Publishing CloudFlare Provider module [$modName]"
     Publish-Module -Path ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)" `
             -Repository STAGING -NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
@@ -51,6 +55,6 @@ else {
     #$modPkgWeb = Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" -MaximumRedirection 0 -ErrorAction Ignore
     #$modPkgUri = New-Object uri($modPkgWeb.Headers.Location)
     #$modPkg = $modPkgUri.Segments[-1]
-    Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" `
-            -OutFile ".\ACMESharp\$($modName)\bin\$($modName).$($env:APPVEYOR_BUILD_VERSION).nupkg"
+    Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
+            -OutFile ".\ACMESharp\$($modName)\bin\$($modName).$($modVer).nupkg"
 }

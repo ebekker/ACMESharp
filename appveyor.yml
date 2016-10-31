@@ -9,6 +9,9 @@ environment:
   ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp
   STAGING_NUGET_APIKEY:
     secure: SUYnj+1syy4bFbcQnP7a9f0jdPoxhbW6yV8FOdNcxTxWQMmnxJ4NqaHnMLlUS2hG
+configuration:
+  - Debug
+  - Release
 install:
 - ps: .\ci\av-install.ps1
 nuget:
@@ -60,8 +63,8 @@ artifacts:
 - path: cov-int
   name: ACMESharp-coverity
   type: zip
-- path: .\ACMESharp\ACMESharp.Providers.CloudFlare\bin\*.nupkg
-  name: ACME-posh-provider-cloudflare
+- path: .\ACMESharp\ACMESharp.Providers.CloudFlare\bin\$(configuration)\*.nupkg
+  name: ACME-posh-provider-cloudflare-$(configuration)
 deploy:
 - provider: S3
   access_key_id: AKIAIU2XOHJ3HOICE4NA

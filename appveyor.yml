@@ -11,7 +11,7 @@ environment:
     secure: SUYnj+1syy4bFbcQnP7a9f0jdPoxhbW6yV8FOdNcxTxWQMmnxJ4NqaHnMLlUS2hG
 configuration:
   - Debug
-  - Release
+# - Release
 install:
 - ps: .\ci\av-install.ps1
 nuget:

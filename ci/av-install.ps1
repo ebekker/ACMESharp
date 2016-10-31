@@ -37,9 +37,9 @@ Get-PackageProvider -Name NuGet -Force
 
 Write-Output "Updating to the latest PSGet module"
 Write-Output "  * Mod Info BEFORE install:"
-Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json)
+Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json -Depth 2)
 
 Install-Module -Name PowerShellGet -Force
 
 Write-Output "  * Mod Info AFTER install:"
-Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json)
+Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json -Depth 2)

@@ -27,13 +27,18 @@ $x64items + @(Get-ChildItem "HKLM:SOFTWARE\wow6432node\Microsoft\Windows\Current
 $x64items
 
 Write-Output "PowerShell Versions:"
-Write-Output ($PSVersionTable | ConvertTo-Json)
+Write-Output $PSVersionTable
+
+## Need to install NuGet for Publish-Module to work as per:
+##   http://help.appveyor.com/discussions/problems/3469-psgetpsm1-doesnt-work
+Write-Output "Installing NUGET PackageProvider"
+Get-PackageProvider -Name NuGet -Force
 
 Write-Output "Updating to the latest PSGet module"
 Write-Output "  * Mod Info BEFORE install:"
-Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json)
+Write-Output (Get-Module PowerShellGet -ListAvailable)
 
 Install-Module -Name PowerShellGet -Force
 
 Write-Output "  * Mod Info AFTER install:"
-Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json)
+Write-Output (Get-Module PowerShellGet -ListAvailable)

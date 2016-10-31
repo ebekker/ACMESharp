@@ -45,12 +45,23 @@ else {
     $modName = "ACMESharp.Providers.CloudFlare"
     ## First we need to publish the module which will force the packaging process of the PSGet module
     $modVer = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+    $modPsd1 = ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)\$($modName).psd1"
+    
     Write-Output "  * Updating Module Manifest Version [$modVer]"
-    Update-ModuleManifest -Path ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)\$($modName).psd1" `
-            -ModuleVersion $modVer
+    ## Unfortunately, this is not working, returning this error:
+    ## Update-ModuleManifest : Cannot update the manifest properly. 'The specified RequiredModules entry 'ACMESharp' in the module manifest 'C:\projects\acmesharp\ACMESharp\ACMESharp.Providers.CloudFlare\bin\Debug\ACMESharp.Providers.CloudFlare\ACMESharp.Providers.CloudFlare.psd1' is invalid. Try again after updating this entry with valid values.'
+    ##  BUT, only on the AV Build server!!! Which is PS5.1, not on PS5.0
+    #Update-ModuleManifest -Path ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)\$($modName).psd1" `
+    #        -ModuleVersion $modVer
+    ## Instead we do a simply find and replace of the version string
+    $modPsd1Body = Get-Content -Path $modPsd1
+    $modPsd1Body = $modPsd1Body -replace '(ModuleVersion[^\d]+\d+\.\d+\.\d+)(\.\d+)?',"`$1.$($env:APPVEYOR_BUILD_NUMBER)"
+    Set-Content -Path $modPsd1 -Value $modPsd1Body
+
     Write-Output "  * Publishing CloudFlare Provider module [$modName]"
     Publish-Module -Path ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)" `
             -Repository STAGING -NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
+
     ## Then we pull the module back down from the STAGING repo 
     #$modPkgWeb = Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" -MaximumRedirection 0 -ErrorAction Ignore
     #$modPkgUri = New-Object uri($modPkgWeb.Headers.Location)

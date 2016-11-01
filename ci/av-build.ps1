@@ -42,17 +42,38 @@ else {
             -SourceLocation https://int.nugettest.org/api/v2 `
             -PublishLocation https://int.nugettest.org/api/v2/package
 
+
+    $modName = "ACMESharp"
+    Write-Output "Publishing to STAGING NuGet [$modName]"
+    $modVer = $env:APPVEYOR_BUILD_VERSION
+    $modPath = ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)"
+    $modPsd1 = "$($modPath)\$($modName).psd1"
+
+    Write-Output "  * Updating Module Manifest Version [$modVer]"
+    Update-ModuleManifest -Path $modPsd1 -ModuleVersion $modVer
+
+    Write-Output "  * Publishing ACMESharp main module [$modName]"
+    Publish-Module -Path $modPath -Repository STAGING `
+            -NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
+
+    ## Then we pull the module back down from the STAGING repo 
+    Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
+            -OutFile ".\ACMESharp\$($modName)\bin\$($modName).$($modVer).nupkg"
+
+
+    ## We need to update the PSModPath so that we can resolve the "RequiredModules"
+    ## dependency to ACMESharp in the upcoming Module Manifests
+    $acmeModPath = (Resolve-Path $modPath).Path
+    $env:PSModulePath += ";$acmeModPath"
+
+
     $modName = "ACMESharp.Providers.CloudFlare"
+    Write-Output "Publishing to STAGING NuGet [$modName]"
     ## First we need to publish the module which will force the packaging process of the PSGet module
     $modVer = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
     $modPath = ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)"
     $modPsd1 = "$($modPath)\$($modName).psd1"
 
-    ## We need to update the PSModPath so that we can resolve the
-    ## "RequiredModules" dependency to ACMESharp in the Module Manifest
-    $acmeModPath = (Resolve-Path ".\ACMESharp\ACMESharp.POSH\bin\$($env:CONFIGURATION)\ACMESharp").Path
-    $env:PSModulePath += ";$acmeModPath"
-    
     Write-Output "  * Updating Module Manifest Version [$modVer]"
     Update-ModuleManifest -Path $modPsd1 -ModuleVersion $modVer
 

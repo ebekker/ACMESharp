@@ -27,8 +27,9 @@ secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp
 #   | Select-Object -Property DisplayName,DisplayVersion
 #$x64items
 
-Write-Output "PowerShell Versions:"
-Write-Output ($PSVersionTable | ConvertTo-Json)
+## Enable this to debug what's on the build host
+#Write-Output "PowerShell Versions:"
+#Write-Output ($PSVersionTable | ConvertTo-Json)
 
 ## Need to install NuGet for Publish-Module to work as per:
 ##   http://help.appveyor.com/discussions/problems/3469-psgetpsm1-doesnt-work
@@ -36,10 +37,13 @@ Write-Output "Installing NUGET PackageProvider"
 Get-PackageProvider -Name NuGet -Force
 
 Write-Output "Updating to the latest PSGet module"
-Write-Output "  * Mod Info BEFORE install:"
-Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json -Depth 2)
+
+## Enable this to debug what's on the build host
+#Write-Output "  * Mod Info BEFORE install:"
+#Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json -Depth 2)
 
 Install-Module -Name PowerShellGet -Force
 
-Write-Output "  * Mod Info AFTER install:"
-Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json -Depth 2)
+## Enable this to debug what's on the build host
+#Write-Output "  * Mod Info AFTER install:"
+#Write-Output (Get-Module PowerShellGet -ListAvailable | ConvertTo-Json -Depth 2)

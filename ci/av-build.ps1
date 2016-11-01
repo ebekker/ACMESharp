@@ -46,7 +46,7 @@ else {
     $modName = "ACMESharp"
     Write-Output "Publishing to STAGING NuGet [$modName]"
     $modVer = $env:APPVEYOR_BUILD_VERSION
-    $modPath = ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName)"
+    $modPath = ".\ACMESharp\$($modName).POSH\bin\$($env:CONFIGURATION)\$($modName)"
     $modPsd1 = "$($modPath)\$($modName).psd1"
 
     Write-Output "  * Updating Module Manifest Version [$modVer]"
@@ -58,7 +58,7 @@ else {
 
     ## Then we pull the module back down from the STAGING repo 
     Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
-            -OutFile ".\ACMESharp\$($modName)\bin\$($modName).$($modVer).nupkg"
+            -OutFile ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName).$($modVer).nupkg"
 
 
     ## We need to update the PSModPath so that we can resolve the "RequiredModules"
@@ -86,5 +86,5 @@ else {
     #$modPkgUri = New-Object uri($modPkgWeb.Headers.Location)
     #$modPkg = $modPkgUri.Segments[-1]
     Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
-            -OutFile ".\ACMESharp\$($modName)\bin\$($modName).$($modVer).nupkg"
+            -OutFile ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName).$($modVer).nupkg"
 }

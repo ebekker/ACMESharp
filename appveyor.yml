@@ -63,6 +63,8 @@ artifacts:
 - path: cov-int
   name: ACMESharp-coverity
   type: zip
+- path: .\ACMESharp\ACMESharp\bin\$(configuration)\*.nupkg
+  name: ACME-posh-main-$(configuration)
 - path: .\ACMESharp\ACMESharp.Providers.CloudFlare\bin\$(configuration)\*.nupkg
   name: ACME-posh-provider-cloudflare-$(configuration)
 deploy:

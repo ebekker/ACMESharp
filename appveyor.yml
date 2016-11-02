@@ -9,6 +9,10 @@ environment:
   ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp
   STAGING_NUGET_APIKEY:
     secure: SUYnj+1syy4bFbcQnP7a9f0jdPoxhbW6yV8FOdNcxTxWQMmnxJ4NqaHnMLlUS2hG
+  GITTER_WEBHOOK:
+    secure: BgCM8p6RSoefZxRRbNdNiFdMFsFCPfwR7U83fS8x5Z4SyrMkMpdfxAO8Hk+5tl4uBDD4DMAprN9nhc1w8X5CQg==
+  SLACK_WEBHOOK:
+    secure: aWdM3NtqORVBUyvtL31SO8Et9glsWcCCycZGM5qr3Na3HnU56TygnbssHZoWq9wuQzlJ36NSI8Qzxr+H8ioQx8iI2ksUyH48Lu435TtfWyk=
 configuration:
   - Debug
 # - Release
@@ -67,19 +71,26 @@ artifacts:
   name: ACME-posh-main-$(configuration)
 - path: .\ACMESharp\ACMESharp.Providers.CloudFlare\bin\$(configuration)\*.nupkg
   name: ACME-posh-provider-cloudflare-$(configuration)
-deploy:
-- provider: S3
-  access_key_id: AKIAIU2XOHJ3HOICE4NA
-  secret_access_key:
-    secure: SFUn+5KMSOZJunA0RgHcztIE1O3mSv2gVgSBJnBwWV/miBevC9/CB+GWpSJ2XBjn
-  region: us-east-1
-  bucket: acmesharp.zyborg.io
-  folder: appveyor-deploy
-  artifact: ACME-lib,ACME-posh,ACME-posh-pester,ACME-posh-pester-bin
-  set_public: true
+## Disabling the S3 deployment -- I don't think this is
+## really needed since we always have the artifacts in AV
+#deploy:
+#- provider: S3
+#  access_key_id: AKIAIU2XOHJ3HOICE4NA
+#  secret_access_key:
+#    secure: SFUn+5KMSOZJunA0RgHcztIE1O3mSv2gVgSBJnBwWV/miBevC9/CB+GWpSJ2XBjn
+#  region: us-east-1
+#  bucket: acmesharp.zyborg.io
+#  folder: appveyor-deploy
+#  artifact: ACME-lib,ACME-posh,ACME-posh-pester,ACME-posh-pester-bin
+#  set_public: true
 notifications:
 - provider: Webhook
-  url: https://webhooks.gitter.im/e/dc0dd42c91579a605d09
+  url: $(GITTER_WEBHOOK)
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
+- provider: Slack
+  incoming_webhook: $(SLACK_WEBHOOK)
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true

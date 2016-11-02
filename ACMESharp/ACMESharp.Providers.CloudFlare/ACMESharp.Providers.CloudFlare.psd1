@@ -58,7 +58,7 @@
 	} # End of PrivateData hashtable
 
 	# Modules that must be imported into the global environment prior to importing this module
-	RequiredModules = @(@{ModuleName="ACMESharp";ModuleVersion="0.8.5.0"})
+	RequiredModules = @(@{ModuleName="ACMESharp"; ModuleVersion="0.8.5"})
 
 
 	############################################################

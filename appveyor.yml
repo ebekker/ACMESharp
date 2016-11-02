@@ -9,10 +9,6 @@ environment:
   ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp
   STAGING_NUGET_APIKEY:
     secure: SUYnj+1syy4bFbcQnP7a9f0jdPoxhbW6yV8FOdNcxTxWQMmnxJ4NqaHnMLlUS2hG
-  GITTER_WEBHOOK:
-    secure: BgCM8p6RSoefZxRRbNdNiFdMFsFCPfwR7U83fS8x5Z4SyrMkMpdfxAO8Hk+5tl4uBDD4DMAprN9nhc1w8X5CQg==
-  SLACK_WEBHOOK:
-    secure: aWdM3NtqORVBUyvtL31SO8Et9glsWcCCycZGM5qr3Na3HnU56TygnbssHZoWq9wuQzlJ36NSI8Qzxr+H8ioQx8iI2ksUyH48Lu435TtfWyk=
 configuration:
   - Debug
 # - Release
@@ -85,12 +81,14 @@ artifacts:
 #  set_public: true
 notifications:
 - provider: Webhook
-  url: $(GITTER_WEBHOOK)
+  url:
+    secure: BgCM8p6RSoefZxRRbNdNiFdMFsFCPfwR7U83fS8x5Z4SyrMkMpdfxAO8Hk+5tl4uBDD4DMAprN9nhc1w8X5CQg==
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true
 - provider: Slack
-  incoming_webhook: $(SLACK_WEBHOOK)
+  incoming_webhook:
+    secure: aWdM3NtqORVBUyvtL31SO8Et9glsWcCCycZGM5qr3Na3HnU56TygnbssHZoWq9wuQzlJ36NSI8Qzxr+H8ioQx8iI2ksUyH48Lu435TtfWyk=
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true

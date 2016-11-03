@@ -81,8 +81,7 @@ artifacts:
 #  set_public: true
 notifications:
 - provider: Webhook
-  url:
-    secure: BgCM8p6RSoefZxRRbNdNiFdMFsFCPfwR7U83fS8x5Z4SyrMkMpdfxAO8Hk+5tl4uBDD4DMAprN9nhc1w8X5CQg==
+  url: https://webhooks.gitter.im/e/c403570df3265c0d6d6b
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ACMESharp.PKI.Providers.BouncyCastle")]
+[assembly: AssemblyDescription("CertificateProvider for ACMESharp using Bouncy Castle")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCulture("")]
 

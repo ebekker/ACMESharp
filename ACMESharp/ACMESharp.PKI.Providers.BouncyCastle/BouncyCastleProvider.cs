@@ -8,6 +8,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
 using System;
 //using System;
 using System.Collections;
@@ -79,34 +80,6 @@ namespace ACMESharp.PKI.Providers
             {
                 throw new NotSupportedException("unsupported private key parameter type");
             }
-        }
-
-        private static string ToPrivatePem(AsymmetricCipherKeyPair ackp)
-        {
-            string pem;
-            using (var tw = new StringWriter())
-            {
-                var pw = new PemWriter(tw);
-                pw.WriteObject(ackp.Private);
-                pem = tw.GetStringBuilder().ToString();
-                tw.GetStringBuilder().Clear();
-            }
-
-            return pem;
-        }
-
-        private static string ToCsrPem(Pkcs10CertificationRequest csr)
-        {
-            string pem;
-            using (var tw = new StringWriter())
-            {
-                var pw = new PemWriter(tw);
-                pw.WriteObject(csr);
-                pem = tw.GetStringBuilder().ToString();
-                tw.GetStringBuilder().Clear();
-            }
-
-            return pem;
         }
 
         public override void ExportPrivateKey(PrivateKey pk, EncodingFormat fmt, Stream target)
@@ -182,6 +155,7 @@ namespace ACMESharp.PKI.Providers
         {
             // Useful examples:
             //    http://www.bouncycastle.org/wiki/display/JA1/X.509+Public+Key+Certificate+and+Certification+Request+Generation
+            //    https://gist.github.com/Venomed/5337717aadfb61b09e58
             //    http://codereview.stackexchange.com/questions/84752/net-bouncycastle-csr-and-private-key-generation
 
             var csrDetails = csrParams.Details;
@@ -307,19 +281,137 @@ namespace ACMESharp.PKI.Providers
             }
         }
 
-        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "")
+        public override Crt ImportCertificate(EncodingFormat fmt, Stream source)
         {
-            throw new NotImplementedException();
+            if (false)
+                throw new NotImplementedException();
+
+            X509Certificate bcCert = null;
+
+            if (fmt == EncodingFormat.DER)
+            {
+                var certParser = new X509CertificateParser();
+                bcCert = certParser.ReadCertificate(source);
+            }
+            else if (fmt == EncodingFormat.PEM)
+            {
+                using (var tr = new StreamReader(source))
+                {
+                    var pr = new PemReader(tr);
+                    bcCert = (X509Certificate)pr.ReadObject();
+                }
+            }
+            else
+            {
+                throw new NotSupportedException("encoding format has not been implemented");
+            }
+
+            using (var tw = new StringWriter())
+            {
+                var pw = new PemWriter(tw);
+                pw.WriteObject(bcCert);
+                return new Crt { Pem = tw.GetStringBuilder().ToString() };
+            }
         }
 
         public override void ExportCertificate(Crt cert, EncodingFormat fmt, Stream target)
         {
-            throw new NotImplementedException();
+            if (false)
+                throw new NotImplementedException();
+
+            if (fmt == EncodingFormat.PEM)
+            {
+                var bytes = Encoding.UTF8.GetBytes(cert.Pem);
+                target.Write(bytes, 0, bytes.Length);
+            }
+            else if (fmt == EncodingFormat.DER)
+            {
+                X509Certificate bcCert = FromCertPem(cert.Pem);
+                var der = bcCert.GetEncoded();
+                target.Write(der, 0, der.Length);
+            }
+            else
+            {
+                throw new NotSupportedException("unsupported encoding format");
+            }
         }
 
-        public override Crt ImportCertificate(EncodingFormat fmt, Stream source)
+        public override void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password)
         {
-            throw new NotImplementedException();
+            var rsaPk = pk as RsaPrivateKey;
+            if (rsaPk == null)
+                throw new NotSupportedException("unsupported private key type");
+
+            if (fmt == ArchiveFormat.PKCS12)
+            {
+                var bcCerts = certs.Select(x =>
+                        new X509CertificateEntry(FromCertPem(x.Pem))).ToArray();
+                var bcPk = FromPrivatePem(rsaPk.Pem);
+
+                var pfx = new Pkcs12Store();
+                pfx.SetCertificateEntry(bcCerts[0].Certificate.ToString(), bcCerts[0]);
+                pfx.SetKeyEntry(bcCerts[0].Certificate.ToString(),
+                        new AsymmetricKeyEntry(bcPk.Private), new[] { bcCerts[0] });
+
+                for (int i = 1; i < bcCerts.Length; ++i)
+                {
+                    pfx.SetCertificateEntry(bcCerts[i].Certificate.SubjectDN.ToString(),
+                            bcCerts[i]);
+                }
+
+                pfx.Save(target, password?.ToCharArray(), new SecureRandom());
+            }
+            else
+            {
+                throw new NotSupportedException("unsupported archive format");
+            }
+        }
+
+        private static string ToPrivatePem(AsymmetricCipherKeyPair ackp)
+        {
+            string pem;
+            using (var tw = new StringWriter())
+            {
+                var pw = new PemWriter(tw);
+                pw.WriteObject(ackp.Private);
+                pem = tw.GetStringBuilder().ToString();
+                tw.GetStringBuilder().Clear();
+            }
+
+            return pem;
+        }
+
+        private static AsymmetricCipherKeyPair FromPrivatePem(string pem)
+        {
+            using (var tr = new StringReader(pem))
+            {
+                var pr = new PemReader(tr);
+                var ackp = (AsymmetricCipherKeyPair)pr.ReadObject();
+                return ackp;
+            }
+        }
+
+        private static string ToCsrPem(Pkcs10CertificationRequest csr)
+        {
+            string pem;
+            using (var tw = new StringWriter())
+            {
+                var pw = new PemWriter(tw);
+                pw.WriteObject(csr);
+                pem = tw.GetStringBuilder().ToString();
+                tw.GetStringBuilder().Clear();
+            }
+
+            return pem;
+        }
+
+        private static X509Certificate FromCertPem(string pem)
+        {
+            using (var tr = new StringReader(pem))
+            {
+                var pr = new PemReader(tr);
+                return (X509Certificate)pr.ReadObject();
+            }
         }
     }
 }

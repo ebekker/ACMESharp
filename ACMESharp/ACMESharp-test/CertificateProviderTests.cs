@@ -121,7 +121,7 @@ namespace ACMESharp
 
         private void TestExportRsaCsr(EncodingFormat fmt)
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
                 var pkp = new RsaPrivateKeyParams();
                 var pk = cp.GeneratePrivateKey(pkp);
@@ -158,7 +158,7 @@ namespace ACMESharp
 
         private void TestImportRsaCsr(EncodingFormat fmt)
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
                 var pkp = new RsaPrivateKeyParams();
                 var pk = cp.GeneratePrivateKey(pkp);
@@ -214,7 +214,7 @@ namespace ACMESharp
 
         private void TestImportCertificate(EncodingFormat fmt, string filePath)
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
 
                 using (var source = new FileStream(filePath, FileMode.Open))
@@ -240,7 +240,7 @@ namespace ACMESharp
 
         private void TestExportCertificate(EncodingFormat fmt, string filePath)
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
 
                 using (var source = new FileStream(filePath, FileMode.Open))
@@ -258,7 +258,7 @@ namespace ACMESharp
         [TestMethod]
         public void TestLoadAndSavePrivateKey()
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
 
                 var testPk = "CertificateProviderTests.key.json";
@@ -282,7 +282,7 @@ namespace ACMESharp
         [TestMethod]
         public void TestExportArchive()
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = GetCP())
             {
 
                 var testPk = "CertificateProviderTests.key.json";

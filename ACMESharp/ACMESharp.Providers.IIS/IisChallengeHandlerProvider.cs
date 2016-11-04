@@ -26,7 +26,7 @@ namespace ACMESharp.Providers.IIS
                 + " IIS Web Site settings.");
 
         public static readonly ParameterDetail SKIP_LOCAL_WEB_CONFIG = new ParameterDetail(
-                nameof(IisChallengeHandler.OverrideSiteRoot),
+                nameof(IisChallengeHandler.SkipLocalWebConfig),
                 ParameterType.BOOLEAN, label: "Skip Local Web Config",
                 desc: "When enabled, inhibits the generation of a local web.config file that"
                 + " controls MIME type mapping and IIS handler mapping.");

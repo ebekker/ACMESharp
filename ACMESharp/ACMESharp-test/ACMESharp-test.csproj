@@ -121,6 +121,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ACMESharp.PKI.Providers.BouncyCastle\ACMESharp.PKI.Providers.BouncyCastle.csproj">
+      <Project>{473bff7d-c7f0-471d-b7a3-19ad9adfdba9}</Project>
+      <Name>ACMESharp.PKI.Providers.BouncyCastle</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ACMESharp.PKI.Providers.OpenSslCli\ACMESharp.PKI.Providers.OpenSslCli.csproj">
       <Project>{5b454575-9688-4a54-bc2b-2d18a15e452b}</Project>
       <Name>ACMESharp.PKI.Providers.OpenSslCli</Name>

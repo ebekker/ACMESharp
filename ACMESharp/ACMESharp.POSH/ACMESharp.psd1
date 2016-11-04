@@ -10,7 +10,7 @@
 
 @{
 	RootModule = 'ACMESharp.POSH.dll'
-	ModuleVersion = '0.8.5'
+	ModuleVersion = '0.8.2'
 	GUID = '244FAB9A-D367-4C0E-A088-FF3D34EDF713'
 	
 	Author = 'https://github.com/ebekker'

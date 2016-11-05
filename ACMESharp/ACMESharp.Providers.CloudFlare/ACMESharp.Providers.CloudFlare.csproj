@@ -64,6 +64,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ACMESharp.Providers.CloudFlare.nuspec" />
     <None Include="packages.config" />
     <None Include="ACMESharp.Providers.CloudFlare.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

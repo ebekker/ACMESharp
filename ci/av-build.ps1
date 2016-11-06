@@ -27,9 +27,13 @@ else {
     & $msb_prog $msb_args
 
     Write-Output "Building nuget packages"
-	.\ACMESharp\ACMESharp\mynuget.cmd
-	.\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib32\mynuget.cmd
-	.\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib64\mynuget.cmd
+	#.\ACMESharp\ACMESharp\mynuget.cmd
+	#.\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib32\mynuget.cmd
+	#.\ACMESharp\ACMESharp.PKI.Providers.OpenSslLib64\mynuget.cmd
+
+	.\ACMESharp\nuget-build.cmd ACMESharp
+	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.OpenSslLib32
+	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.OpenSslLib64
 
 	.\ACMESharp\nuget-build.cmd ACMESharp.Vault
 	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.IIS

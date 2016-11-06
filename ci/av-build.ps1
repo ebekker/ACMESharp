@@ -105,7 +105,8 @@ else {
 		#$modPkgUri = New-Object uri($modPkgWeb.Headers.Location)
 		#$modPkg = $modPkgUri.Segments[-1]
 		Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
-				-OutFile ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName).$($modVer).nupkg"
+				-OutFile ".\ACMESharp\$($modName)\bin\posh\$($modName).$($modVer).nupkg"
+		#		-OutFile ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName).$($modVer).nupkg"
 
 
 		## We update the PSModPath with each module we process in case any

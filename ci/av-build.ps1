@@ -71,6 +71,13 @@ else {
     #!$acmeModPath = (Resolve-Path $modPath).Path
     #!$env:PSModulePath += ";$acmeModPath"
 
+	## The AWS Provider down below needs this to be in
+	## the STAGING repo in order to pass validations
+	Install-Module AWSPowerShell -Force
+	Publish-Module AWSPowerShell -Repository STAGING `
+				-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
+
+
 	$poshModules = [ordered]@{
 		## Embedded '@' overrides the default Project Folder
 		"ACMESharp@ACMESharp.POSH"       = $env:APPVEYOR_BUILD_VERSION

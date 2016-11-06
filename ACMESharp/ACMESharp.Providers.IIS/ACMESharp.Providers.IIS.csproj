@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="IisChallengeHandler.cs" />
     <Compile Include="IisChallengeHandlerProvider.cs" />
     <Compile Include="IisWebSite.cs" />

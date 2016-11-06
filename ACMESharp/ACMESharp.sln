@@ -55,6 +55,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.CloudFl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.BouncyCastle", "ACMESharp.PKI.Providers.BouncyCastle\ACMESharp.PKI.Providers.BouncyCastle.csproj", "{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psorg", "psorg", "{4F61BC69-0B98-45E1-87C1-D2BCF0352E06}"
+	ProjectSection(SolutionItems) = preProject
+		..\ci\psorg\PS4-Step0.ps1 = ..\ci\psorg\PS4-Step0.ps1
+		..\ci\psorg\PS4-Step1.ps1 = ..\ci\psorg\PS4-Step1.ps1
+		..\ci\psorg\PS4-Step2.ps1 = ..\ci\psorg\PS4-Step2.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,5 +138,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A6084888-8C82-4999-880F-2721BF1AA639} = {551C2059-1DE9-484C-8329-7894DDF57771}
+		{4F61BC69-0B98-45E1-87C1-D2BCF0352E06} = {A6084888-8C82-4999-880F-2721BF1AA639}
 	EndGlobalSection
 EndGlobal

@@ -88,7 +88,7 @@ else {
 		}
 
 		Write-Output "Publishing to STAGING NuGet [$modName]"
-		Write-Output "    from project folder [$modDir]"
+		Write-Output "  from project folder [$modDir]"
 		## First we need to publish the module which will force the packaging process of the PSGet module
 		$modPath = ".\ACMESharp\$($modDir)\bin\$($env:CONFIGURATION)\$($modName)"
 		$modPsd1 = "$($modPath)\$($modName).psd1"
@@ -104,8 +104,12 @@ else {
 		#$modPkgWeb = Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" -MaximumRedirection 0 -ErrorAction Ignore
 		#$modPkgUri = New-Object uri($modPkgWeb.Headers.Location)
 		#$modPkg = $modPkgUri.Segments[-1]
+
+		$modPoshDir = ".\ACMESharp\$($modDir)\bin\posh"
+		$modPoshPkg = "$($modPoshDir)\$($modName).$($modVer).nupkg"
+		mkdir -Force $modPoshDir
 		Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
-				-OutFile ".\ACMESharp\$($modName)\bin\posh\$($modName).$($modVer).nupkg"
+				-OutFile $modPoshPkg
 		#		-OutFile ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName).$($modVer).nupkg"
 
 

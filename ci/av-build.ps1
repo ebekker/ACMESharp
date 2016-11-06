@@ -77,8 +77,11 @@ else {
 
 	## The AWS Provider down below needs this to be in
 	## the STAGING repo in order to pass validations
-	Install-Module AWSPowerShell -Force
-	Publish-Module AWSPowerShell -Repository STAGING `
+	## We only enable this when we want to publish the latest
+	## version of AWSPowerShell, otherwise we leave it disabled
+	Write-Output "Installing AWSPowerShell Module to resolve dependencies"
+	Install-Module -Name AWSPowerShell -Force
+	Publish-Module -Name AWSPowerShell -Repository STAGING `
 				-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
 
 

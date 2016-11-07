@@ -39,6 +39,7 @@ else {
 	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.IIS
 	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.AWS
 	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.CloudFlare
+	.\ACMESharp\nuget-build.cmd ACMESharp.POSH
 
 	Write-Output "Building choco packages"
 	.\ACMESharp\ACMESharp.POSH\choco\acmesharp-posh\choco-pack.cmd

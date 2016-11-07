@@ -10,8 +10,17 @@ SET PRJ_ARG=%1
 IF NOT "%PRJ_ARG%"=="" GOTO :found_prj_arg
 ECHO *** MISSING PROJECT NAME ARGUMENT!!! ***
 GOTO :eof
-
 :found_prj_arg
+
+@REM Collect any surplus arguments
+SET NUGET_ARGS=
+:next_collect_args
+SHIFT
+IF "%1"=="" GOTO :end_collect_args
+SET NUGET_ARGS=%NUGET_ARGS% %1
+GOTO :next_collect_args
+:end_collect_args
+
 SET BUILDNO=%APPVEYOR_BUILD_NUMBER%
 IF "%BUILDNO%"=="" SET BUILDNO=0
 
@@ -42,6 +51,9 @@ SET NUGET_PROPS=%NUGET_PROPS%;buildNum=%BUILDNO%
 SET NUGET_PROPS=%NUGET_PROPS%;versionLabel=-EA
 
 :Execute_NuGet
-%NUGET% pack -Properties "%NUGET_PROPS%" -OutputDirectory %NUGET_OUT% %NUGET_PRJ%
+ECHO *********************
+ECHO ** Executing NuGet:  %NUGET% pack -Properties "%NUGET_PROPS%" -OutputDirectory %NUGET_OUT% %NUGET_PRJ% %NUGET_ARGS%
+ECHO *********************
+%NUGET% pack -Properties "%NUGET_PROPS%" -OutputDirectory %NUGET_OUT% %NUGET_PRJ% %NUGET_ARGS%
 
 ECHO.

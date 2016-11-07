@@ -58,9 +58,14 @@
 	} # End of PrivateData hashtable
 
 	# Modules that must be imported into the global environment prior to importing this module
-	RequiredModules = @(
+	RequiredModules = @(  ## FYI -- If one module uses the Hashtable spec, they all have to
+
+		## The minimum version of ACMESharp that supports our form of a Provider
+		## extension as a dynamically installed and *enabled* POSH Extension Module
 		, @{ModuleName="ACMESharp";ModuleVersion="0.8.2"}
-		, 'AWSPowerShell'
+
+		## We specify abolute min version, effectively *any* version
+		, @{ModuleName="AWSPowerShell";ModuleVersion="0.0.1"}
 	)
 
 

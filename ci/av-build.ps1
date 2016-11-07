@@ -82,8 +82,24 @@ else {
 	## but this is just in case the module was "wiped out" from
 	## a staging repo since there are no guarantees they exist
 	Write-Output "Installing Fake AWSPowerShell Module to resolve dependencies"
-	Publish-Module -Repository staging -Path .\ci\nuget-staging\AWSPowerShell `
-			-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Continue
+	try {
+		Publish-Module -Repository staging -Path .\ci\nuget-staging\AWSPowerShell `
+				-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force
+	}
+	catch [System.InvalidOperationException] {
+		## Testing for something like this:
+		##    The module 'AWSPowerShell' with version '0.0.1.0' cannot be published as the current version '0.0.1.0' is already available in the repository 
+		$errMsg = $Error[0].Exception.Message
+		if ($errMsg -and
+				($errMsg -match 'cannot be published') -and
+				($errMsg -match 'is already available')) {
+			Write-Warning "Looks like AWSPowerShell is already published; should be safe to ignore"
+		}
+		else {
+			## Otherwise re-throw it
+			throw $Error[0].Exception
+		}
+	}
 
 
 	$poshModules = [ordered]@{
@@ -108,10 +124,10 @@ else {
 		$modPath = ".\ACMESharp\$($modDir)\bin\$($env:CONFIGURATION)\$($modName)"
 		$modPsd1 = "$($modPath)\$($modName).psd1"
 
-		Write-Output "  * Updating Module Manifest Version [$modVer]"
+		Write-Output "  * Updating Module Manifest [$modPsd1] to Version [$modVer]"
 		Update-ModuleManifest -Path $modPsd1 -ModuleVersion $modVer
 
-		Write-Output "  * Publishing CloudFlare Provider module [$modName]"
+		Write-Output "  * Publishing module [$modName]"
 		Publish-Module -Path $modPath -Repository STAGING `
 				-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
 

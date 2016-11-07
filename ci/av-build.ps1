@@ -76,13 +76,14 @@ else {
     #!$env:PSModulePath += ";$acmeModPath"
 
 	## The AWS Provider down below needs this to be in
-	## the STAGING repo in order to pass validations
-	## We only enable this when we want to publish the latest
-	## version of AWSPowerShell, otherwise we leave it disabled
-	Write-Output "Installing AWSPowerShell Module to resolve dependencies"
-	Install-Module -Name AWSPowerShell -Force
-	Publish-Module -Name AWSPowerShell -Repository STAGING `
-				-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
+	## the STAGING repo in order to pass validations.
+	## This will normally already be in the target repo due
+	## due to prior publications, that's why we ignore on error
+	## but this is just in case the module was "wiped out" from
+	## a staging repo since there are no guarantees they exist
+	Write-Output "Installing Fake AWSPowerShell Module to resolve dependencies"
+	Publish-Module -Repository staging -Path .\ci\nuget-staging\AWSPowerShell `
+			-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Continue
 
 
 	$poshModules = [ordered]@{

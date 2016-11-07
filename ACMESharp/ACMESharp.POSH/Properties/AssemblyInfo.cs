@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ACME Client for .NET")]
-[assembly: AssemblyDescription("ACME PowerShell Module")]
+[assembly: AssemblyTitle("ACMESharp PowerShell Main Module")]
+[assembly: AssemblyDescription("PowerShell Module library for ACMESharp POSH Module client.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCulture("")]
 

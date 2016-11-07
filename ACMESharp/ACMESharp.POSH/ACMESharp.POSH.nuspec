@@ -16,7 +16,7 @@
     <copyright>Copyright &#169; 2016 Eugene Bekker</copyright>
     <tags>pki ssl tls security certificates letsencrypt powershell acme acmesharp</tags>
     <dependencies>
-      <dependency id="ACMESharp" version="8.1.0" />
+      <dependency id="ACMESharp" version="0.8.1" />
     </dependencies>
    </metadata>
 </package>

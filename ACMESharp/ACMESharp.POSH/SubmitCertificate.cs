@@ -49,6 +49,18 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a PKI tool provider (i.e. CertificateProvider) to be used in
+        ///     all PKI related operations such as private key generation, CSR generation
+        ///     and certificate importing and exporting.  If left unspecified a default
+        ///     PKI tool provider will be used.
+        /// </para>
+        /// </summary>
+        [Parameter]
+        public string PkiTool
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
@@ -69,7 +81,7 @@ namespace ACMESharp.POSH
                 if (ci == null)
                     throw new Exception("Unable to find a Certificate for the given reference");
 
-                using (var cp = CertificateProvider.GetProvider())
+                using (var cp = PkiHelper.GetPkiTool(PkiTool))
                 {
 
                     if (!string.IsNullOrEmpty(ci.GenerateDetailsFile))

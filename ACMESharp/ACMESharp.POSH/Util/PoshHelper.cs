@@ -1,14 +1,10 @@
 ﻿using ACMESharp.Ext;
 using ACMESharp.Vault;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACMESharp.POSH.Util
 {

@@ -83,6 +83,7 @@
     <Compile Include="UpdateRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ClientHelper.cs" />
+    <Compile Include="Util\PkiHelper.cs" />
     <Compile Include="Util\PoshHelper.cs" />
     <Compile Include="Util\VaultHelper.cs" />
   </ItemGroup>
@@ -122,6 +123,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ACMESharp.PKI.Providers.BouncyCastle\ACMESharp.PKI.Providers.BouncyCastle.csproj">
+      <Project>{473bff7d-c7f0-471d-b7a3-19ad9adfdba9}</Project>
+      <Name>ACMESharp.PKI.Providers.BouncyCastle</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ACMESharp.PKI.Providers.OpenSslLib32\ACMESharp.PKI.Providers.OpenSslLib32.csproj">
       <Project>{2ce2e059-f228-4f88-8440-0413c1af2e4c}</Project>
       <Name>ACMESharp.PKI.Providers.OpenSslLib32</Name>

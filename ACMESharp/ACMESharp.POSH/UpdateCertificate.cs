@@ -118,6 +118,18 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a PKI tool provider (i.e. CertificateProvider) to be used in
+        ///     all PKI related operations such as private key generation, CSR generation
+        ///     and certificate importing and exporting.  If left unspecified a default
+        ///     PKI tool provider will be used.
+        /// </para>
+        /// </summary>
+        [Parameter]
+        public string PkiTool
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             using (var vlt = Util.VaultHelper.GetVault(VaultProfile))
@@ -165,7 +177,7 @@ namespace ACMESharp.POSH
                         if (crtPemAsset == null)
                             crtPemAsset = vlt.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
 
-                        using (var cp = CertificateProvider.GetProvider())
+                        using (var cp = PkiHelper.GetPkiTool(PkiTool))
                         {
                             var bytes = ci.CertificateRequest.GetCertificateContent();
 
@@ -248,7 +260,7 @@ namespace ACMESharp.POSH
                                             if (issuerPemAsset == null)
                                                 issuerPemAsset = vlt.CreateAsset(VaultAssetType.IssuerPem, cacertPemFile);
 
-                                            using (var cp = CertificateProvider.GetProvider())
+                                            using (var cp = PkiHelper.GetPkiTool(PkiTool))
                                             {
 
                                                 using (Stream source = vlt.LoadAsset(issuerDerAsset),

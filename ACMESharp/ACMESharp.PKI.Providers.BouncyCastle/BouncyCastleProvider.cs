@@ -189,7 +189,7 @@ namespace ACMESharp.PKI.Providers
                     if (ackp != null)
                     {
                         var sigAlg = $"{mdVal}withRSA";
-                        DerSet csrAttrs = null;
+                        var csrAttrs = new List<Asn1Encodable>();
 
                         if (csrDetails.AlternativeNames != null)
                         {
@@ -209,14 +209,14 @@ namespace ACMESharp.PKI.Providers
                             });
 #pragma warning restore CS0612 // Type or member is obsolete
 
-                            csrAttrs = new DerSet(new Org.BouncyCastle.Asn1.Cms.Attribute(
+                            csrAttrs.Add(new Org.BouncyCastle.Asn1.Cms.Attribute(
                                     PkcsObjectIdentifiers.Pkcs9AtExtensionRequest,
                                     new DerSet(x509Ext)));
                         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
                         var csr = new Pkcs10CertificationRequest(sigAlg,
-                                subj, ackp.Public, csrAttrs, ackp.Private);
+                                subj, ackp.Public, new DerSet(csrAttrs.ToArray()), ackp.Private);
 #pragma warning restore CS0618 // Type or member is obsolete
 
                         var csrPem = ToCsrPem(csr);

@@ -20,8 +20,30 @@ using System.Threading.Tasks;
 
 namespace ACMESharp.PKI.Providers
 {
+    /// <summary>
+    /// Implementation of a <see cref="CertificateProvider"/> implemented using
+    /// the <see cref="http://www.bouncycastle.org/csharp/index.html"
+    /// >Bouncy Castle C# library</see>.
+    /// </summary>
+    /// <remarks>
+    /// Using the Bouncy Castle (BC) library allows us to implement a purely
+    /// managed provider that should work in most environments with minimum
+    /// dependencies.
+    /// </remarks>
     public class BouncyCastleProvider : CertificateProvider
     {
+        // Useful references and examples for BC:
+        //  CSR:
+        //    http://www.bouncycastle.org/wiki/display/JA1/X.509+Public+Key+Certificate+and+Certification+Request+Generation
+        //    https://gist.github.com/Venomed/5337717aadfb61b09e58
+        //    http://codereview.stackexchange.com/questions/84752/net-bouncycastle-csr-and-private-key-generation
+        //  Other:
+        //    https://www.txedo.com/blog/java-read-rsa-keys-pem-file/
+
+        #region -- Constants --
+
+        public const string PROVIDER_NAME = "BouncyCastle";
+
         public const int RSA_BITS_DEFAULT = 2048;
 
         public static readonly BigInteger RSA_E_3 = BigInteger.Three;
@@ -31,9 +53,17 @@ namespace ACMESharp.PKI.Providers
         //    https://github.com/bcgit/bc-csharp/blob/fba5af528ce7dcd0ac0513363196a62639b82a86/crypto/src/crypto/generators/RsaKeyPairGenerator.cs#L37
         protected const int DEFAULT_CERTAINTY = 100;
 
+        #endregion -- Constants --
+
+        #region -- Constructors --
+
         public BouncyCastleProvider(IReadOnlyDictionary<string, string> initParams)
             : base(initParams)
         { }
+
+        #endregion -- Constructors --
+
+        #region -- Methods --
 
         public override PrivateKey GeneratePrivateKey(PrivateKeyParams pkp)
         {
@@ -153,11 +183,6 @@ namespace ACMESharp.PKI.Providers
 
         public override Csr GenerateCsr(CsrParams csrParams, PrivateKey pk, Crt.MessageDigest md)
         {
-            // Useful examples:
-            //    http://www.bouncycastle.org/wiki/display/JA1/X.509+Public+Key+Certificate+and+Certification+Request+Generation
-            //    https://gist.github.com/Venomed/5337717aadfb61b09e58
-            //    http://codereview.stackexchange.com/questions/84752/net-bouncycastle-csr-and-private-key-generation
-
             var csrDetails = csrParams.Details;
             var mdVal = Enum.GetName(typeof(Crt.MessageDigest), md);
 
@@ -413,5 +438,7 @@ namespace ACMESharp.PKI.Providers
                 return (X509Certificate)pr.ReadObject();
             }
         }
+
+        #endregion -- Methods --
     }
 }

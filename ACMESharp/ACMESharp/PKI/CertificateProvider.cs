@@ -88,7 +88,7 @@ namespace ACMESharp.PKI
         {
             using (var w = new StreamWriter(target))
             {
-                w.Write(JsonConvert.SerializeObject(this));
+                w.Write(JsonConvert.SerializeObject(csr));
             }
         }
 

@@ -19,13 +19,22 @@ namespace ACMESharp.PKI
         private const string DEFAULT_PROVIDER_NAME = "";
         private static readonly Type[] PROVIDER_CTOR_SIG = { typeof(IReadOnlyDictionary<string, string>) };
 
-        private static readonly Dictionary<string, Type> _providers = new Dictionary<string, Type>
+        private static readonly Dictionary<string, Type> _providers =
+                new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+
+        private static readonly List<Tuple<string, string>> _providerTypes =
+                new List<Tuple<string, string>>
         {
-            [DEFAULT_PROVIDER_NAME] =
-                    typeof(Providers.OpenSslLibProvider),
-            [Providers.OpenSslLibProvider.PROVIDER_NAME] =
-                    typeof(Providers.OpenSslLibProvider),
+            Tuple.Create(Providers.OpenSslLibProvider.PROVIDER_NAME,
+                    typeof(Providers.OpenSslLibProvider).FullName),
+            Tuple.Create("BouncyCastle",
+                    "ACMESharp.PKI.Providers.BouncyCastleProvider"),
+            Tuple.Create("OpenSSL-CLI",
+                    "ACMESharp.PKI.Providers.OpenSslCliProvider"),
         };
+
+        // Flag indicates if registration of *supplemental* providers was attempted
+        private static bool _providersRegistered = false;
 
         protected CertificateProvider(IReadOnlyDictionary<string, string> newParams)
         { }
@@ -139,6 +148,8 @@ namespace ACMESharp.PKI
             Type t;
             lock (_providers)
             {
+                if (!_providersRegistered)
+                    RegisterProviders();
                 t = _providers[name];
             }
 
@@ -150,6 +161,25 @@ namespace ACMESharp.PKI
 
             return (CertificateProvider)t.GetConstructor(PROVIDER_CTOR_SIG)
                     .Invoke(new[] { initParams });
+        }
+
+        private static void RegisterProviders()
+        {
+            string defaultProvider = null;
+            foreach (var p in _providerTypes)
+            {
+                var t = Type.GetType(p.Item2, false);
+                if (t != null)
+                {
+                    _providers[p.Item1] = t;
+                    if (defaultProvider == null)
+                    {
+                        _providers[DEFAULT_PROVIDER_NAME] = t;
+                        defaultProvider = p.Item1;
+                    }
+                }
+            }
+            _providersRegistered = true;
         }
     }
 }

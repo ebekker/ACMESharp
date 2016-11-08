@@ -15,6 +15,7 @@ namespace ACMESharp.PKI.Providers
     public class OpenSslLibBaseProvider : CertificateProvider
     {
         public const int RSA_BITS_DEFAULT = 2048;
+        public const int RSA_BITS_MINIMUM = 1024 + 1; // LE no longer allows 1024-bit PrvKeys
 
         public static readonly BigNumber RSA_E_3 = 3;
         public static readonly BigNumber RSA_E_F4 = 0x10001;
@@ -52,7 +53,7 @@ namespace ACMESharp.PKI.Providers
             {
                 int bits;
                 // Bits less than 1024 are weak Ref: http://openssl.org/docs/manmaster/crypto/RSA_generate_key_ex.html
-                if (rsaPkParams.NumBits < 1024)
+                if (rsaPkParams.NumBits < RSA_BITS_MINIMUM)
                     bits = RSA_BITS_DEFAULT;
                 else
                     bits = rsaPkParams.NumBits;

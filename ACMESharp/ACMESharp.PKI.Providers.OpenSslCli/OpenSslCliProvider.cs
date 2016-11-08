@@ -29,6 +29,10 @@ namespace ACMESharp.PKI.Providers
     {
         public const string PROVIDER_NAME = "OpenSSL-CLI";
 
+        public const int RSA_BITS_DEFAULT = 2048;
+        public const int RSA_BITS_MINIMUM = 1024 + 1; // LE no longer allows 1024-bit PrvKeys
+
+
         private static readonly Regex PKEY_BITS_REGEX =
                 new Regex("Public-Key: \\(([0-9]+) bit\\)");
         private static readonly Regex PKEY_PUBEXP_REGEX =
@@ -77,10 +81,13 @@ namespace ACMESharp.PKI.Providers
                 try
                 {
                     var args = $"genpkey -algorithm RSA -out {tempKeyFile}";
-                    if (rsaPkp.NumBits > 0)
-                        args += $" -pkeyopt rsa_keygen_bits:{rsaPkp.NumBits}";
                     if (!string.IsNullOrEmpty(rsaPkp.PubExp))
                         args += $" -pkeyopt rsa_keygen_pubexp:{rsaPkp.PubExp}";
+
+                    var numBits = RSA_BITS_DEFAULT;
+                    if (rsaPkp.NumBits >= RSA_BITS_MINIMUM)
+                        numBits = rsaPkp.NumBits;
+                    args += $" -pkeyopt rsa_keygen_bits:{numBits}";
 
                     RunCli(args);
                     var rsaPk = new RsaPrivateKey(rsaPkp.NumBits, rsaPkp.PubExp, File.ReadAllText(tempKeyFile));

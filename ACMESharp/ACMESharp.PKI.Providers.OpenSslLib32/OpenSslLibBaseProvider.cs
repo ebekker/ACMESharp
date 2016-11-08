@@ -194,7 +194,7 @@ namespace ACMESharp.PKI.Providers
             {
                 // TODO: Managed OpenSSL Library has not implemented
                 // d2i_X509_REQ_bio(...) routine yet
-                throw new NotImplementedException("x509 CSR export to DER has not yet been implemented");
+                throw new NotImplementedException("x509 CSR import to DER has not yet been implemented");
             }
             else
             {

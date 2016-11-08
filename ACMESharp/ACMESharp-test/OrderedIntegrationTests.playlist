@@ -1,0 +1,26 @@
+<Playlist Version="1.0">
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0010_Init" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0020_GetDirectory" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0030_Register" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0040_RegisterEmptyUpdate" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0050_RegisterUpdateTosAgreement" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0060_RegisterUpdateContacts" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0080_AuthorizeDnsBlacklisted" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0090_AuthorizeIdentifier" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0111_RefreshAuthzHttpChallenge" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0122_DecodeHttpChallenge" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0146_SubmitHttpChallengeAnswer" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0148_RefreshAuthzHttpChallenge" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0150_AuthorizeIdentifier" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0095_RefreshIdentifierAuthorization" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0160_RequestCertificateInvalidCsr" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0151_DecodeDnsChallenge" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0070_RegisterDuplicate" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0120_GenerateChallengeAnswers" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0141_HandleHttpChallenge" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0142_HandleHttpChallenge" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0156_SubmitDnsChallengeAnswer" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0152_HandleDnsChallenge" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0170_GenCsrAndRequestCertificate" />
+  <Add Test="ACMESharp.AcmeClientUnitTests.Test0190_RefreshCertificateRequest" />
+</Playlist>

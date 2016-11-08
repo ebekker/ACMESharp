@@ -64,6 +64,11 @@ namespace ACMESharp
         private static string _testGenCsr_RsaKeysFile = $"{DEFAULT_BASE_LOCAL_STORE}\\300-TestGenCsr-rsaKeys.txt";
         private static string _testGenCsr_CsrDetailsFile = $"{DEFAULT_BASE_LOCAL_STORE}\\310-TestGenCsr-csrDetails.txt";
         private static string _testGenCsr_CsrFile = $"{DEFAULT_BASE_LOCAL_STORE}\\350-TestGenCsr-csr.txt";
+        private static string _testGenCsr_CsrPemFile = $"{DEFAULT_BASE_LOCAL_STORE}\\350-TestGenCsr-csr.pem";
+        private static string _testGenCsr_CsrDerFile = $"{DEFAULT_BASE_LOCAL_STORE}\\350-TestGenCsr-csr.der";
+        private static string _testGenCsr_CsrDerAltFile = $"{DEFAULT_BASE_LOCAL_STORE}\\350-TestGenCsr-csr2.der";
+        private static string _testGenCsr_CsrDerJsonFile = $"{DEFAULT_BASE_LOCAL_STORE}\\350-TestGenCsr-csr.json.der";
+        private static string _testGenCsr_CsrDerJsonAltFile = $"{DEFAULT_BASE_LOCAL_STORE}\\350-TestGenCsr-csr2.json.der";
 
         private static string _testCertRequ_AcmeCertRequFile = $"{DEFAULT_BASE_LOCAL_STORE}\\500-TestCertRequ.acmeCertRequ";
         private static string _testCertRequRefreshed_AcmeCertRequFile = $"{DEFAULT_BASE_LOCAL_STORE}\\501-TestCertRequ-Refreshed.acmeCertRequ";
@@ -1247,7 +1252,10 @@ namespace ACMESharp
         [TestCategory("acmeServerInteg")]
         public void Test0170_GenCsrAndRequestCertificate()
         {
-            using (var cp = CertificateProvider.GetProvider())
+            using (var cp = CertificateProvider.GetProvider(
+                    PKI.Providers.BouncyCastleProvider.PROVIDER_NAME))
+            //using (var cp2 = CertificateProvider.GetProvider(
+            //        PKI.Providers.OpenSslLibProvider.PROVIDER_NAME))
             {
 
                 var rsaKeyParams = new RsaPrivateKeyParams();
@@ -1263,7 +1271,8 @@ namespace ACMESharp
                 {
                     Details = new CsrDetails
                     {
-                        CommonName = TEST_CN1
+                        CommonName = TEST_CN1,
+                        //AlternativeNames = new[] { TEST_CN1 },
                     }
                 };
 
@@ -1293,13 +1302,61 @@ namespace ACMESharp
                         reg = AcmeRegistration.Load(fs);
                     }
 
-                    byte[] derRaw;
-                    using (var bs = new MemoryStream())
+                    byte[] pemRaw;
+                    using (var ms = new MemoryStream())
                     {
-                        cp.ExportCsr(csr, EncodingFormat.DER, bs);
-                        derRaw = bs.ToArray();
+                        cp.ExportCsr(csr, EncodingFormat.PEM, ms);
+                        pemRaw = ms.ToArray();
                     }
+                    File.WriteAllBytes(_testGenCsr_CsrPemFile, pemRaw);
+
+                    // Verify we can read what we wrote
+                    using (var ms = new MemoryStream(pemRaw))
+                    {
+                        var csrRead = cp.ImportCsr(EncodingFormat.PEM, ms);
+                        Assert.AreEqual(csr.Pem, csrRead.Pem);
+                    }
+
+                    //// Verify it's somewhat interoperable
+                    //using (var ms = new MemoryStream(pemRaw))
+                    //{
+                    //    var csrRead = cp2.ImportCsr(EncodingFormat.PEM, ms);
+                    //}
+
+                    byte[] derRaw;
+                    using (var ms = new MemoryStream())
+                    {
+                        cp.ExportCsr(csr, EncodingFormat.DER, ms);
+                        derRaw = ms.ToArray();
+                    }
+                    File.WriteAllBytes(_testGenCsr_CsrDerFile, derRaw);
+
+                    // NotImplemented for OpenSSL-CLI
+                    //// Verify we can read what we wrote
+                    //using (var ms = new MemoryStream(derRaw))
+                    //{
+                    //    var csrRead = cp.ImportCsr(EncodingFormat.DER, ms);
+                    //    Assert.AreEqual(csr.Pem, csrRead.Pem);
+                    //}
+
+                    // NotImplemented for OpenSSL-CLI
+                    //// Verify it's interoperable
+                    //byte[] derRaw2;
+                    //using (var ms = new MemoryStream(derRaw))
+                    //{
+                    //    var csrRead = cp2.ImportCsr(EncodingFormat.DER, ms);
+                    //    using (var ms2 = new MemoryStream())
+                    //    {
+                    //        cp2.ExportCsr(csrRead, EncodingFormat.DER, ms2);
+                    //        derRaw2 = ms2.ToArray();
+                    //        File.WriteAllBytes(_testGenCsr_CsrDerAltFile, derRaw2);
+                    //        File.WriteAllText(_testGenCsr_CsrDerJsonAltFile,
+                    //                JwsHelper.Base64UrlEncode(derRaw2));
+                    //    }
+                    //}
+
                     var derB64u = JwsHelper.Base64UrlEncode(derRaw);
+                    File.WriteAllText(_testGenCsr_CsrDerJsonFile, derB64u);
 
                     using (var client = BuildClient(testTagHeader: nameof(Test0170_GenCsrAndRequestCertificate)))
                     {

@@ -27,6 +27,8 @@ namespace ACMESharp.PKI.Providers
     /// </remarks>
     public class OpenSslCliProvider : CertificateProvider
     {
+        public const string PROVIDER_NAME = "OpenSSL-CLI";
+
         private static readonly Regex PKEY_BITS_REGEX =
                 new Regex("Public-Key: \\(([0-9]+) bit\\)");
         private static readonly Regex PKEY_PUBEXP_REGEX =

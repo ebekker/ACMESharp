@@ -6,6 +6,8 @@ namespace ACMESharp.PKI.Providers
 {
     public class OpenSslLibProvider : CertificateProvider
     {
+        public const string PROVIDER_NAME = "OpenSSL-LIB";
+
         private static Type _cpType;
         private readonly CertificateProvider _cp;
 

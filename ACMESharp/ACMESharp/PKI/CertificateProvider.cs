@@ -21,7 +21,10 @@ namespace ACMESharp.PKI
 
         private static readonly Dictionary<string, Type> _providers = new Dictionary<string, Type>
         {
-            { DEFAULT_PROVIDER_NAME, typeof(Providers.OpenSslLibProvider) },
+            [DEFAULT_PROVIDER_NAME] =
+                    typeof(Providers.OpenSslLibProvider),
+            [Providers.OpenSslLibProvider.PROVIDER_NAME] =
+                    typeof(Providers.OpenSslLibProvider),
         };
 
         protected CertificateProvider(IReadOnlyDictionary<string, string> newParams)

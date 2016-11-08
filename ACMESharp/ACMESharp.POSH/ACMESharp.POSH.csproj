@@ -120,7 +120,6 @@
     <Content Include="en-US\ACMESharp.POSH.dll-Help.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="README-TESTING.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACMESharp.PKI.Providers.OpenSslLib32\ACMESharp.PKI.Providers.OpenSslLib32.csproj">

@@ -1,13 +1,48 @@
 ﻿$ErrorActionPreference = 'Stop'
 
+<#
+.PARAMETER ModuleName
+Required, the name of the PowerShell module that is an ACMESharp Extension Module.
+
+.PARAMETER ModuleVersion
+An optional version spec, useful if multiple version of the target Extension Module
+are installed.
+
+The spec can be an exact version string or a `-like` pattern to be matched.
+
+.PARAMETER AcmeVersion
+An optional version spec, useful if multiple versions of the core ACMESharp module is installed,
+this will specify which module installation will be targeted for enabling the module.
+
+The spec can be an exact version string or a `-like` pattern to be matched.
+#>
 function Resolve-ProviderModule {
 	param(
 		[Parameter(Mandatory)]
-		[string]$ModuleName
+		[string]$ModuleName,
+		[Parameter(Mandatory=$false)]
+		[string]$ModuleVersion,
+
+		[Parameter(Mandatory=$false)]
+		[string]$AcmeVersion
 	)
 
-	$acmeMod = Get-Module ACMESharp
-	$provMod = Get-Module $ModuleName
+	$acmeMods = Get-Module -ListAvailable ACMESharp | sort -Descending Version
+	$provMods = Get-Module -ListAvailable $ModuleName | sort -Descending Version
+
+	if ($AcmeVersion) {
+		$acmeMod = $acmeMods | ? { $_.Version -like $AcmeVersion } | select -First
+	}
+	else {
+		$acmeMod = $acmeMods | select -First
+	}
+
+	if ($ModuleVersion) {
+		$provMod = $provMods | ? { $_.Version -like $ModuleVersion } | select -First
+	}
+	else {
+		$provMod = $provMods | select -First
+	}
 
 	if (-not $provMod -or -not $provMod.ModuleBase) {
 		Write-Error "Cannot resolve provider module's base [$ModuleName]"
@@ -33,10 +68,31 @@ function Resolve-ProviderModule {
 	}		
 }
 
+<#
+.PARAMETER ModuleName
+Required, the name of the PowerShell module that is an ACMESharp Extension Module.
+
+.PARAMETER ModuleVersion
+An optional version spec, useful if multiple version of the target Extension Module
+are installed.
+
+The spec can be an exact version string or a `-like` pattern to be matched.
+
+.PARAMETER AcmeVersion
+An optional version spec, useful if multiple versions of the core ACMESharp module is installed,
+this will specify which module installation will be targeted for enabling the module.
+
+The spec can be an exact version string or a `-like` pattern to be matched.
+#>
 function Enable-ProviderModule {
 	param(
 		[Parameter(Mandatory)]
-		[string]$ModuleName
+		[string]$ModuleName,
+		[Parameter(Mandatory=$false)]
+		[string]$ModuleVersion,
+
+		[Parameter(Mandatory=$false)]
+		[string]$AcmeVersion
 	)
 	
 	$deps = Resolve-ProviderModule -ModuleName $ModuleName
@@ -53,10 +109,31 @@ function Enable-ProviderModule {
 	@{ Path = $deps.provMod.ModuleBase } | ConvertTo-Json -Compress > $deps.extPath
 }
 
+<#
+.PARAMETER ModuleName
+Required, the name of the PowerShell module that is an ACMESharp Extension Module.
+
+.PARAMETER ModuleVersion
+An optional version spec, useful if multiple version of the target Extension Module
+are installed.
+
+The spec can be an exact version string or a `-like` pattern to be matched.
+
+.PARAMETER AcmeVersion
+An optional version spec, useful if multiple versions of the core ACMESharp module is installed,
+this will specify which module installation will be targeted for enabling the module.
+
+The spec can be an exact version string or a `-like` pattern to be matched.
+#>
 function Disable-ProviderModule {
 	param(
 		[Parameter(Mandatory)]
-		[string]$ModuleName
+		[string]$ModuleName,
+		[Parameter(Mandatory=$false)]
+		[string]$ModuleVersion,
+
+		[Parameter(Mandatory=$false)]
+		[string]$AcmeVersion
 	)
 	
 	$deps = Resolve-ProviderModule -ModuleName $ModuleName

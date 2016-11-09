@@ -81,7 +81,8 @@ namespace ACMESharp.POSH
                 if (ci == null)
                     throw new Exception("Unable to find a Certificate for the given reference");
 
-                using (var cp = PkiHelper.GetPkiTool(PkiTool))
+                using (var cp = PkiHelper.GetPkiTool(
+                            StringHelper.IfNullOrEmpty(PkiTool, v.PkiTool)))
                 {
 
                     if (!string.IsNullOrEmpty(ci.GenerateDetailsFile))

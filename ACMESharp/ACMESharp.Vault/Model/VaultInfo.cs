@@ -23,6 +23,12 @@ namespace ACMESharp.Vault.Model
         public string BaseUri
         { get; set; }
 
+        public string Signer
+        { get; set; }
+
+        public string PkiTool
+        { get; set; }
+
         public bool GetInitialDirectory
         { get; set; } = true;
 

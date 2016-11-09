@@ -28,6 +28,22 @@ namespace ACMESharp.POSH
         public string Signer
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Specifies a PKI tool provider (i.e. CertificateProvider) to be used by
+        ///     default in all subsequent operations against this vault.  In most cases
+        ///     this can be overridden on a call-by-call basis but typically, all
+        ///     PKI-related operations should be performed by a single PKI Tool provider
+        ///     because of the internal workings of the provider and interdependencies
+        ///     of the operations.  Such operations include private key generation,
+        ///     CSR generation and certificate importing and exporting.
+        ///     If left unspecified a default PKI tool provider will be used.
+        /// </para>
+        /// </summary>
+        [Parameter]
+        public string PkiTool
+        { get; set; }
+
         [Parameter]
         public bool Force
         { get; set; }
@@ -68,6 +84,8 @@ namespace ACMESharp.POSH
                 v.Memo = StringHelper.IfNullOrEmpty(Memo, v.Memo);
                 v.BaseService = StringHelper.IfNullOrEmpty(BaseService, v.BaseService);
                 v.BaseUri = StringHelper.IfNullOrEmpty(baseUri, v.BaseUri);
+                v.Signer = StringHelper.IfNullOrEmpty(Signer, v.Signer);
+                v.PkiTool = StringHelper.IfNullOrEmpty(PkiTool, v.PkiTool);
 
                 vlt.SaveVault(v);
             }

@@ -177,7 +177,8 @@ namespace ACMESharp.POSH
                         if (crtPemAsset == null)
                             crtPemAsset = vlt.CreateAsset(VaultAssetType.CrtPem, crtPemFile);
 
-                        using (var cp = PkiHelper.GetPkiTool(PkiTool))
+                        using (var cp = PkiHelper.GetPkiTool(
+                            StringHelper.IfNullOrEmpty(PkiTool, v.PkiTool)))
                         {
                             var bytes = ci.CertificateRequest.GetCertificateContent();
 
@@ -260,7 +261,8 @@ namespace ACMESharp.POSH
                                             if (issuerPemAsset == null)
                                                 issuerPemAsset = vlt.CreateAsset(VaultAssetType.IssuerPem, cacertPemFile);
 
-                                            using (var cp = PkiHelper.GetPkiTool(PkiTool))
+                                            using (var cp = PkiHelper.GetPkiTool(
+                                                StringHelper.IfNullOrEmpty(PkiTool, v.PkiTool)))
                                             {
 
                                                 using (Stream source = vlt.LoadAsset(issuerDerAsset),

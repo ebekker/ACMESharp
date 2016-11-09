@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using ACMESharp.PKI;
+using ACMESharp.Util;
 
 namespace ACMESharp.POSH
 {
@@ -256,7 +257,7 @@ namespace ACMESharp.POSH
                         var isuPemAsset = vlt.GetAsset(VaultAssetType.IssuerPem,
                                 v.IssuerCertificates[ci.IssuerSerialNumber].CrtPemFile);
 
-                        using (var cp = Util.PkiHelper.GetPkiTool(PkiTool))
+                        using (var cp = Util.PkiHelper.GetPkiTool(StringHelper.IfNullOrEmpty(PkiTool, v.PkiTool)))
                         {
 
                             using (Stream keyStream = vlt.LoadAsset(keyPemAsset),

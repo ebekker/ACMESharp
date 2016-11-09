@@ -63,12 +63,15 @@
     <Compile Include="GetChallengeHandlerProfile.cs" />
     <Compile Include="GetIdentifier.cs" />
     <Compile Include="CompleteChallenge.cs" />
+    <Compile Include="GetInstallerProfile.cs" />
     <Compile Include="GetIssuerCertificate.cs" />
     <Compile Include="GetVault.cs" />
     <Compile Include="GetVaultProfile.cs" />
+    <Compile Include="InstallCertificate.cs" />
     <Compile Include="NewCertificate.cs" />
     <Compile Include="NewIdentifier.cs" />
     <Compile Include="SetChallengeHandlerProfile.cs" />
+    <Compile Include="SetInstallerProfile.cs" />
     <Compile Include="SetProxy.cs" />
     <Compile Include="SetServerDirectory.cs" />
     <Compile Include="SetVault.cs" />

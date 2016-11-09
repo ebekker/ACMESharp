@@ -13,28 +13,28 @@ namespace ACMESharp.POSH
     [Cmdlet(VerbsCommon.Get, "ChallengeHandlerProfile", DefaultParameterSetName = PSET_GET_HANDLER_PROFILE)]
     public class GetChallengeHandlerProfile : Cmdlet
     {
-        public const string PSET_GET_CHALLENGE_TYPES = "GetChallengeTypes";
-        public const string PSET_GET_CHALLENGE_HANDLERS = "GetChallengeHandlers";
+        public const string PSET_GET_CHALLENGE_TYPE = "GetChallengeType";
+        public const string PSET_GET_CHALLENGE_HANDLER = "GetChallengeHandler";
         public const string PSET_LIST_HANDLER_PROFILES = "ListHandlerProfiles";
         public const string PSET_GET_HANDLER_PROFILE = "GetHandlerProfile";
 
-        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_TYPES)]
+        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_TYPE)]
         public SwitchParameter ListChallengeTypes
         { get; set; }
 
-        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_TYPES)]
+        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_TYPE)]
         public string GetChallengeType
         { get; set; }
 
-        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_HANDLERS)]
+        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_HANDLER)]
         public SwitchParameter ListChallengeHandlers
         { get; set; }
 
-        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_HANDLERS)]
+        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_HANDLER)]
         public string GetChallengeHandler
         { get; set; }
 
-        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_HANDLERS)]
+        [Parameter(ParameterSetName = PSET_GET_CHALLENGE_HANDLER)]
         public SwitchParameter ParametersOnly
         { get; set; }
 

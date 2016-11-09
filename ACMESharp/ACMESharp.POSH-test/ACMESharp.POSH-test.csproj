@@ -47,6 +47,7 @@
     <Content Include="README-PESTER.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Pester\Vault.Tests.ps1" />
   </ItemGroup>
   <ItemGroup>

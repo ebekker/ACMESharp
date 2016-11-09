@@ -61,9 +61,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\packages\ManagedOpenSsl64.0.6.1.1\content\x64\libeay32.dll">
       <Link>x64\libeay32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

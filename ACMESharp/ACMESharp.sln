@@ -62,6 +62,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psorg", "psorg", "{4F61BC69
 		..\ci\psorg\PS4-Step2.ps1 = ..\ci\psorg\PS4-Step2.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget-staging", "nuget-staging", "{34013351-8A64-4272-AFF0-2ADE706E5019}"
+	ProjectSection(SolutionItems) = preProject
+		..\ci\nuget-staging\AWSPowerShell\AWSPowerShell.psd1 = ..\ci\nuget-staging\AWSPowerShell\AWSPowerShell.psd1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,5 +144,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A6084888-8C82-4999-880F-2721BF1AA639} = {551C2059-1DE9-484C-8329-7894DDF57771}
 		{4F61BC69-0B98-45E1-87C1-D2BCF0352E06} = {A6084888-8C82-4999-880F-2721BF1AA639}
+		{34013351-8A64-4272-AFF0-2ADE706E5019} = {A6084888-8C82-4999-880F-2721BF1AA639}
 	EndGlobalSection
 EndGlobal

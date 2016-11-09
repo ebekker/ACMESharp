@@ -31,17 +31,17 @@ function Resolve-ProviderModule {
 	$provMods = Get-Module -ListAvailable $ModuleName | sort -Descending Version
 
 	if ($AcmeVersion) {
-		$acmeMod = $acmeMods | ? { $_.Version -like $AcmeVersion } | select -First
+		$acmeMod = $acmeMods | ? { $_.Version -like $AcmeVersion } | select -First 1
 	}
 	else {
-		$acmeMod = $acmeMods | select -First
+		$acmeMod = $acmeMods | select -First 1
 	}
 
 	if ($ModuleVersion) {
-		$provMod = $provMods | ? { $_.Version -like $ModuleVersion } | select -First
+		$provMod = $provMods | ? { $_.Version -like $ModuleVersion } | select -First 1
 	}
 	else {
-		$provMod = $provMods | select -First
+		$provMod = $provMods | select -First 1
 	}
 
 	if (-not $provMod -or -not $provMod.ModuleBase) {

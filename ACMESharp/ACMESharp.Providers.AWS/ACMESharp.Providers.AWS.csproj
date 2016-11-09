@@ -65,6 +65,10 @@
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
     <Compile Include="AwsCommonParams.cs" />
+    <Compile Include="AwsElbInstaller.cs" />
+    <Compile Include="AwsIamCertificateInstallerProvider.cs" />
+    <Compile Include="AwsElbInstallerProvider.cs" />
+    <Compile Include="AwsIamCertificateInstaller.cs" />
     <Compile Include="AwsRoute53ChallengeHandler.cs" />
     <Compile Include="AwsRoute53ChallengeHandlerProvider.cs" />
     <Compile Include="AwsS3ChallengeHandler.cs" />

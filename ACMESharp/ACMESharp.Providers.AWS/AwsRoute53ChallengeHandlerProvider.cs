@@ -17,7 +17,7 @@ namespace ACMESharp.Providers.AWS
         public static readonly ParameterDetail HOSTED_ZONE_ID = new ParameterDetail(
                 nameof(AwsRoute53ChallengeHandler.HostedZoneId),
                 ParameterType.TEXT, isRequired: true, label: "Hosted Zone ID",
-                desc:"The ID of Route 53 Zone to operate against");
+                desc: "The ID of Route 53 Zone to operate against");
 
         public static readonly ParameterDetail RR_TYPE = new ParameterDetail(
                 nameof(AwsRoute53ChallengeHandler.ResourceRecordType),

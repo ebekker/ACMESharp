@@ -103,6 +103,11 @@
     <Compile Include="Ext\ParameterDetail.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />
+    <Compile Include="Installer\IInstaller.cs" />
+    <Compile Include="Installer\IInstallerProvider.cs" />
+    <Compile Include="Installer\IInstallerProviderInfo.cs" />
+    <Compile Include="Installer\InstallerExtManager.cs" />
+    <Compile Include="Installer\InstallerProviderAttribute.cs" />
     <Compile Include="JOSE\ISigner.cs" />
     <Compile Include="JOSE\JwsHeaders.cs" />
     <Compile Include="JOSE\JwsHelper.cs" />

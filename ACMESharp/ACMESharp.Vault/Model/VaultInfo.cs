@@ -44,6 +44,9 @@ namespace ACMESharp.Vault.Model
         public EntityDictionary<ProviderProfileInfo> ProviderProfiles
         { get; set; }
 
+        public EntityDictionary<InstallerProfileInfo> InstallerProfiles
+        { get; set; }
+
         public EntityDictionary<RegistrationInfo> Registrations
         { get; set; }
 

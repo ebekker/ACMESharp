@@ -56,5 +56,11 @@ namespace ACMESharp.Vault
 
         IssuerDer,
         IssuerPem,
+
+        /// <summary>
+        /// An InstallerProfileInfofile to instantiate and
+        /// configure a Provider for installing a certificate.
+        /// </summary>
+        InstallerConfigInfo,
     }
 }

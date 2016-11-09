@@ -28,9 +28,9 @@ namespace ACMESharp.PKI
             Tuple.Create(Providers.OpenSslLibProvider.PROVIDER_NAME,
                     typeof(Providers.OpenSslLibProvider).FullName),
             Tuple.Create("BouncyCastle",
-                    "ACMESharp.PKI.Providers.BouncyCastleProvider"),
+                    "ACMESharp.PKI.Providers.BouncyCastleProvider, ACMESharp.PKI.Providers.BouncyCastle"),
             Tuple.Create("OpenSSL-CLI",
-                    "ACMESharp.PKI.Providers.OpenSslCliProvider"),
+                    "ACMESharp.PKI.Providers.OpenSslCliProvider, ACMESharp.PKI.Providers.OpenSslCli"),
         };
 
         // Flag indicates if registration of *supplemental* providers was attempted

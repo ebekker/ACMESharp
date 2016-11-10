@@ -98,6 +98,8 @@
     <Compile Include="DNS\IDnsProvider.cs" />
     <Compile Include="DNS\ManualDnsProvider.cs" />
     <Compile Include="Ext\ExtCommon.cs" />
+    <Compile Include="Ext\ExtRegistry.cs" />
+    <Compile Include="Ext\IAliasesSupported.cs" />
     <Compile Include="Ext\IExtDetail.cs" />
     <Compile Include="Ext\ExtManagerAttribute.cs" />
     <Compile Include="Ext\NamedInfo.cs" />

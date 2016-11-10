@@ -14,7 +14,6 @@ namespace ACMESharp.Installer
     public static class InstallerExtManager
     {
         private static Config _config;
-        private static Dictionary<string, string> _aliases;
 
         public static IEnumerable<NamedInfo<IInstallerProviderInfo>> GetProviderInfos()
         {
@@ -26,25 +25,21 @@ namespace ACMESharp.Installer
 
         public static IInstallerProviderInfo GetProviderInfo(string name)
         {
-            var pi = _config[name];
-            if (pi == null && _aliases.ContainsKey(name))
-                pi = _config[_aliases[name]];
-            return pi?.Metadata;
+            AssertInit();
+            return _config.Get(name)?.Metadata;
         }
 
         public static IEnumerable<string> GetAliases()
         {
-            return _aliases.Keys;
+            AssertInit();
+            return _config.Aliases.Keys;
         }
 
         public static IInstallerProvider GetProvider(string name,
             IReadOnlyDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
-            var p = _config[name]?.Value;
-            if (p == null && _aliases.ContainsKey(name))
-                p = _config[_aliases[name]]?.Value;
-            return p;
+            return _config.Get(name)?.Value;
         }
 
         static void AssertInit()
@@ -66,57 +61,12 @@ namespace ACMESharp.Installer
         static void InitConfig()
         {
             _config = ExtCommon.InitExtConfig<Config>();
-            _aliases = new Dictionary<string, string>();
-            foreach (var pi in _config)
-            {
-                var name = pi.Key;
-                var aliases = pi.Value.Metadata.Aliases;
-                if (aliases != null)
-                    foreach (var al in aliases)
-                        _aliases[al] = name;
-            }
         }
 
-        class Config : Dictionary<string, Lazy<IInstallerProvider,
-                IInstallerProviderInfo>>, IExtDetail
+        class Config : ExtRegistry<IInstallerProvider, IInstallerProviderInfo>
         {
-            private IEnumerable<Lazy<IInstallerProvider,
-                    IInstallerProviderInfo>> _Providers;
-
-            public Config()
-                : base(StringComparer.InvariantCultureIgnoreCase)
+            public Config() : base(_ => _.Name)
             { }
-
-            public CompositionContainer CompositionContainer
-            { get; set; }
-
-            [ImportMany]
-            public IEnumerable<Lazy<IInstallerProvider,
-                    IInstallerProviderInfo>> Providers
-            {
-                get
-                {
-                    return _Providers;
-                }
-
-                set
-                {
-                    _Providers = value;
-                    Clear();
-                    foreach (var x in Providers)
-                    {
-                        var m = x.Metadata;
-
-                        // We can register the provider to the suggested name...
-
-                        // ...if the name is not missing...
-                        if (!string.IsNullOrEmpty(m?.Name))
-                            // ...and the name is not already taken
-                            if (!this.ContainsKey(m.Name))
-                                this[m.Name] = x;
-                    }
-                }
-            }
         }
     }
 }

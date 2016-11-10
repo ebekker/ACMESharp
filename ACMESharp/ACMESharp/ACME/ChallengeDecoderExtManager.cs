@@ -61,16 +61,17 @@ namespace ACMESharp.ACME
                         pi.Key, pi.Value.Metadata);
         }
 
-        public static IChallengeDecoderProviderInfo GetProviderInfo(string name)
+        public static IChallengeDecoderProviderInfo GetProviderInfo(string type)
         {
-            return _config[name]?.Metadata;
+            AssertInit();
+            return _config.Get(type)?.Metadata;
         }
 
         public static IChallengeDecoderProvider GetProvider(string type,
             IReadOnlyDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
-            return _config[type]?.Value;
+            return _config.Get(type)?.Value;
         }
 
         static void AssertInit()
@@ -94,46 +95,10 @@ namespace ACMESharp.ACME
             _config = ExtCommon.InitExtConfig<Config>();
         }
 
-        class Config : Dictionary<string, Lazy<IChallengeDecoderProvider,
-                IChallengeDecoderProviderInfo>>, IExtDetail
+        class Config : ExtRegistry<IChallengeDecoderProvider, IChallengeDecoderProviderInfo>
         {
-            private IEnumerable<Lazy<IChallengeDecoderProvider,
-                    IChallengeDecoderProviderInfo>> _Providers;
-
-            public Config()
-                : base(StringComparer.InvariantCultureIgnoreCase)
+            public Config() : base(_ => _.Type)
             { }
-
-            public CompositionContainer CompositionContainer
-            { get; set; }
-
-            [ImportMany]
-            public IEnumerable<Lazy<IChallengeDecoderProvider,
-                    IChallengeDecoderProviderInfo>> Providers
-            {
-                get
-                {
-                    return _Providers;
-                }
-
-                set
-                {
-                    _Providers = value;
-                    Clear();
-                    foreach (var x in Providers)
-                    {
-                        var m = x.Metadata;
-
-                        // We can register the provider to the suggested name...
-
-                        // ...if the type is not missing...
-                        if (!string.IsNullOrEmpty(m?.Type))
-                            // ...and the name is not already taken
-                            if (!this.ContainsKey(m.Type))
-                                this[m.Type] = x;
-                    }
-                }
-            }
         }
     }
 }

@@ -57,8 +57,8 @@ function Resolve-ProviderModule {
 		return
 	}
 
-	$extRoot = "$($acmeMod.ModuleBase)\Ext"
-	$extPath = "$($extRoot)\$($ModuleName).extlnk"
+	$extRoot = "$($acmeMod.ModuleBase)\EXT"
+	$extPath = "$($extRoot)\$($provMod.Name).extlnk"
 
 	[ordered]@{
 		acmeMod = $acmeMod
@@ -106,7 +106,10 @@ function Enable-ProviderModule {
 	}
 	mkdir -Force $deps.extRoot
 	Write-Output "Installing Provider Extension Module to [$($deps.extPath)]"
-	@{ Path = $deps.provMod.ModuleBase } | ConvertTo-Json -Compress > $deps.extPath
+	@{
+		Path = $deps.provMod.ModuleBase
+		Version = $deps.provMod.Version.ToString()
+	} | ConvertTo-Json > $deps.extPath
 }
 
 <#

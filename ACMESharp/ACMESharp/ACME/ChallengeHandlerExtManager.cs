@@ -99,6 +99,10 @@ namespace ACMESharp.ACME
             private IEnumerable<Lazy<IChallengeHandlerProvider,
                     IChallengeHandlerProviderInfo>> _Providers;
 
+            public Config()
+                : base(StringComparer.InvariantCultureIgnoreCase)
+            { }
+
             public CompositionContainer CompositionContainer
             { get; set; }
 

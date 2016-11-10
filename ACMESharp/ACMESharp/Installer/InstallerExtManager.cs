@@ -67,6 +67,10 @@ namespace ACMESharp.Installer
             private IEnumerable<Lazy<IInstallerProvider,
                     IInstallerProviderInfo>> _Providers;
 
+            public Config()
+                : base(StringComparer.InvariantCultureIgnoreCase)
+            { }
+
             public CompositionContainer CompositionContainer
             { get; set; }
 

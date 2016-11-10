@@ -48,6 +48,7 @@ namespace ACMESharp.ACME
         { get; set; }
     }
 
+    [ExtManager]
     public static class ChallengeDecoderExtManager
     {
         private static Config _config;

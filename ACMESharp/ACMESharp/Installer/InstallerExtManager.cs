@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace ACMESharp.Installer
 {
+    [ExtManager]
     public static class InstallerExtManager
     {
         private static Config _config;

@@ -8,7 +8,8 @@ using ACMESharp.Ext;
 
 namespace ACMESharp.Providers.AWS
 {
-    [InstallerProvider("awsElb",
+    [InstallerProvider("aws-elb",
+        Aliases = new[] { "awsElb" },
         Label = "AWS Elastic Load Balancer",
         Description = "Provider for handling certificate"
                 + " installation to AWS Elastic Load Balancer.")]

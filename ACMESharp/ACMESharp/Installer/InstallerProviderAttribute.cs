@@ -20,6 +20,9 @@ namespace ACMESharp.Installer
         public string Name
         { get; private set; }
 
+        public string[] Aliases
+        { get; set; }
+
         public string Label
         { get; set; }
 

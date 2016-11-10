@@ -17,6 +17,9 @@ namespace ACMESharp.ACME
         ChallengeTypeKind SupportedTypes
         { get; }
 
+        string[] Aliases
+        { get; }
+
         string Label
         { get; }
 
@@ -41,6 +44,9 @@ namespace ACMESharp.ACME
         public ChallengeTypeKind SupportedTypes
         { get; private set; }
 
+        public string[] Aliases
+        { get; set; }
+
         public string Label
         { get; set; }
 
@@ -52,6 +58,7 @@ namespace ACMESharp.ACME
     public static class ChallengeHandlerExtManager
     {
         private static Config _config;
+        private static Dictionary<string, string> _aliases;
 
         public static IEnumerable<NamedInfo<IChallengeHandlerProviderInfo>> GetProviderInfos()
         {
@@ -64,13 +71,24 @@ namespace ACMESharp.ACME
         public static IChallengeHandlerProviderInfo GetProviderInfo(string name)
         {
             var pi = _config[name];
+            if (pi == null && _aliases.ContainsKey(name))
+                pi = _config[_aliases[name]];
+            return pi?.Metadata;
+        }
+
+        public static IEnumerable<string> GetAliases()
+        {
+            return _aliases.Keys;
         }
 
         public static IChallengeHandlerProvider GetProvider(string name,
             IReadOnlyDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
-            return _config[name]?.Value;
+            var p = _config[name]?.Value;
+            if (p == null && _aliases.ContainsKey(name))
+                p = _config[_aliases[name]]?.Value;
+            return p;
         }
 
         static void AssertInit()
@@ -92,6 +110,15 @@ namespace ACMESharp.ACME
         static void InitConfig()
         {
             _config = ExtCommon.InitExtConfig<Config>();
+            _aliases = new Dictionary<string, string>();
+            foreach (var pi in _config)
+            {
+                var name = pi.Key;
+                var aliases = pi.Value.Metadata.Aliases;
+                if (aliases != null)
+                    foreach (var al in aliases)
+                        _aliases[al] = name;
+            }
         }
 
         class Config : Dictionary<string, Lazy<IChallengeHandlerProvider,

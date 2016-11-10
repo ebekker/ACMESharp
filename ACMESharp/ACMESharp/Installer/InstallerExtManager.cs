@@ -14,6 +14,7 @@ namespace ACMESharp.Installer
     public static class InstallerExtManager
     {
         private static Config _config;
+        private static Dictionary<string, string> _aliases;
 
         public static IEnumerable<NamedInfo<IInstallerProviderInfo>> GetProviderInfos()
         {
@@ -26,6 +27,8 @@ namespace ACMESharp.Installer
         public static IInstallerProviderInfo GetProviderInfo(string name)
         {
             var pi = _config[name];
+            if (pi == null && _aliases.ContainsKey(name))
+                pi = _config[_aliases[name]];
             return pi?.Metadata;
         }
 
@@ -38,7 +41,10 @@ namespace ACMESharp.Installer
             IReadOnlyDictionary<string, object> reservedLeaveNull = null)
         {
             AssertInit();
-            return _config[name]?.Value;
+            var p = _config[name]?.Value;
+            if (p == null && _aliases.ContainsKey(name))
+                p = _config[_aliases[name]]?.Value;
+            return p;
         }
 
         static void AssertInit()
@@ -60,6 +66,15 @@ namespace ACMESharp.Installer
         static void InitConfig()
         {
             _config = ExtCommon.InitExtConfig<Config>();
+            _aliases = new Dictionary<string, string>();
+            foreach (var pi in _config)
+            {
+                var name = pi.Key;
+                var aliases = pi.Value.Metadata.Aliases;
+                if (aliases != null)
+                    foreach (var al in aliases)
+                        _aliases[al] = name;
+            }
         }
 
         class Config : Dictionary<string, Lazy<IInstallerProvider,

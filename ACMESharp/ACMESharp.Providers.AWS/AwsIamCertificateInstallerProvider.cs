@@ -8,7 +8,8 @@ using ACMESharp.Ext;
 
 namespace ACMESharp.Providers.AWS
 {
-    [InstallerProvider("awsIam",
+    [InstallerProvider("aws-iam",
+        Aliases = new[] { "awsIam" },
         Label = "AWS IAM Server Certificate",
         Description = "Provider for uploading a certificate"
                 + " to IAM as a Server Certificate.")]

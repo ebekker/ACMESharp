@@ -11,6 +11,9 @@ namespace ACMESharp.Installer
         string Name
         { get; }
 
+        string[] Aliases
+        { get; }
+
         string Label
         { get; }
 

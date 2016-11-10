@@ -8,7 +8,8 @@ using ACMESharp.Ext;
 
 namespace ACMESharp.Providers.AWS
 {
-    [ChallengeHandlerProvider("awsRoute53", ChallengeTypeKind.DNS,
+    [ChallengeHandlerProvider("aws-route53", ChallengeTypeKind.DNS,
+        Aliases = new[] { "awsRoute53", "route53", "awsR53" },
         Label = "AWS Route 53",
         Description = "Provider for handling Challenges that manages" +
                       " DNS entries hosted in an AWS Route 53 zone.")]

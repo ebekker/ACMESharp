@@ -27,8 +27,10 @@ function Resolve-ProviderModule {
 		[string]$AcmeVersion
 	)
 
-	$acmeMods = Get-Module -ListAvailable ACMESharp | sort -Descending Version
-	$provMods = Get-Module -ListAvailable $ModuleName | sort -Descending Version
+	## Get any modules that are resident in the current session and
+	## any module versions that are available on the current system
+	$acmeMods = @(Get-Module ACMESharp) + @(Get-Module -ListAvailable ACMESharp | sort -Descending Version)
+	$provMods = @(Get-Module $ModuleName) + (Get-Module -ListAvailable $ModuleName | sort -Descending Version)
 
 	if ($AcmeVersion) {
 		$acmeMod = $acmeMods | ? { $_.Version -like $AcmeVersion } | select -First 1

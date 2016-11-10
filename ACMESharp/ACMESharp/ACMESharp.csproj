@@ -99,6 +99,7 @@
     <Compile Include="DNS\ManualDnsProvider.cs" />
     <Compile Include="Ext\ExtCommon.cs" />
     <Compile Include="Ext\IExtDetail.cs" />
+    <Compile Include="Ext\ExtManagerAttribute.cs" />
     <Compile Include="Ext\NamedInfo.cs" />
     <Compile Include="Ext\ParameterDetail.cs" />
     <Compile Include="HTTP\Link.cs" />

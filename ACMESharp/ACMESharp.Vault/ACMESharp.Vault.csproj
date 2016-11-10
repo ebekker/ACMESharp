@@ -48,6 +48,8 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
+    <Compile Include="IVaultProvider.cs" />
+    <Compile Include="IVaultProviderInfo.cs" />
     <Compile Include="Model\CertificateInfo.cs" />
     <Compile Include="Model\IdentifierInfo.cs" />
     <Compile Include="Model\IssuerCertificateInfo.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="Model\VaultInfo.cs" />
     <Compile Include="VaultExtManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VaultProviderAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ACMESharp\ACMESharp.csproj">

@@ -10,7 +10,7 @@ namespace ACMESharp.Vault
         [TestMethod]
         public void TestProviderNamesCount()
         {
-            var all = VaultExtManager.GetProviders();
+            var all = VaultExtManager.GetProviderInfos();
 
             // Make sure at least the local disk and the default
             Assert.IsTrue(all.Count() > 0);

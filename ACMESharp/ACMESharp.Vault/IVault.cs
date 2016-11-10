@@ -9,13 +9,6 @@ using ACMESharp.Vault.Model;
 
 namespace ACMESharp.Vault
 {
-    public interface IVaultProvider // : IDisposable
-    {
-        IEnumerable<ParameterDetail> DescribeParameters();
-
-        IVault GetVault(IReadOnlyDictionary<string, object> initParams);
-    }
-
     public interface IVault : IDisposable
     {
         #region -- Properties --

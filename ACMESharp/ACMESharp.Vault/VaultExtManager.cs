@@ -12,41 +12,10 @@ using ACMESharp.Vault.Providers;
 
 namespace ACMESharp.Vault
 {
-    public interface IVaultProviderInfo
-    {
-        string Name
-        { get; }
-
-        string Label
-        { get; }
-
-        string Description
-        { get; }
-    }
-
-    [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class VaultProviderAttribute : ExportAttribute
-    {
-        public VaultProviderAttribute(string name)
-            : base(typeof (IVaultProvider))
-        {
-            Name = name;
-        }
-
-        public string Name 
-        { get; private set; }
-
-        public string Label
-        { get; set; }
-
-        public string Description
-        { get; set; }
-    }
-
     /// <summary>
     /// Extension Manager for the Vault subsystem.
     /// </summary>
+    [ExtManager]
     public static class VaultExtManager
     {
         public static readonly Type DEFAULT_PROVIDER_TYPE =
@@ -64,20 +33,36 @@ namespace ACMESharp.Vault
             }
         }
 
-        public static IEnumerable<NamedInfo<IVaultProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IVaultProviderInfo>> GetProviderInfos()
         {
             AssertInit();
             foreach (var pi in _config)
-                yield return new NamedInfo<IVaultProviderInfo>(pi.Key, pi.Value.Metadata);
+                yield return new NamedInfo<IVaultProviderInfo>(
+                        pi.Key, pi.Value.Metadata);
         } 
+
+        public static IVaultProviderInfo GetProviderInfo(string name)
+        {
+            AssertInit();
+            return _config.Get(name)?.Metadata;
+        }
+
+        public static IEnumerable<string> GetAliases()
+        {
+            AssertInit();
+            return _config.Aliases.Keys;
+        }
 
         /// <remarks>
         /// An optional name may be given to distinguish between different
-        /// available provider implementations.  Additionally, an optional
+        /// available provider implementations.
+        /// <!--
+        /// Additionally, an optional
         /// set of named initialization parameters may be provided to
         /// further configure or qualify the Provider instance that is
         /// returned and ultimately the Components that the Provider
         /// produces.
+        /// -->
         /// </remarks>
         public static IVaultProvider GetProvider(string name = null,
             IReadOnlyDictionary<string, object> reservedLeaveNull = null)
@@ -85,7 +70,7 @@ namespace ACMESharp.Vault
             AssertInit();
             if (name == null)
                 name = _defaultProviderName;
-            return _config[name]?.Value;
+            return _config.Get(name)?.Value;
         }
 
         static void AssertInit()
@@ -109,48 +94,17 @@ namespace ACMESharp.Vault
             _config = ExtCommon.InitExtConfig<Config>();
         }
 
-        class Config : Dictionary<string, Lazy<IVaultProvider, IVaultProviderInfo>>,
-                IExtDetail
+        class Config : ExtRegistry<IVaultProvider, IVaultProviderInfo>
         {
-            // NOTE:  Even though we declare this for lazy evaluation, in reality
-            // this will get evaluated and instantiated almost as soon as it's
-            // configured because we'll need to inspect the value in order to
-            // setup some additional details; therefore the Lazy<> type is
-            // really just being used as a tuple container like KVPair
-            private IEnumerable<Lazy<IVaultProvider, IVaultProviderInfo>> _Providers;
+            public Config() : base(_ => _.Name)
+            { }
 
-            public CompositionContainer CompositionContainer
-            { get; set; }
-
-            [ImportMany]
-            public IEnumerable<Lazy<IVaultProvider, IVaultProviderInfo>> Providers
+            protected override void PostRegisterProvider(
+                    IVaultProviderInfo providerInfo, IVaultProvider provider, bool registered)
             {
-                get
-                {
-                    return _Providers;
-                }
-
-                set
-                {
-                    _Providers = value;
-                    Clear();
-                    foreach (var x in Providers)
-                    {
-                        var m = x.Metadata;
-
-                        // We can register the provider to the suggested name...
-
-                        // ...if the name is not missing...
-                        if (!string.IsNullOrEmpty(m?.Name))
-                            // ...and the name is not already taken
-                            if (!this.ContainsKey(m.Name))
-                                this[m.Name] = x;
-
-                        // Special case for the default provider
-                        if (_defaultProviderName == null && DEFAULT_PROVIDER_TYPE == x.Value.GetType())
-                            _defaultProviderName = m.Name;
-                    }
-                }
+                // Special case for the default provider
+                if (_defaultProviderName == null && DEFAULT_PROVIDER_TYPE == provider.GetType())
+                    _defaultProviderName = providerInfo.Name;
             }
         }
     }

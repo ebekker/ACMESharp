@@ -54,7 +54,7 @@ namespace ACMESharp.Ext
 
                 // If the PI supports aliases, create a place to store them
                 _Aliases = typeof(IAliasesSupported).IsAssignableFrom(typeof(PI))
-                        ? new Dictionary<string, string>()
+                        ? new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
                         : null;
 
                 foreach (var x in _Providers)

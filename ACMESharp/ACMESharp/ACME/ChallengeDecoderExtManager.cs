@@ -52,12 +52,17 @@ namespace ACMESharp.ACME
     {
         private static Config _config;
 
-        public static IEnumerable<NamedInfo<IChallengeDecoderProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IChallengeDecoderProviderInfo>> GetProviderInfos()
         {
             AssertInit();
             foreach (var pi in _config)
                 yield return new NamedInfo<IChallengeDecoderProviderInfo>(
                         pi.Key, pi.Value.Metadata);
+        }
+
+        public static IChallengeDecoderProviderInfo GetProviderInfo(string name)
+        {
+            return _config[name]?.Metadata;
         }
 
         public static IChallengeDecoderProvider GetProvider(string type,

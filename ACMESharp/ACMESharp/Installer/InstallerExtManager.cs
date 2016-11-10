@@ -14,12 +14,23 @@ namespace ACMESharp.Installer
     {
         private static Config _config;
 
-        public static IEnumerable<NamedInfo<IInstallerProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IInstallerProviderInfo>> GetProviderInfos()
         {
             AssertInit();
             foreach (var pi in _config)
                 yield return new NamedInfo<IInstallerProviderInfo>(
                         pi.Key, pi.Value.Metadata);
+        }
+
+        public static IInstallerProviderInfo GetProviderInfo(string name)
+        {
+            var pi = _config[name];
+            return pi?.Metadata;
+        }
+
+        public static IEnumerable<string> GetAliases()
+        {
+            return _aliases.Keys;
         }
 
         public static IInstallerProvider GetProvider(string name,

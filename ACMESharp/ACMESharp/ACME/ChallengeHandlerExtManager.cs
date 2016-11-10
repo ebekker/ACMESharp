@@ -52,12 +52,17 @@ namespace ACMESharp.ACME
     {
         private static Config _config;
 
-        public static IEnumerable<NamedInfo<IChallengeHandlerProviderInfo>> GetProviders()
+        public static IEnumerable<NamedInfo<IChallengeHandlerProviderInfo>> GetProviderInfos()
         {
             AssertInit();
             foreach (var pi in _config)
                 yield return new NamedInfo<IChallengeHandlerProviderInfo>(
                         pi.Key, pi.Value.Metadata);
+        }
+
+        public static IChallengeHandlerProviderInfo GetProviderInfo(string name)
+        {
+            var pi = _config[name];
         }
 
         public static IChallengeHandlerProvider GetProvider(string name,

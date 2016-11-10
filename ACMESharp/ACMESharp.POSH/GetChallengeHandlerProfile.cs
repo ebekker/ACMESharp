@@ -60,27 +60,24 @@ namespace ACMESharp.POSH
             if (!string.IsNullOrEmpty(GetChallengeType))
             {
                 WriteVerbose("Getting details of Challenge Type Decoder");
-                var tInfo = ChallengeDecoderExtManager.GetProviders()
-                        .FirstOrDefault(_ => _.Name == GetChallengeType);
+                var tInfo = ChallengeDecoderExtManager.GetProviderInfo(GetChallengeType);
                 var t = ChallengeDecoderExtManager.GetProvider(GetChallengeType);
                 WriteObject(new {
-                        tInfo.Name,
-                        tInfo.Info.Label,
-                        tInfo.Info.SupportedType,
-                        ChallengeType = tInfo.Info.Type,
-                        tInfo.Info.Description,
+                        ChallengeType = tInfo.Type,
+                        tInfo.Label,
+                        tInfo.SupportedType,
+                        tInfo.Description,
                     });
             }
             else if (ListChallengeTypes)
             {
                 WriteVerbose("Listing all Challenge Type Decoders");
-                WriteObject(ChallengeDecoderExtManager.GetProviders().Select(_ => _.Name), true);
+                WriteObject(ChallengeDecoderExtManager.GetProviderInfos().Select(_ => _.Name), true);
             }
             else if (!string.IsNullOrEmpty(GetChallengeHandler))
             {
                 WriteVerbose("Getting details of Challenge Type Handler");
-                var pInfo = ChallengeHandlerExtManager.GetProviders()
-                        .FirstOrDefault(_ => _.Name == GetChallengeHandler);
+                var pInfo = ChallengeHandlerExtManager.GetProviderInfo(GetChallengeHandler);
                 var p = ChallengeHandlerExtManager.GetProvider(GetChallengeHandler);
                 if (ParametersOnly)
                 {
@@ -98,9 +95,9 @@ namespace ACMESharp.POSH
                 {
                     WriteObject(new {
                             pInfo.Name,
-                            pInfo.Info.Label,
-                            pInfo.Info.SupportedTypes,
-                            pInfo.Info.Description,
+                            pInfo.Label,
+                            pInfo.SupportedTypes,
+                            pInfo.Description,
                             Parameters = p.DescribeParameters().Select(_ => new {
                                     _.Name,
                                     _.Label,
@@ -115,7 +112,7 @@ namespace ACMESharp.POSH
             else if (ListChallengeHandlers)
             {
                 WriteVerbose("Listing all Challenge Type Handlers");
-                WriteObject(ChallengeHandlerExtManager.GetProviders().Select(_ => _.Name), true);
+                WriteObject(ChallengeHandlerExtManager.GetProviderInfos().Select(_ => _.Name), true);
             }
             else
             {

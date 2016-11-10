@@ -34,7 +34,7 @@ namespace ACMESharp
         [TestMethod]
         public void TestBuiltInProvidersExist()
         {
-            var provsEnum = ChallengeHandlerExtManager.GetProviders();
+            var provsEnum = ChallengeHandlerExtManager.GetProviderInfos();
             Assert.IsNotNull(provsEnum);
 
             var provsArr = provsEnum.ToArray();
@@ -44,7 +44,7 @@ namespace ACMESharp
         [TestMethod]
         public void TestProviderInfo()
         {
-            var prov = ChallengeHandlerExtManager.GetProviders().First();
+            var prov = ChallengeHandlerExtManager.GetProviderInfos().First();
 
             Assert.AreEqual("manual", prov.Name);
             Assert.AreEqual(prov.Info.SupportedTypes,

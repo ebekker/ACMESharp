@@ -51,7 +51,7 @@ namespace ACMESharp.POSH
             if (!string.IsNullOrEmpty(GetInstaller))
             {
                 WriteVerbose("Getting details of Installer");
-                var pInfo = InstallerExtManager.GetProviders()
+                var pInfo = InstallerExtManager.GetProviderInfos()
                         .FirstOrDefault(_ => _.Name == GetInstaller);
                 var p = InstallerExtManager.GetProvider(GetInstaller);
                 if (ParametersOnly)
@@ -88,7 +88,7 @@ namespace ACMESharp.POSH
             else if (ListInstallers)
             {
                 WriteVerbose("Listing all Installers");
-                WriteObject(InstallerExtManager.GetProviders().Select(_ => _.Name), true);
+                WriteObject(InstallerExtManager.GetProviderInfos().Select(_ => _.Name), true);
             }
             else
             {

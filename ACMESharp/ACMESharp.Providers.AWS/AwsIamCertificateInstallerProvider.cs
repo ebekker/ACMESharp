@@ -97,7 +97,8 @@ namespace ACMESharp.Providers.AWS
             {
                 if (!string.IsNullOrEmpty(inst.Path))
                 {
-                    if (!inst.Path.StartsWith(AwsIamCertificateInstaller.PATH_REQUIRED_CLOUDFRONT_PREFIX))
+                    if (!inst.Path.StartsWith(AwsIamCertificateInstaller.PATH_REQUIRED_CLOUDFRONT_PREFIX,
+                            StringComparison.InvariantCultureIgnoreCase))
                         throw new ArgumentException($"optional Path argument must start with leading"
                                 + $" '{AwsIamCertificateInstaller.PATH_REQUIRED_CLOUDFRONT_PREFIX}'");
                 }

@@ -42,7 +42,7 @@ namespace ACMESharp.POSH
         public SwitchParameter ListProfiles
         { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = PSET_GET_HANDLER_PROFILE)]
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = PSET_GET_HANDLER_PROFILE)]
         public string ProfileRef
         { get; set; }
 

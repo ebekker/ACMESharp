@@ -74,7 +74,7 @@ namespace ACMESharp.Providers.AWS
             inst.LoadBalancerName = (string)initParams[ELB_NAME.Name];
             if (!initParams.ContainsKey(LIS_PORT.Name))
                 throw new KeyNotFoundException($"missing required parameter [{LIS_PORT.Name}]");
-            inst.LoadBalancerPort = (int)initParams[LIS_PORT.Name];
+            inst.LoadBalancerPort = (int)((long)initParams[LIS_PORT.Name]);
 
             // Optional params
             if (initParams.ContainsKey(LIS_PROTO.Name))
@@ -84,7 +84,7 @@ namespace ACMESharp.Providers.AWS
                     throw new ArgumentException("invalid listener protocol specified");
 
                 if (initParams.ContainsKey(INST_PORT.Name))
-                    inst.InstancePort = (int)initParams[INST_PORT.Name];
+                    inst.InstancePort = (int)((long)initParams[INST_PORT.Name]);
                 else
                     inst.InstancePort = inst.LoadBalancerPort;
 

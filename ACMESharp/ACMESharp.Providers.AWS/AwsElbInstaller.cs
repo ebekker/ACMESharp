@@ -47,7 +47,7 @@ namespace ACMESharp.Providers.AWS
         { get; set; }
 
         public AwsIamCertificateInstaller CertInstaller
-        { get; set; }
+        { get; set; } = new AwsCommonParams();
 
         public AwsCommonParams CommonParams
         { get; set; }

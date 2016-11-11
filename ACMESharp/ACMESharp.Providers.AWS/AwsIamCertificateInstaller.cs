@@ -27,7 +27,7 @@ namespace ACMESharp.Providers.AWS
         { get; set; }
 
         public AwsCommonParams CommonParams
-        { get; set; }
+        { get; set; } = new AwsCommonParams();
 
         public bool IsDisposed
         { get; private set; }

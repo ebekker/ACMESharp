@@ -83,10 +83,14 @@ namespace ACMESharp.Vault.Util
                 if (throwOnMissing || ContainsKey(id))
                     return this[id];
             }
-            else if (char.IsNumber(entityRef, 0))
+            else if (char.IsDigit(entityRef, 0)
+                || (entityRef.Length > 1 && entityRef[0] == '-' && char.IsDigit(entityRef, 1)))
             {
                 // Ref by Index
                 var index = int.Parse(entityRef);
+                if (index < 0)
+                    // Index is relative from the end
+                    index = Count + index;
                 if (throwOnMissing || ContainsKey(index))
                     return this[index];
             }
@@ -128,7 +132,7 @@ namespace ACMESharp.Vault.Util
 
         public bool ContainsKey(int key)
         {
-            return _dictById.Count > key;
+            return key >= 0 && _dictById.Count > key;
         }
 
         public bool TryGetValue(int key, out TEntity value)

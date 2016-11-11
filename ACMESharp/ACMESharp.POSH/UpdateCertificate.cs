@@ -146,7 +146,7 @@ namespace ACMESharp.POSH
                 if (v.Certificates == null || v.Certificates.Count < 1)
                     throw new InvalidOperationException("No certificates found");
 
-                var ci = v.Certificates.GetByRef(CertificateRef);
+                var ci = v.Certificates.GetByRef(CertificateRef, throwOnMissing: false);
                 if (ci == null)
                     throw new Exception("Unable to find a Certificate for the given reference");
 

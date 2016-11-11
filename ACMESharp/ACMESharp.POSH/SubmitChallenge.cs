@@ -85,7 +85,7 @@ namespace ACMESharp.POSH
                 if (v.Identifiers == null || v.Identifiers.Count < 1)
                     throw new InvalidOperationException("No identifiers found");
 
-                var ii = v.Identifiers.GetByRef(IdentifierRef);
+                var ii = v.Identifiers.GetByRef(IdentifierRef, throwOnMissing: false);
                 if (ii == null)
                     throw new Exception("Unable to find an Identifier for the given reference");
 

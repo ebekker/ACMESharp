@@ -183,7 +183,7 @@ namespace ACMESharp.POSH
                 if (v.Identifiers == null || v.Identifiers.Count < 1)
                     throw new InvalidOperationException("No identifiers found");
 
-                var ii = v.Identifiers.GetByRef(IdentifierRef);
+                var ii = v.Identifiers.GetByRef(IdentifierRef, throwOnMissing: false);
                 if (ii == null)
                     throw new Exception("Unable to find an Identifier for the given reference");
 
@@ -241,7 +241,7 @@ namespace ACMESharp.POSH
 
                         csrDetails.AlternativeNames = AlternativeIdentifierRefs.Select(alternativeIdentifierRef =>
                         {
-                            var altId = v.Identifiers.GetByRef($"{alternativeIdentifierRef}");
+                            var altId = v.Identifiers.GetByRef($"{alternativeIdentifierRef}", throwOnMissing: false);
                             if (altId == null)
                                 throw new Exception("Unable to find an Identifier for the given Alternative Identifier reference")
                                         .With(nameof(alternativeIdentifierRef), alternativeIdentifierRef)

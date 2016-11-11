@@ -63,7 +63,7 @@ namespace ACMESharp.POSH
                 }
 
                 WriteVerbose($"Searching for existing Installer Profile for reference [{ProfileName}]");
-                var ipi = v.InstallerProfiles.GetByRef(ProfileName, false);
+                var ipi = v.InstallerProfiles.GetByRef(ProfileName, throwOnMissing: false);
                 if (ipi == null)
                     WriteVerbose("No existing Profile found");
                 else

@@ -132,7 +132,7 @@ namespace ACMESharp.POSH
 
                 if (!string.IsNullOrEmpty(InstallerProfileRef))
                 {
-                    var ppi = v.ProviderProfiles.GetByRef(InstallerProfileRef);
+                    var ppi = v.ProviderProfiles.GetByRef(InstallerProfileRef, throwOnMissing: false);
                     if (ppi == null)
                         throw new ItemNotFoundException("no Installer profile found for the given reference")
                                 .With(nameof(InstallerProfileRef), InstallerProfileRef);

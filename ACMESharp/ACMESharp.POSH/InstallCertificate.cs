@@ -117,7 +117,7 @@ namespace ACMESharp.POSH
                 var keyAsset = vlt.GetAsset(Vault.VaultAssetType.KeyPem, ci.KeyPemFile);
                 var crtAsset = vlt.GetAsset(Vault.VaultAssetType.CrtPem, ci.CrtPemFile);
                 var issCrtAsset = ici != null
-                        ? vlt.GetAsset(Vault.VaultAssetType.CrtPem, ici.CrtPemFile)
+                        ? vlt.GetAsset(Vault.VaultAssetType.IssuerPem, ici.CrtPemFile)
                         : null;
 
 
@@ -132,12 +132,12 @@ namespace ACMESharp.POSH
 
                 if (!string.IsNullOrEmpty(InstallerProfileRef))
                 {
-                    var ppi = v.ProviderProfiles.GetByRef(InstallerProfileRef, throwOnMissing: false);
+                    var ppi = v.InstallerProfiles.GetByRef(InstallerProfileRef, throwOnMissing: false);
                     if (ppi == null)
                         throw new ItemNotFoundException("no Installer profile found for the given reference")
                                 .With(nameof(InstallerProfileRef), InstallerProfileRef);
 
-                    var ppAsset = vlt.GetAsset(Vault.VaultAssetType.ProviderConfigInfo,
+                    var ppAsset = vlt.GetAsset(Vault.VaultAssetType.InstallerConfigInfo,
                             ppi.Id.ToString());
                     InstallerProfile ip;
                     using (var s = vlt.LoadAsset(ppAsset))

@@ -164,7 +164,7 @@ namespace ACMESharp.POSH
                 if (v.Identifiers == null || v.Identifiers.Count < 1)
                     throw new InvalidOperationException("No identifiers found");
 
-                var ii = v.Identifiers.GetByRef(IdentifierRef);
+                var ii = v.Identifiers.GetByRef(IdentifierRef, throwOnMissing: false);
                 if (ii == null)
                     throw new Exception("Unable to find an Identifier for the given reference");
 
@@ -191,7 +191,7 @@ namespace ACMESharp.POSH
 
                 if (!string.IsNullOrEmpty(HandlerProfileRef))
                 {
-                    var ppi = v.ProviderProfiles.GetByRef(HandlerProfileRef);
+                    var ppi = v.ProviderProfiles.GetByRef(HandlerProfileRef, throwOnMissing: false);
                     if (ppi == null)
                         throw new ItemNotFoundException("no Handler profile found for the given reference")
                                 .With(nameof(HandlerProfileRef), HandlerProfileRef);

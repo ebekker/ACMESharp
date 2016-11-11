@@ -104,7 +104,7 @@ namespace ACMESharp.POSH
                     }
                     else
                     {
-                        var ipi = v.InstallerProfiles?.GetByRef(ProfileRef, false);
+                        var ipi = v.InstallerProfiles?.GetByRef(ProfileRef, throwOnMissing: false);
                         if (ipi == null)
                         {
                             WriteObject(ipi);

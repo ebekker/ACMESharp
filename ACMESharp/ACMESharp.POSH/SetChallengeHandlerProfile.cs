@@ -71,7 +71,7 @@ namespace ACMESharp.POSH
                 }
 
                 WriteVerbose($"Searching for existing Provider Profile for reference [{ProfileName}]");
-                var ppi = v.ProviderProfiles.GetByRef(ProfileName, false);
+                var ppi = v.ProviderProfiles.GetByRef(ProfileName, throwOnMissing: false);
                 if (ppi == null)
                     WriteVerbose("No existing Profile found");
                 else

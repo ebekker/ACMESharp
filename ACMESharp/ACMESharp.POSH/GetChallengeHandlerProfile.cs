@@ -128,7 +128,7 @@ namespace ACMESharp.POSH
                     }
                     else
                     {
-                        var ppi = v.ProviderProfiles?.GetByRef(ProfileRef, false);
+                        var ppi = v.ProviderProfiles?.GetByRef(ProfileRef, throwOnMissing: false);
                         if (ppi == null)
                         {
                             WriteObject(ppi);

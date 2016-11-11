@@ -84,7 +84,7 @@ namespace ACMESharp.POSH
                     }
                     else
                     {
-                        var ii = v.Identifiers.GetByRef(IdentifierRef);
+                        var ii = v.Identifiers.GetByRef(IdentifierRef, throwOnMissing: false);
                         if (ii == null)
                             throw new ItemNotFoundException("Unable to find an Identifier for the given reference");
 

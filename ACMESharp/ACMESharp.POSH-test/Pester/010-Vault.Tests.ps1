@@ -128,7 +128,7 @@ Describe "VaultTests" {
     Context "List and Get Available Challenge Handlers" {
         It "verifies the Challenge Handlers " {
             $ch = Get-ACMEChallengeHandlerProfile -ListChallengeHandlers
-            ($ch | ConvertTo-Json -Compress) | Should Be (@('manual', 'awsRoute53', 'awsS3', 'iis') | ConvertTo-Json -Compress)
+            ($ch | ConvertTo-Json -Compress) | Should Be (@('manual', 'aws-route53', 'aws-s3', 'iis') | ConvertTo-Json -Compress)
         }
         It "gets the details of a non-existent Challenge Handler" {
             { Get-ACMEChallengeHandlerProfile -GetChallengeHandler no-such-type } | Should Throw

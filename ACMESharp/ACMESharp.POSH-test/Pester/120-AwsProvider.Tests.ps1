@@ -13,7 +13,7 @@ Describe "AwsHandlerTests" {
 
         It "confirms AWS S3 Handler is available" {
             $ch = Get-ACMEChallengeHandlerProfile -ListChallengeHandlers
-            $ch.Contains('awsS3') | Should Be $true
+            $ch.Contains('aws-s3') | Should Be $true
         }
         It "creates a Profile" {
             Set-ACMEVaultProfile -ProfileName $profName -Provider $provName -VaultParameters $vaultParams -Force

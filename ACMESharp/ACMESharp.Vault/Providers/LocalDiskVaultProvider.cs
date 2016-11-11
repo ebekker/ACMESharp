@@ -73,24 +73,26 @@ namespace ACMESharp.Vault.Providers
         public const string CRTDR  /**/ = "66-CRTDR";
         public const string ISUPM  /**/ = "75-ISUPM";
         public const string ISUDR  /**/ = "76-ISUDR";
+        public const string INSTP  /**/ = "80-INSTP";
         public const string ASSET  /**/ = "99-ASSET";
 
         public static readonly IReadOnlyDictionary<VaultAssetType, string> TYPE_PATHS =
                 new ReadOnlyDictionary<VaultAssetType, string>(
                         new Dictionary<VaultAssetType, string>
                         {
-                            { VaultAssetType.Other,               /**/ ASSET },
-                            { VaultAssetType.ProviderConfigInfo,  /**/ PRVDR },
-                            { VaultAssetType.CsrDetails,          /**/ CSRDT },
-                            { VaultAssetType.KeyGen,              /**/ KEYGN },
-                            { VaultAssetType.CsrGen,              /**/ CSRGN },
-                            { VaultAssetType.KeyPem,              /**/ KEYPM },
-                            { VaultAssetType.CsrPem,              /**/ CSRPM },
-                            { VaultAssetType.CsrDer,              /**/ CSRDR },
-                            { VaultAssetType.CrtPem,              /**/ CRTPM },
-                            { VaultAssetType.CrtDer,              /**/ CRTDR },
-                            { VaultAssetType.IssuerPem,           /**/ ISUPM },
-                            { VaultAssetType.IssuerDer,           /**/ ISUDR },
+                            [VaultAssetType.Other]               /**/ = ASSET,
+                            [VaultAssetType.ProviderConfigInfo]  /**/ = PRVDR,
+                            [VaultAssetType.CsrDetails]          /**/ = CSRDT,
+                            [VaultAssetType.KeyGen]              /**/ = KEYGN,
+                            [VaultAssetType.CsrGen]              /**/ = CSRGN,
+                            [VaultAssetType.KeyPem]              /**/ = KEYPM,
+                            [VaultAssetType.CsrPem]              /**/ = CSRPM,
+                            [VaultAssetType.CsrDer]              /**/ = CSRDR,
+                            [VaultAssetType.CrtPem]              /**/ = CRTPM,
+                            [VaultAssetType.CrtDer]              /**/ = CRTDR,
+                            [VaultAssetType.IssuerPem]           /**/ = ISUPM,
+                            [VaultAssetType.IssuerDer]           /**/ = ISUDR,
+                            [VaultAssetType.InstallerConfigInfo] /**/ = INSTP,
                         });
 
         #endregion -- Constants --
@@ -267,6 +269,10 @@ namespace ACMESharp.Vault.Providers
         public VaultAsset CreateAsset(VaultAssetType type, string name, bool isSensitive = false,
                 bool getOrCreate = false)
         {
+            if (!TYPE_PATHS.ContainsKey(type))
+                throw new NotSupportedException("unknown or unsupported asset type")
+                        .With(nameof(VaultAssetType), type);
+
             var path = Path.Combine(RootPath, TYPE_PATHS[type], name);
 
             if (!File.Exists(path))

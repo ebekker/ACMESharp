@@ -11,6 +11,7 @@ using System.Collections;
 using ACMESharp.Vault.Profile;
 using ACMESharp.Util;
 using ACMESharp.ACME;
+using System.Linq;
 
 namespace ACMESharp.POSH
 {
@@ -148,6 +149,12 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///     Forces an attempt to complete the challenge even when the state of the
+        ///     current Identifier authorization is in a failed or completed state.
+        /// </para>
+        /// </summary>
         [Parameter]
         public SwitchParameter Force
         { get; set; }
@@ -192,6 +199,19 @@ namespace ACMESharp.POSH
                 if (HandlerParameters?.Count > 0)
                     cliHandlerParams = (IReadOnlyDictionary<string, object>
                                     )PoshHelper.Convert<string, object>(HandlerParameters);
+
+                if (!Force)
+                {
+                    if (!authzState.IsPending())
+                        throw new InvalidOperationException(
+                                "authorization is not in pending state;"
+                                + " use Force flag to override this validation");
+
+                    if (authzState.Challenges.Any(_ => _.IsInvalid()))
+                        throw new InvalidOperationException(
+                                "authorization already contains challenges in an invalid state;"
+                                + " use Force flag to override this validation");
+                }
 
                 if (!string.IsNullOrEmpty(HandlerProfileRef))
                 {

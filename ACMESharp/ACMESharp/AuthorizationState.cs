@@ -9,6 +9,12 @@ namespace ACMESharp
 {
     public class AuthorizationState
     {
+        public const string STATUS_PENDING = "pending";
+        public const string STATUS_PROCESSING = "processing";
+        public const string STATUS_VALID = "valid";
+        public const string STATUS_INVALID = "invalid";
+        public const string STATUS_REVOKED = "revoked";
+
         public IdentifierPart IdentifierPart
         { get; set; }
 
@@ -32,6 +38,12 @@ namespace ACMESharp
 
         public IEnumerable<IEnumerable<int>> Combinations
         { get; set; }
+
+        public bool IsPending()
+        {
+            return string.IsNullOrEmpty(Status) || string.Equals(Status, STATUS_PENDING,
+                    StringComparison.InvariantCultureIgnoreCase);
+        }
 
         public void Save(Stream s)
         {

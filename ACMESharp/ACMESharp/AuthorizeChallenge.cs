@@ -9,6 +9,10 @@ namespace ACMESharp
 {
     public class AuthorizeChallenge
     {
+        public const string STATUS_PENDING = "pending";
+        public const string STATUS_VALID = "valid";
+        public const string STATUS_INVALID = "invalid";
+
         public ChallengePart ChallengePart
         { get; set; }
 
@@ -50,6 +54,18 @@ namespace ACMESharp
 
         //public object ValidationRecord
         //{ get; set; }
+
+        public bool IsPending()
+        {
+            return string.IsNullOrEmpty(Status) || string.Equals(Status, STATUS_PENDING,
+                    StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public bool IsInvalid()
+        {
+            return string.Equals(Status, STATUS_INVALID,
+                    StringComparison.InvariantCultureIgnoreCase);
+        }
 
         /// <summary>
         /// Returns a key-value pair that represents the DNS domain name that needs

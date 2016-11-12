@@ -1,5 +1,6 @@
 ﻿using ACMESharp.POSH.Util;
 using System;
+using System.Linq;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
@@ -66,7 +67,17 @@ namespace ACMESharp.POSH
         /// </para>
         /// </summary>
         [Parameter]
+
         public string VaultProfile
+        { get; set; }
+        /// <summary>
+        /// <para type="description">
+        ///     Forces an attempt to submit the challenge even when the state of the
+        ///     current Identifier authorization is in a failed or completed state.
+        /// </para>
+        /// </summary>
+        [Parameter]
+        public SwitchParameter Force
         { get; set; }
 
         protected override void ProcessRecord()
@@ -90,6 +101,19 @@ namespace ACMESharp.POSH
                     throw new Exception("Unable to find an Identifier for the given reference");
 
                 var authzState = ii.Authorization;
+
+                if (!Force)
+                {
+                    if (!authzState.IsPending())
+                        throw new InvalidOperationException(
+                                "authorization is not in pending state;"
+                                + " use Force flag to override this validation");
+
+                    if (authzState.Challenges.Any(_ => _.IsInvalid()))
+                        throw new InvalidOperationException(
+                                "authorization already contains challenges in an invalid state;"
+                                + " use Force flag to override this validation");
+                }
 
                 try
                 {

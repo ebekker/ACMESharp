@@ -77,11 +77,11 @@ namespace ACMESharp.POSH
         /// <summary>
         /// <para type="description">
         ///   Optionaly, set or update the unique alias assigned to the Identifier
-        ///   for future reference.
+        ///   for future reference.  To remove the alias, use the empty string.
         /// </para>
         /// </summary>
         [Parameter]
-        public string Alias
+        public string NewAlias
         { get; set; }
 
         /// <summary>
@@ -134,6 +134,15 @@ namespace ACMESharp.POSH
                 if (ii == null)
                     throw new Exception("Unable to find an Identifier for the given reference");
 
+                // If we're renaming the Alias, do that
+                // first in case there are any problems
+                if (NewAlias != null)
+                {
+                    v.Identifiers.Rename(IdentifierRef, NewAlias);
+                    ii.Alias = NewAlias == "" ? null : NewAlias;
+                }
+
+
                 var authzState = ii.Authorization;
 
                 if (!LocalOnly)
@@ -163,9 +172,8 @@ namespace ACMESharp.POSH
                     }
                 }
 
-                v.Alias = StringHelper.IfNullOrEmpty(Alias);
-                v.Label = StringHelper.IfNullOrEmpty(Label);
-                v.Memo = StringHelper.IfNullOrEmpty(Memo);
+                ii.Label = StringHelper.IfNullOrEmpty(Label);
+                ii.Memo = StringHelper.IfNullOrEmpty(Memo);
 
                 vlt.SaveVault(v);
 

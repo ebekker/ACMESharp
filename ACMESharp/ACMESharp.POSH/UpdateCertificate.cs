@@ -81,11 +81,11 @@ namespace ACMESharp.POSH
         /// <summary>
         /// <para type="description">
         ///   Optionaly, set or update the unique alias assigned to the Certificate
-        ///   for future reference.
+        ///   for future reference.  To remove the alias, use the empty string.
         /// </para>
         /// </summary>
         [Parameter]
-        public string Alias
+        public string NewAlias
         { get; set; }
 
         /// <summary>
@@ -149,6 +149,14 @@ namespace ACMESharp.POSH
                 var ci = v.Certificates.GetByRef(CertificateRef, throwOnMissing: false);
                 if (ci == null)
                     throw new Exception("Unable to find a Certificate for the given reference");
+
+                // If we're renaming the Alias, do that
+                // first in case there are any problems
+                if (NewAlias != null)
+                {
+                    v.Certificates.Rename(CertificateRef, NewAlias);
+                    ci.Alias = NewAlias == "" ? null : NewAlias;
+                }
 
                 if (!LocalOnly)
                 {
@@ -297,9 +305,8 @@ namespace ACMESharp.POSH
                     }
                 }
 
-                v.Alias = StringHelper.IfNullOrEmpty(Alias);
-                v.Label = StringHelper.IfNullOrEmpty(Label);
-                v.Memo = StringHelper.IfNullOrEmpty(Memo);
+                ci.Label = StringHelper.IfNullOrEmpty(Label);
+                ci.Memo = StringHelper.IfNullOrEmpty(Memo);
 
                 vlt.SaveVault(v);
 

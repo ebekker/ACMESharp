@@ -15,6 +15,7 @@ namespace ACMESharp.POSH
     public class SetInstallerProfile : Cmdlet
     {
         public const string PSET_SET = "Set";
+        public const string PSET_RENAME = "Rename";
         public const string PSET_REMOVE = "Remove";
 
         [Parameter(Mandatory = true, Position = 0)]
@@ -35,6 +36,10 @@ namespace ACMESharp.POSH
 
         [Parameter(Mandatory = false, ParameterSetName = PSET_SET)]
         public Hashtable InstallerParameters
+        { get; set; }
+
+        [Parameter(Mandatory = false, ParameterSetName = PSET_RENAME)]
+        public string Rename
         { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = PSET_REMOVE)]
@@ -69,7 +74,15 @@ namespace ACMESharp.POSH
                 else
                     WriteVerbose($"Existing Profile found [{ipi.Id}][{ipi.Alias}]");
 
-                if (Remove)
+                if (!string.IsNullOrEmpty(Rename))
+                {
+                    if (ipi == null)
+                        throw new KeyNotFoundException("no existing profile found that can be renamed");
+
+                    v.InstallerProfiles.Rename(ProfileName, Rename);
+                    ipi.Alias = Rename;
+                }
+                else if (Remove)
                 {
                     WriteVerbose($"Removing named Installer Profile for name [{ProfileName}]");
                     if (ipi == null)

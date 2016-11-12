@@ -15,6 +15,7 @@ namespace ACMESharp.POSH
     public class SetChallengeHandlerProfile : Cmdlet
     {
         public const string PSET_SET = "Set";
+        public const string PSET_RENAME = "Rename";
         public const string PSET_REMOVE = "Remove";
 
         [Parameter(Mandatory = true, Position = 0)]
@@ -43,6 +44,10 @@ namespace ACMESharp.POSH
 
         [Parameter(Mandatory = false, ParameterSetName = PSET_SET)]
         public Hashtable HandlerParameters
+        { get; set; }
+
+        [Parameter(Mandatory = false, ParameterSetName = PSET_RENAME)]
+        public string Rename
         { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = PSET_REMOVE)]
@@ -76,8 +81,16 @@ namespace ACMESharp.POSH
                     WriteVerbose("No existing Profile found");
                 else
                     WriteVerbose($"Existing Profile found [{ppi.Id}][{ppi.Alias}]");
-                
-                if (Remove)
+
+                if (!string.IsNullOrEmpty(Rename))
+                {
+                    if (ppi == null)
+                        throw new KeyNotFoundException("no existing profile found that can be renamed");
+
+                    v.ProviderProfiles.Rename(ProfileName, Rename);
+                    ppi.Alias = Rename;
+                }
+                else if (Remove)
                 {
                     WriteVerbose($"Removing named Provider Profile for name [{ProfileName}]");
                     if (ppi == null)

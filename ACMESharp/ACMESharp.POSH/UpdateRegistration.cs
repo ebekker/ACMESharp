@@ -29,8 +29,14 @@ namespace ACMESharp.POSH
         public SwitchParameter AcceptTos
         { get; set; }
 
+        /// <summary>
+        /// <para type="description">
+        ///   Optionaly, set or update the unique alias assigned to the Certificate
+        ///   for future reference.  To remove the alias, use the empty string.
+        /// </para>
+        /// </summary>
         [Parameter]
-        public string Alias
+        public string NewAlias
         { get; set; }
 
         [Parameter]
@@ -58,6 +64,14 @@ namespace ACMESharp.POSH
                 var ri = v.Registrations[0];
                 var r = ri.Registration;
 
+                // If we're renaming the Alias, do that
+                // first in case there are any problems
+                if (NewAlias != null)
+                {
+                    v.Registrations.Rename("0", NewAlias);
+                    ri.Alias = NewAlias == "" ? null : NewAlias;
+                }
+
                 if (!LocalOnly)
                 {
                     try
@@ -80,9 +94,8 @@ namespace ACMESharp.POSH
                     vlt.SaveVault(v);
                 }
 
-                v.Alias = StringHelper.IfNullOrEmpty(Alias);
-                v.Label = StringHelper.IfNullOrEmpty(Label);
-                v.Memo = StringHelper.IfNullOrEmpty(Memo);
+                ri.Label = StringHelper.IfNullOrEmpty(Label);
+                ri.Memo = StringHelper.IfNullOrEmpty(Memo);
 
                 vlt.SaveVault(v);
 

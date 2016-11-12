@@ -148,6 +148,10 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        [Parameter]
+        public SwitchParameter Force
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             using (var vlt = Util.VaultHelper.GetVault(VaultProfile))

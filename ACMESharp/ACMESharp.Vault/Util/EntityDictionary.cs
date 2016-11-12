@@ -1,7 +1,9 @@
-﻿using ACMESharp.Vault.Model;
+﻿using ACMESharp.Util;
+using ACMESharp.Vault.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ACMESharp.Vault.Util
 {
@@ -58,6 +60,54 @@ namespace ACMESharp.Vault.Util
             _dictById.Add(item.Id, item);
             if (!string.IsNullOrEmpty(item.Alias))
                 _dictByAlias.Add(item.Alias, item);
+        }
+
+        /// <summary>
+        /// Renames the alias under which an existing entity is stored.
+        /// </summary>
+        /// <param name="entityRef">
+        ///     Entity reference for an existing
+        ///     entity.  This may include an entity which does not
+        ///     currently have an alias, in which case it would only
+        ///     include an index or ID.
+        /// </param>
+        /// <param name="newAlias">
+        ///     New alias under which to store
+        ///     the resolved entity.  This may specify <c>null</c>
+        ///     which would remove an existing entity alias.
+        /// </param>
+        public void Rename(string entityRef, string newAlias)
+        {
+            // Do some validations ot make sure we can do this first
+
+            if (string.IsNullOrEmpty(entityRef))
+                throw new ArgumentNullException("ref", "invalid or missing reference");
+
+            var ent = GetByRef(entityRef);
+            if (ent == null)
+                throw new KeyNotFoundException("unresolved existing entity reference")
+                        .With(nameof(entityRef), entityRef)
+                        .With(nameof(newAlias), newAlias);
+
+            if (_dictByAlias.ContainsKey(newAlias))
+            {
+                if (object.Equals(_dictByAlias[newAlias], ent))
+                    // No need to do anything
+                    return;
+
+                throw new System.InvalidOperationException("new alias conflicts with existing entity")
+                        .With(nameof(entityRef), entityRef)
+                        .With(nameof(newAlias), newAlias);
+            }
+
+            // Remove existing old alias(es) if there are any
+            var existingAliases = _dictByAlias.Where(
+                    _ => _.Value.Id == ent.Id).ToArray();
+            foreach (var kv in existingAliases)
+                _dictByAlias.Remove(kv.Key);
+
+            if (!string.IsNullOrEmpty(newAlias))
+                _dictByAlias.Add(newAlias, ent);
         }
 
         public void Remove(Guid id)

@@ -17,6 +17,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.POSH", "ACMESharp.POSH\ACMESharp.POSH.csproj", "{2F8D5934-B5A7-4983-8051-1F25882C7C30}"
 	ProjectSection(ProjectDependencies) = postProject
 		{63AE964A-79A4-4C7D-A686-DD9B2389AF3F} = {63AE964A-79A4-4C7D-A686-DD9B2389AF3F}
+		{F085D9BB-0DF5-442B-8340-6250792A8D7A} = {F085D9BB-0DF5-442B-8340-6250792A8D7A}
 		{944EC9BD-81A1-484E-BA29-360BC155BF51} = {944EC9BD-81A1-484E-BA29-360BC155BF51}
 		{CD8842F7-5CBD-4DB1-B2B9-387A095AB91F} = {CD8842F7-5CBD-4DB1-B2B9-387A095AB91F}
 	EndProjectSection
@@ -71,6 +72,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget-staging", "nuget-stag
 	ProjectSection(SolutionItems) = preProject
 		..\ci\nuget-staging\AWSPowerShell\AWSPowerShell.psd1 = ..\ci\nuget-staging\AWSPowerShell\AWSPowerShell.psd1
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.Windows", "ACMESharp.Providers.Windows\ACMESharp.Providers.Windows.csproj", "{F085D9BB-0DF5-442B-8340-6250792A8D7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,6 +145,10 @@ Global
 		{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F085D9BB-0DF5-442B-8340-6250792A8D7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F085D9BB-0DF5-442B-8340-6250792A8D7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F085D9BB-0DF5-442B-8340-6250792A8D7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F085D9BB-0DF5-442B-8340-6250792A8D7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- See reference at:  http://docs.nuget.org/Create/NuSpec-Reference -->
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$.$buildNum$$versionLabel$</version>
+    <title>$title$</title>
+    <authors>https://github.com/ebekker</authors>
+    <owners>https://github.com/ebekker</owners>
+    <licenseUrl>https://raw.githubusercontent.com/ebekker/ACMESharp/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ebekker/ACMESharp</projectUrl>
+    <iconUrl>https://cdn.rawgit.com/ebekker/ACMESharp/49bf6524da8239ecf258ab3857dfbbf40366ecfd/artwork/ACMESharp-logo-square64.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Early-access release of ACMESharp Providers Lib for Microsoft Windows.</releaseNotes>
+    <copyright>Copyright &#169; 2016 Eugene Bekker</copyright>
+    <tags>pki ssl tls security certificates letsencrypt acme acmesharp</tags>
+
+    <dependencies>
+      <dependency id="ACMESharp" version="8.2.0" />
+    </dependencies>
+   </metadata>
+</package>

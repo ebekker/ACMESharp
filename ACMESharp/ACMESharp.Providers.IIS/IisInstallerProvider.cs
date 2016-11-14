@@ -34,6 +34,11 @@ namespace ACMESharp.Providers.IIS
                 ParameterType.TEXT, label: "Web Site Ref",
                 desc: "An optional host name to bind to using SNI (IIS8+)");
 
+        public static readonly ParameterDetail BINDING_HOST_REQUIRED = new ParameterDetail(
+                nameof(IisInstaller.BindingHostRequired),
+                ParameterType.BOOLEAN, label: "Web Site Ref",
+                desc: "An optional flag to indicate SNI is required (IIS8+)");
+
         public static readonly ParameterDetail FORCE = new ParameterDetail(
                 nameof(IisInstaller.Force),
                 ParameterType.BOOLEAN, label: "Web Site Ref",
@@ -51,6 +56,7 @@ namespace ACMESharp.Providers.IIS
             BINDING_ADDRESS,
             BINDING_PORT,
             BINDING_HOST,
+            BINDING_HOST_REQUIRED,
             FORCE,
             CERTIFICATE_FRIENDLY_NAME,
         };
@@ -79,6 +85,8 @@ namespace ACMESharp.Providers.IIS
                 inst.BindingPort = (int)((long)initParams[BINDING_PORT.Name]);
             if (initParams.ContainsKey(BINDING_HOST.Name))
                 inst.BindingHost = (string)initParams[BINDING_HOST.Name];
+            if (initParams.ContainsKey(BINDING_HOST_REQUIRED.Name))
+                inst.BindingHostRequired = (bool)initParams[BINDING_HOST_REQUIRED.Name];
             if (initParams.ContainsKey(FORCE.Name))
                 inst.Force = (bool)initParams[FORCE.Name];
 

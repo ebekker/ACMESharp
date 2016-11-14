@@ -39,6 +39,9 @@ namespace ACMESharp.Providers.IIS
         public string BindingHost
         { get; set; }
 
+        public bool? BindingHostRequired
+        { get; set; }
+
         public bool Force
         { get; set; }
 
@@ -77,6 +80,8 @@ namespace ACMESharp.Providers.IIS
             {
                 foreach (var oldBinding in existing)
                 {
+                    if (BindingHostRequired.HasValue)
+                        oldBinding.BindingHostRequired = BindingHostRequired;
                     IisHelper.UpdateSiteBinding(oldBinding, certStore, certHash);
                 }
             }
@@ -95,6 +100,7 @@ namespace ACMESharp.Providers.IIS
                     BindingAddress = this.BindingAddress,
                     BindingPort = this.BindingPort.ToString(),
                     BindingHost = this.BindingHost,
+                    BindingHostRequired = this.BindingHostRequired,
                 };
 
                 IisHelper.CreateSiteBinding(newBinding, certStore, certHash);

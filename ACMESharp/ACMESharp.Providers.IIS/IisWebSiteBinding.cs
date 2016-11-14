@@ -26,6 +26,9 @@ namespace ACMESharp.Providers.IIS
         public string BindingHost
         { get; set; }
 
+        public bool? BindingHostRequired
+        { get; set; }
+
         public string SiteRoot
         { get; set; }
     }

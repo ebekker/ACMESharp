@@ -120,7 +120,10 @@ namespace ACMESharp.Providers.IIS
                         ++bindingCount;
                         b.CertificateStoreName = certStore;
                         b.CertificateHash = certHash;
-                        b.SetAttributeValue("sslFlags", 3);
+                        if (binding.BindingHostRequired.GetValueOrDefault() && GetIisVersion().Major >= 8)
+                            b.SetAttributeValue("sslFlags", 1);
+                        else
+                            b.SetAttributeValue("sslFlags", 3);
                     }
                 }
 

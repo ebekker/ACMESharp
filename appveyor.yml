@@ -9,6 +9,8 @@ environment:
   ACME_POSH_PATH: C:\projects\acmesharp\ACMESharp\ACMESharp.POSH-test\bin\ACMESharp
   STAGING_NUGET_APIKEY:
     secure: SUYnj+1syy4bFbcQnP7a9f0jdPoxhbW6yV8FOdNcxTxWQMmnxJ4NqaHnMLlUS2hG
+  STAGING_MYGET_APIKEY:
+    secure: YgniOlPvY8QhpvATtvXiPP9zM65vI/zvanIzIFZ2YJvK+xxfzgwEKpj8CcZjHf1k
 configuration:
   - Debug
 # - Release

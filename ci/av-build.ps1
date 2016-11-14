@@ -46,9 +46,20 @@ else {
     Write-Output "Publishing POSH modules to staging repo:"
     Import-Module PowerShellGet -Force
     Write-Output "  * Registering STAGING repo"
+
+	## NuGet Staging
+    #$PSGalleryPublishUri = 'https://int.nugettest.org/api/v2/package'
+    #$PSGallerySourceUri  = 'https://int.nugettest.org/api/v2'
+	#$PSGalleryApiKey     = $env:STAGING_NUGET_APIKEY
+
+	## MyGet - Our Own ACMESharp-POSH Staging
+	$PSGalleryPublishUri = 'https://www.myget.org/F/acmesharp-posh-staging/api/v2/package'
+	$PSGallerySourceUri  = 'https://www.myget.org/F/acmesharp-posh-staging/api/v2'
+	$PSGalleryApiKey     = $env:STAGING_MYGET_APIKEY
+
     Register-PSRepository -Name STAGING -PackageManagementProvider NuGet -InstallationPolicy Trusted `
-            -SourceLocation https://int.nugettest.org/api/v2 `
-            -PublishLocation https://int.nugettest.org/api/v2/package
+            -PublishLocation $PSGalleryPublishUri `
+            -SourceLocation $PSGallerySourceUri
 
 
     #!$modName = "ACMESharp"
@@ -62,7 +73,7 @@ else {
 	#!
     #!Write-Output "  * Publishing ACMESharp main module [$modName]"
     #!Publish-Module -Path $modPath -Repository STAGING `
-    #!        -NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
+    #!        -NuGetApiKey $PSGalleryApiKey -Force -ErrorAction Stop
 	#!
     #!## Then we pull the module back down from the STAGING repo 
     #!Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
@@ -83,7 +94,7 @@ else {
 	Write-Output "Installing Fake AWSPowerShell Module to resolve dependencies"
 	try {
 		Publish-Module -Repository staging -Path .\ci\nuget-staging\AWSPowerShell `
-				-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force
+				-NuGetApiKey $PSGalleryApiKey -Force
 	}
 	catch [System.InvalidOperationException] {
 		## Testing for something like this:
@@ -128,7 +139,7 @@ else {
 
 		Write-Output "  * Publishing module [$modName]"
 		Publish-Module -Path $modPath -Repository STAGING `
-				-NuGetApiKey $env:STAGING_NUGET_APIKEY -Force -ErrorAction Stop
+				-NuGetApiKey $PSGalleryApiKey -Force -ErrorAction Stop
 
 		## Then we pull the module back down from the STAGING repo 
 		#$modPkgWeb = Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" -MaximumRedirection 0 -ErrorAction Ignore

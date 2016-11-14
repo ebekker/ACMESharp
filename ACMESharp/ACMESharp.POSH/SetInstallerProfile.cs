@@ -1,4 +1,5 @@
-﻿using ACMESharp.POSH.Util;
+﻿using ACMESharp.Installer;
+using ACMESharp.POSH.Util;
 using ACMESharp.Util;
 using ACMESharp.Vault.Profile;
 using System;
@@ -106,6 +107,12 @@ namespace ACMESharp.POSH
 
                         WriteVerbose("Removing existing Profile");
                         v.InstallerProfiles.Remove(ipi.Id);
+                    }
+
+                    if (InstallerExtManager.GetProviderInfo(Installer) == null)
+                    {
+                        throw new ArgumentException("Unknown or invalid Installer provider name")
+                                .With(nameof(Installer), Installer);
                     }
 
                     WriteVerbose("Adding new Installer Profile Info");

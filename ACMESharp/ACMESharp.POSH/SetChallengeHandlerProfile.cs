@@ -1,4 +1,5 @@
-﻿using ACMESharp.POSH.Util;
+﻿using ACMESharp.ACME;
+using ACMESharp.POSH.Util;
 using ACMESharp.Util;
 using ACMESharp.Vault.Profile;
 using System;
@@ -114,6 +115,12 @@ namespace ACMESharp.POSH
 
                         WriteVerbose("Removing existing Profile");
                         v.ProviderProfiles.Remove(ppi.Id);
+                    }
+
+                    if (ChallengeHandlerExtManager.GetProviderInfo(Handler) == null)
+                    {
+                        throw new ArgumentException("Unknown or invalid Handler provider name")
+                                .With(nameof(Handler), Handler);
                     }
 
                     WriteVerbose("Adding new Provider Profile Info");

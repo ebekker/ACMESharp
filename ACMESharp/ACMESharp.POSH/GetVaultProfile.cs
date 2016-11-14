@@ -1,4 +1,5 @@
-﻿using ACMESharp.Vault.Profile;
+﻿using ACMESharp.Vault;
+using ACMESharp.Vault.Profile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace ACMESharp.POSH
     {
         public const string PSET_LIST = "List";
         public const string PSET_GET = "Get";
+        public const string PSET_RELOAD_PROVIDERS = "ReloadProviders";
 
         [Parameter(ParameterSetName = PSET_LIST)]
         public SwitchParameter ListProfiles
@@ -23,9 +25,17 @@ namespace ACMESharp.POSH
         public string ProfileName
         { get; set; }
 
+        [Parameter(ParameterSetName = PSET_RELOAD_PROVIDERS)]
+        public SwitchParameter ReloadProviders
+        { get; set; }
+
         protected override void ProcessRecord()
         {
-            if (ListProfiles)
+            if (ReloadProviders)
+            {
+                VaultExtManager.Reload();
+            }
+            else if (ListProfiles)
             {
                 WriteObject(VaultProfileManager.GetProfileNames(), true);
             }

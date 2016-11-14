@@ -17,6 +17,7 @@ namespace ACMESharp.POSH
         public const string PSET_GET_CHALLENGE_HANDLER = "GetChallengeHandler";
         public const string PSET_LIST_HANDLER_PROFILES = "ListHandlerProfiles";
         public const string PSET_GET_HANDLER_PROFILE = "GetHandlerProfile";
+        public const string PSET_RELOAD_PROVIDERS = "ReloadProviders";
 
         [Parameter(ParameterSetName = PSET_GET_CHALLENGE_TYPE)]
         public SwitchParameter ListChallengeTypes
@@ -51,13 +52,22 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        [Parameter(ParameterSetName = PSET_RELOAD_PROVIDERS)]
+        public SwitchParameter ReloadProviders
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             // We have to invoke this here because we *may not* invoke
             // any Vault access but we do rely on Ext mechanism access.
             Util.PoshHelper.BeforeExtAccess();
 
-            if (!string.IsNullOrEmpty(GetChallengeType))
+            if (ReloadProviders)
+            {
+                ChallengeDecoderExtManager.Reload();
+                ChallengeHandlerExtManager.Reload();
+            }
+            else if (!string.IsNullOrEmpty(GetChallengeType))
             {
                 WriteVerbose("Getting details of Challenge Type Decoder");
                 var tInfo = ChallengeDecoderExtManager.GetProviderInfo(GetChallengeType);

@@ -16,6 +16,7 @@ namespace ACMESharp.POSH
         public const string PSET_GET_INSTALLER = "GetInstaller";
         public const string PSET_LIST_INSTALLER_PROFILES = "ListInstallerProfiles";
         public const string PSET_GET_INSTALLER_PROFILE = "GetInstallerProfile";
+        public const string PSET_RELOAD_PROVIDERS = "ReloadProviders";
 
         [Parameter(ParameterSetName = PSET_GET_INSTALLER)]
         public SwitchParameter ListInstallers
@@ -42,13 +43,21 @@ namespace ACMESharp.POSH
         public string VaultProfile
         { get; set; }
 
+        [Parameter(ParameterSetName = PSET_RELOAD_PROVIDERS)]
+        public SwitchParameter ReloadProviders
+        { get; set; }
+
         protected override void ProcessRecord()
         {
             // We have to invoke this here because we *may not* invoke
             // any Vault access but we do rely on Ext mechanism access.
             Util.PoshHelper.BeforeExtAccess();
 
-            if (!string.IsNullOrEmpty(GetInstaller))
+            if (ReloadProviders)
+            {
+                InstallerExtManager.Reload();
+            }
+            else if (!string.IsNullOrEmpty(GetInstaller))
             {
                 WriteVerbose("Getting details of Installer");
                 var pInfo = InstallerExtManager.GetProviderInfos()

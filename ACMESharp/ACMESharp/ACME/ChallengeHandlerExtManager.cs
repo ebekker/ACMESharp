@@ -9,48 +9,6 @@ using System.ComponentModel.Composition.Hosting;
 
 namespace ACMESharp.ACME
 {
-    public interface IChallengeHandlerProviderInfo : IAliasesSupported
-    {
-        string Name
-        { get; }
-
-        ChallengeTypeKind SupportedTypes
-        { get; }
-
-        string Label
-        { get; }
-
-        string Description
-        { get; }
-    }
-
-    [MetadataAttribute]
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ChallengeHandlerProviderAttribute : ExportAttribute
-    {
-        public ChallengeHandlerProviderAttribute(string name,
-                ChallengeTypeKind supportedTypes) : base(typeof(IChallengeHandlerProvider))
-        {
-            Name = name;
-            SupportedTypes = supportedTypes;
-        }
-
-        public string Name
-        { get; private set; }
-
-        public ChallengeTypeKind SupportedTypes
-        { get; private set; }
-
-        public string[] Aliases
-        { get; set; }
-
-        public string Label
-        { get; set; }
-
-        public string Description
-        { get; set; }
-    }
-
     [ExtManager]
     public static class ChallengeHandlerExtManager
     {

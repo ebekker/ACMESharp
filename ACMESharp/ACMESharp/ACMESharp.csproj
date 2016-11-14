@@ -79,9 +79,13 @@
     <Compile Include="AcmeRegistration.cs" />
     <Compile Include="AcmeServerDirectory.cs" />
     <Compile Include="ACME\Challenge.cs" />
+    <Compile Include="ACME\ChallengeDecoderProviderAttribute.cs" />
     <Compile Include="ACME\ChallengeHandlerExtManager.cs" />
     <Compile Include="ACME\ChallengeDecoderExtManager.cs" />
     <Compile Include="ACME\ChallengeAnswer.cs" />
+    <Compile Include="ACME\ChallengeHandlerProviderAttribute.cs" />
+    <Compile Include="ACME\IChallengeDecoderProviderInfo.cs" />
+    <Compile Include="ACME\IChallengeHandlerProviderInfo.cs" />
     <Compile Include="ACME\Providers\DnsChallengeDecoder.cs" />
     <Compile Include="ACME\IChallengeHandler.cs" />
     <Compile Include="ACME\IChallengeDecoder.cs" />

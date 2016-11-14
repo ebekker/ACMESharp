@@ -200,7 +200,7 @@ namespace ACMESharp.POSH
                     cliHandlerParams = (IReadOnlyDictionary<string, object>
                                     )PoshHelper.Convert<string, object>(HandlerParameters);
 
-                if (!Force)
+                if (!Force && !CleanUp)
                 {
                     if (!authzState.IsPending())
                         throw new InvalidOperationException(

@@ -35,6 +35,22 @@ namespace ACMESharp.ACME
             return _config.Get(type)?.Value;
         }
 
+        /// <summary>
+        /// Release existing configuration and registry and
+        /// tries to rediscover and reload any providers.
+        /// </summary>
+        public static void Reload()
+        {
+
+            if (_config?.CompositionContainer != null)
+            {
+                _config.CompositionContainer.Catalog?.Dispose();
+                _config.CompositionContainer.Dispose();
+            }
+
+            InitConfig();
+        }
+
         static void AssertInit()
         {
             if (_config == null)

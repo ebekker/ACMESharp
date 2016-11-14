@@ -76,7 +76,7 @@ else {
     #!        -NuGetApiKey $PSGalleryApiKey -Force -ErrorAction Stop
 	#!
     #!## Then we pull the module back down from the STAGING repo 
-    #!Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
+    #!Invoke-WebRequest -Uri "$($PSGalleryPublishUri)/$($modName)/$($modVer)" `
     #!        -OutFile ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName).$($modVer).nupkg"
     #!
 	#!
@@ -118,6 +118,7 @@ else {
 		"ACMESharp.Providers.IIS"        = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
 		"ACMESharp.Providers.AWS"        = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
 		"ACMESharp.Providers.CloudFlare" = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.Windows"    = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
 	}
 
 	foreach ($modName in $poshModules.Keys) {
@@ -142,14 +143,14 @@ else {
 				-NuGetApiKey $PSGalleryApiKey -Force -ErrorAction Stop
 
 		## Then we pull the module back down from the STAGING repo 
-		#$modPkgWeb = Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)" -MaximumRedirection 0 -ErrorAction Ignore
+		#$modPkgWeb = Invoke-WebRequest -Uri "$($PSGalleryPublishUri)/$($modName)" -MaximumRedirection 0 -ErrorAction Ignore
 		#$modPkgUri = New-Object uri($modPkgWeb.Headers.Location)
 		#$modPkg = $modPkgUri.Segments[-1]
 
 		$modPoshDir = ".\ACMESharp\$($modDir)\bin\posh"
 		$modPoshPkg = "$($modPoshDir)\$($modName).$($modVer).nupkg"
 		mkdir -Force $modPoshDir
-		Invoke-WebRequest -Uri "https://staging.nuget.org/api/v2/package/$($modName)/$($modVer)" `
+		Invoke-WebRequest -Uri "$($PSGalleryPublishUri)/$($modName)/$($modVer)" `
 				-OutFile $modPoshPkg
 		#		-OutFile ".\ACMESharp\$($modName)\bin\$($env:CONFIGURATION)\$($modName).$($modVer).nupkg"
 

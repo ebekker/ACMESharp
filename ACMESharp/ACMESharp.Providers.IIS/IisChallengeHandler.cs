@@ -27,14 +27,6 @@ namespace ACMESharp.Providers.IIS
     /// </remarks>
     public class IisChallengeHandler : IChallengeHandler
     {
-        #region -- Constants --
-
-        public const string IIS_REG_KEY = @"Software\Microsoft\InetStp";
-        public const string IIS_REG_MAJOR_VERS_VALNAME = "MajorVersion";
-        public const string IIS_REG_MINOR_VERS_VALNAME = "MinorVersion";
-
-        #endregion -- Constants --
-
         #region -- Properties --
 
         public string WebSiteRef
@@ -52,68 +44,6 @@ namespace ACMESharp.Providers.IIS
         #endregion -- Properties --
 
         #region -- Methods --
-
-        public static bool IsAdministrator()
-        {
-            var winId = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(winId);
-
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        public static Version GetIisVersion()
-        {
-            using (RegistryKey componentsKey = Registry.LocalMachine.OpenSubKey(IIS_REG_KEY, false))
-            {
-                if (componentsKey != null)
-                {
-                    int majorVersion = (int)componentsKey.GetValue(IIS_REG_MAJOR_VERS_VALNAME, -1);
-                    int minorVersion = (int)componentsKey.GetValue(IIS_REG_MINOR_VERS_VALNAME, -1);
-
-                    if (majorVersion != -1 && minorVersion != -1)
-                        return new Version(majorVersion, minorVersion);
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Returns just the distinct sites that have
-        /// at least one HTTP binding, sorted by ID.
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<IisWebSite> ListHttpWebSites()
-        {
-            return ListWebSites().Where(x => "http" == x.BindingProtocol)
-                .OrderBy(x => x.SiteId).Distinct(IisWebSiteComparer.INSTANCE);
-        }
-
-        /// <summary>
-        /// Returns an enumeration of minimal IIS site details.
-        /// </summary>
-        /// <returns></returns>
-        public static IEnumerable<IisWebSite> ListWebSites()
-        {
-            if (GetIisVersion()?.Major == 0)
-                yield break;
-
-            using (var iis = new ServerManager())
-            {
-                foreach (var site in iis.Sites)
-                    foreach (var binding in site.Bindings)
-                        yield return new IisWebSite
-                        {
-                            SiteId = site.Id,
-                            SiteName = site.Name,
-                            SiteRoot = site.Applications["/"].VirtualDirectories["/"].PhysicalPath,
-                            BindingProtocol = binding.Protocol,
-                            BindingAddress = binding?.EndPoint?.Address?.ToString(),
-                            BindingPort = binding?.EndPoint?.Port.ToString(),
-                            BindingHost = binding.Host,
-                        };
-            }
-        }
 
         public void Handle(Challenge c)
         {
@@ -142,35 +72,16 @@ namespace ACMESharp.Providers.IIS
 
         private void EditFile(HttpChallenge httpChallenge, bool delete)
         {
-            var httpSites = ListHttpWebSites().ToArray();
-            var sitesById = httpSites.Where(x => WebSiteRef == x.SiteId.ToString()).ToArray();
-            var sitesByName = httpSites.Where(x => WebSiteRef == x.SiteName).ToArray();
-
-            IisWebSite site;
-
-            if (sitesById.Length > 1)
-                throw new InvalidOperationException("duplicate sites resolved for referenced site ID")
-                        .With(nameof(WebSiteRef), WebSiteRef)
-                        .With("count", sitesById.Length);
-            if (sitesById.Length == 1)
-                site = sitesById[0];
-            else if (sitesByName.Length > 1)
-                throw new InvalidOperationException("ambiguous reference, duplicate sites resolved for referenced site name")
-                        .With(nameof(WebSiteRef), WebSiteRef)
-                        .With("count", sitesByName.Length);
-            else if (sitesByName.Length < 1)
-                throw new InvalidOperationException("unresolved site for given site reference")
-                        .With(nameof(WebSiteRef), WebSiteRef);
-            else
-                site = sitesByName[0];
+            IisWebSiteBinding site = IisHelper.ResolveSingleSite(WebSiteRef,
+                    IisHelper.ListDistinctHttpWebSites());
 
             var siteRoot = site.SiteRoot;
             if (!string.IsNullOrEmpty(OverrideSiteRoot))
                 siteRoot = OverrideSiteRoot;
             if (string.IsNullOrEmpty(siteRoot))
                 throw new InvalidOperationException("missing root path for resolve site")
-                        .With(nameof(IisWebSite.SiteId), site.SiteId)
-                        .With(nameof(IisWebSite.SiteName), site.SiteName);
+                        .With(nameof(IisWebSiteBinding.SiteId), site.SiteId)
+                        .With(nameof(IisWebSiteBinding.SiteName), site.SiteName);
 
             // IIS-configured Site Root can use env vars
             siteRoot = Environment.ExpandEnvironmentVariables(siteRoot);
@@ -194,7 +105,7 @@ namespace ACMESharp.Providers.IIS
             var fullMetaPath = $"{fullFilePath}-acmesharp_meta";
 
             // Check if user is running with elevated privs and warn if not
-            if (!IsAdministrator())
+            if (!IisHelper.IsAdministrator())
             {
                 Console.Error.WriteLine("WARNING:  You are not running with elelvated privileges.");
                 Console.Error.WriteLine("          Write access may be denied to the destination.");
@@ -249,7 +160,7 @@ namespace ACMESharp.Providers.IIS
                 // we can capture and clean it up later on
                 var meta = new IisChallengeHandlerMeta
                 {
-                    WasAdmin = IsAdministrator(),
+                    WasAdmin = IisHelper.IsAdministrator(),
                     SkippedLocalWebConfig = SkipLocalWebConfig,
                     DirsCreated = new List<string>(),
                 };
@@ -306,21 +217,6 @@ namespace ACMESharp.Providers.IIS
         #endregion -- Methods --
 
         #region -- Types --
-
-        private class IisWebSiteComparer : EqualityComparer<IisWebSite>
-        {
-            public static readonly IisWebSiteComparer INSTANCE = new IisWebSiteComparer();
-
-            public override bool Equals(IisWebSite x, IisWebSite y)
-            {
-                return x?.SiteId == y?.SiteId;
-            }
-
-            public override int GetHashCode(IisWebSite obj)
-            {
-                return $"{obj?.SiteId}".GetHashCode();
-            }
-        }
 
         public class IisChallengeHandlerMeta
         {

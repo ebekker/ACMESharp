@@ -50,7 +50,10 @@
     </Compile>
     <Compile Include="IisChallengeHandler.cs" />
     <Compile Include="IisChallengeHandlerProvider.cs" />
-    <Compile Include="IisWebSite.cs" />
+    <Compile Include="IisHelper.cs" />
+    <Compile Include="IisInstaller.cs" />
+    <Compile Include="IisInstallerProvider.cs" />
+    <Compile Include="IisWebSiteBinding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

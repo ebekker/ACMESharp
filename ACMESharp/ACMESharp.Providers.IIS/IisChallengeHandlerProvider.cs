@@ -9,7 +9,7 @@ using ACMESharp.Ext;
 namespace ACMESharp.Providers.IIS
 {
     [ChallengeHandlerProvider("iis", ChallengeTypeKind.HTTP,
-        Label = "Internet Information Servier (IIS)",
+        Label = "Internet Information Server (IIS)",
         Description = "Provider for handling Challenges that manages" +
                       " the local IIS site configuration.")]
     public class IisChallengeHandlerProvider : IChallengeHandlerProvider

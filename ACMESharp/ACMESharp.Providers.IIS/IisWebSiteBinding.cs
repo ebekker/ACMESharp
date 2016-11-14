@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ACMESharp.Providers.IIS
 {
-    public class IisWebSite
+    public class IisWebSiteBinding
     {
         public long SiteId
         { get; set; }

@@ -48,13 +48,7 @@ namespace ACMESharp.ACME
         public static void Reload()
         {
 
-            if (_config?.CompositionContainer != null)
-            {
-                _config.CompositionContainer.Catalog?.Dispose();
-                _config.CompositionContainer.Dispose();
-            }
-
-            InitConfig();
+            _config = ExtCommon.ReloadExtConfig<Config>(_config);
         }
 
         static void AssertInit()
@@ -65,17 +59,12 @@ namespace ACMESharp.ACME
                 {
                     if (_config == null)
                     {
-                        InitConfig();
+                        Reload();
                     }
                 }
             }
             if (_config == null)
                 throw new InvalidOperationException("could not initialize provider configuration");
-        }
-
-        static void InitConfig()
-        {
-            _config = ExtCommon.InitExtConfig<Config>();
         }
 
         class Config : ExtRegistry<IChallengeHandlerProvider, IChallengeHandlerProviderInfo>

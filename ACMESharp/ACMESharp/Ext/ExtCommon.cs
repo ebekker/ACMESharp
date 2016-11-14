@@ -45,6 +45,28 @@ namespace ACMESharp.Ext
             return Path.Combine(thisDir, EXT_DIR);
         }
 
+        public static TExtConfig ReloadExtConfig<TExtConfig>(TExtConfig existing) where TExtConfig : new()
+        {
+            if (existing != null)
+            {
+                if (existing is IExtDetail)
+                {
+                    var extDetail = (IExtDetail)existing;
+                    if (extDetail?.CompositionContainer != null)
+                    {
+                        extDetail.CompositionContainer.Catalog?.Dispose();
+                        extDetail.CompositionContainer.Dispose();
+                    }
+                }
+
+                if (existing is IDisposable)
+                {
+                    ((IDisposable)existing).Dispose();
+                }
+            }
+            return InitExtConfig<TExtConfig>();
+        }
+
         public static TExtConfig InitExtConfig<TExtConfig>() where TExtConfig : new()
         {
             var aggCat = new AggregateCatalog();

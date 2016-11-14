@@ -10,6 +10,6 @@ namespace ACMESharp.Ext
     public interface IExtDetail
     {
         CompositionContainer CompositionContainer
-        { set; }
+        { get;  set; }
     }
 }

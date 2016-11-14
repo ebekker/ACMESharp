@@ -28,11 +28,13 @@ else {
 
     Write-Output "Building nuget packages"
 	.\ACMESharp\nuget-build.cmd ACMESharp
+	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.BouncyCastle
 	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.OpenSslLib32
 	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.OpenSslLib64
 
 	.\ACMESharp\nuget-build.cmd ACMESharp.Vault
 	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.IIS
+	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.Windows
 	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.AWS
 	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.CloudFlare
 	.\ACMESharp\nuget-build.cmd ACMESharp.POSH -Exclude README-TESTING.txt -Exclude en-us\*

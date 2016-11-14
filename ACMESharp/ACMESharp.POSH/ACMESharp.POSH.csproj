@@ -165,8 +165,8 @@
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   <Target Name="XmlDoc2CmdletDoc" AfterTargets="Build">
-    <Exec Command="$(ProjectDir)..\..\tools\XmlDoc2CmdletDoc\XmlDoc2CmdletDoc.exe $(TargetPath)" />
-    <Exec Command="move $(TargetPath)-Help.xml $(TargetDir)en-US" />
+    <Exec Command="&quot;$(ProjectDir)..\..\tools\XmlDoc2CmdletDoc\XmlDoc2CmdletDoc.exe&quot; &quot;$(TargetPath)&quot;" />
+    <Exec Command="move &quot;$(TargetPath)-Help.xml&quot; &quot;$(TargetDir)en-US&quot;" />
     <!-- Add the generated help XML to the Content item group -->
     <!-- Thanks to http://stackoverflow.com/a/12887795 for this -->
     <!--

@@ -83,7 +83,7 @@ namespace ACMESharp.Providers.IIS
             var p = GetProvider();
             using (var h = p.GetHandler(c, _handlerParams))
             {
-                var sites = IisChallengeHandler.ListHttpWebSites();
+                var sites = IisHelper.ListDistinctHttpWebSites();
                 Assert.IsNotNull(sites);
                 var site = sites.First(x => x.SiteName == _handlerParams.WebSiteRef);
                 Assert.IsNotNull(site);

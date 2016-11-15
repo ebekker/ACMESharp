@@ -140,8 +140,14 @@
     <Compile Include="PKI\CsrParams.cs" />
     <Compile Include="PKI\EC\EcPrivateKey.cs" />
     <Compile Include="PKI\EC\EcPrivateKeyParams.cs" />
+    <Compile Include="PKI\IPkiTool.cs" />
+    <Compile Include="PKI\IPkiToolProvider.cs" />
+    <Compile Include="PKI\IPkiToolProviderInfo.cs" />
     <Compile Include="PKI\PkiFormats.cs" />
+    <Compile Include="PKI\PkiToolProviderAttribute.cs" />
+    <Compile Include="PKI\PkiToolExtManager.cs" />
     <Compile Include="PKI\PrivateKey.cs" />
+    <Compile Include="PKI\Providers\PkiToolBase.cs" />
     <Compile Include="PKI\RSA\RsaPrivateKey.cs" />
     <Compile Include="PKI\RSA\RsaPrivateKeyParams.cs" />
     <Compile Include="RequestMessage.cs" />

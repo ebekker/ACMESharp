@@ -55,7 +55,7 @@ namespace ACMESharp.Providers.IIS
 
         #region -- Methods --
 
-        public void Install(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, CertificateProvider cp)
+        public void Install(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, IPkiTool cp)
         {
             var bindings = IisHelper.ResolveSiteBindings(WebSiteRef);
             var existing = IisHelper.ResolveSiteBindings(
@@ -107,13 +107,13 @@ namespace ACMESharp.Providers.IIS
             }
         }
 
-        public void Uninstall(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, CertificateProvider cp)
+        public void Uninstall(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, IPkiTool cp)
         {
             throw new NotImplementedException();
         }
 
         public static X509Certificate2 ImportCertificate(
-                PrivateKey pk, Crt crt, IEnumerable<Crt> chain, CertificateProvider cp,
+                PrivateKey pk, Crt crt, IEnumerable<Crt> chain, IPkiTool cp,
                 StoreName storeName, StoreLocation storeLocation, string friendlyName)
         {
             var store = new X509Store(storeName, storeLocation);

@@ -25,10 +25,10 @@ namespace ACMESharp.Installer
         #region -- Methods --
 
         void Install(PKI.PrivateKey pk, PKI.Crt crt, IEnumerable<PKI.Crt> chain,
-                PKI.CertificateProvider cp);
+                PKI.IPkiTool cp);
 
         void Uninstall(PKI.PrivateKey pk, PKI.Crt crt, IEnumerable<PKI.Crt> chain,
-                PKI.CertificateProvider cp);
+                PKI.IPkiTool cp);
 
         #endregion -- Methods --
     }

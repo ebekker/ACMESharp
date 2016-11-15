@@ -1253,9 +1253,13 @@ namespace ACMESharp
         [TestCategory("acmeServerInteg")]
         public void Test0170_GenCsrAndRequestCertificate()
         {
-            using (var cp = CertificateProvider.GetProvider(
-                    PKI.Providers.BouncyCastleProvider.PROVIDER_NAME))
+            //using (var cp = CertificateProvider.GetProvider(
+            //        PKI.Providers.BouncyCastleProvider.PROVIDER_NAME))
             //using (var cp2 = CertificateProvider.GetProvider(
+            //        PKI.Providers.OpenSslLibProvider.PROVIDER_NAME))
+            using (var cp = PkiToolExtManager.GetPkiTool(
+                    PKI.Providers.BouncyCastleProvider.PROVIDER_NAME))
+            //using (var cp2 = PkiToolExtManager.GetPkiTool(
             //        PKI.Providers.OpenSslLibProvider.PROVIDER_NAME))
             {
 

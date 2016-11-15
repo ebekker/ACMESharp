@@ -8,13 +8,14 @@ namespace ACMESharp
     [TestClass]
     public class CertificateProviderTests
     {
-        private static CertificateProvider GetCP()
+        private static IPkiTool GetCP()
         {
             //CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.OpenSslCliProvider>();
             //CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.CertEnrollProvider>();
             //CertificateProvider.RegisterProvider<ACMESharp.PKI.Providers.BouncyCastleProvider>();
 
-            return CertificateProvider.GetProvider(ACMESharp.PKI.Providers.BouncyCastleProvider.PROVIDER_NAME);
+            //return CertificateProvider.GetProvider(ACMESharp.PKI.Providers.BouncyCastleProvider.PROVIDER_NAME);
+            return PkiToolExtManager.GetPkiTool(ACMESharp.PKI.Providers.BouncyCastleProvider.PROVIDER_NAME);
         }
 
         [TestMethod]

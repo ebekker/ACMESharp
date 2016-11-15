@@ -33,7 +33,7 @@ namespace ACMESharp.Providers.AWS
         { get; private set; }
 
         public void Install(PrivateKey pk, Crt crt, IEnumerable<PKI.Crt> chain,
-                CertificateProvider cp)
+                IPkiTool cp)
         {
             AssertNotDisposed();
 
@@ -84,7 +84,7 @@ namespace ACMESharp.Providers.AWS
         }
 
         public void Uninstall(PrivateKey pk, Crt crt, IEnumerable<PKI.Crt> chain,
-                CertificateProvider cp)
+                IPkiTool cp)
         {
             AssertNotDisposed();
 

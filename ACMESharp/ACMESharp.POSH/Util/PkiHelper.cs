@@ -9,11 +9,13 @@ namespace ACMESharp.POSH.Util
 {
     public static class PkiHelper
     {
-        public static CertificateProvider GetPkiTool(string name)
+        public static IPkiTool GetPkiTool(string name)
         {
             return string.IsNullOrEmpty(name)
-                ? CertificateProvider.GetProvider()
-                : CertificateProvider.GetProvider(name);
+                //? CertificateProvider.GetProvider()
+                //: CertificateProvider.GetProvider(name);
+                ? PkiToolExtManager.GetPkiTool()
+                : PkiToolExtManager.GetPkiTool(name);
         }
     }
 }

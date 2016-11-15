@@ -24,7 +24,7 @@ namespace ACMESharp.Providers.Windows
         public bool IsDisposed
         { get; private set; }
 
-        public void Install(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, CertificateProvider cp)
+        public void Install(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, IPkiTool cp)
         {
             var store = new X509Store(StoreName, StoreLocation);
             try
@@ -55,7 +55,7 @@ namespace ACMESharp.Providers.Windows
             }
         }
 
-        public void Uninstall(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, CertificateProvider cp)
+        public void Uninstall(PrivateKey pk, Crt crt, IEnumerable<Crt> chain, IPkiTool cp)
         {
             throw new NotImplementedException();
         }

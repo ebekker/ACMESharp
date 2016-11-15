@@ -52,7 +52,7 @@
     </Compile>
     <Compile Include="OpenSslLibProvider.cs" />
     <Compile Include="OSSLLibPkiTool.cs" />
-    <Compile Include="OSSLCliPkiToolProvider.cs" />
+    <Compile Include="OSSLLibPkiToolProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

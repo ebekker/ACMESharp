@@ -32,7 +32,7 @@ namespace ACMESharp.PKI.Providers
     /// managed provider that should work in most environments with minimum
     /// dependencies.
     /// </remarks>
-    public class BouncyCastleProvider : CertificateProvider
+    public class BouncyCastleProvider : CertificateProvider, IPkiTool
     {
         // Useful references and examples for BC:
         //  CSR:

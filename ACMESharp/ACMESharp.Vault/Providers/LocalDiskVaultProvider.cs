@@ -63,6 +63,7 @@ namespace ACMESharp.Vault.Providers
 
         public const string VAULT  /**/ = "00-VAULT";
         public const string PRVDR  /**/ = "10-PRVDR";
+        public const string INSTP  /**/ = "18-INSTP";
         public const string CSRDT  /**/ = "30-CSRDT";
         public const string KEYGN  /**/ = "40-KEYGN";
         public const string KEYPM  /**/ = "45-KEYPM";
@@ -73,7 +74,6 @@ namespace ACMESharp.Vault.Providers
         public const string CRTDR  /**/ = "66-CRTDR";
         public const string ISUPM  /**/ = "75-ISUPM";
         public const string ISUDR  /**/ = "76-ISUDR";
-        public const string INSTP  /**/ = "80-INSTP";
         public const string ASSET  /**/ = "99-ASSET";
 
         public static readonly IReadOnlyDictionary<VaultAssetType, string> TYPE_PATHS =

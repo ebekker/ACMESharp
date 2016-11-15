@@ -6,6 +6,7 @@ using System.Linq;
 using System.Management.Automation;
 using ACMESharp.PKI;
 using ACMESharp.Util;
+using ACMESharp.PKI.RSA;
 
 namespace ACMESharp.POSH
 {

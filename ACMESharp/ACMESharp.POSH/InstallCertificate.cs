@@ -1,5 +1,7 @@
 ﻿using ACMESharp.Installer;
 using ACMESharp.PKI;
+using ACMESharp.PKI.EC;
+using ACMESharp.PKI.RSA;
 using ACMESharp.POSH.Util;
 using ACMESharp.Util;
 using ACMESharp.Vault.Model;

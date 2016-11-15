@@ -66,7 +66,7 @@ namespace ACMESharp.PKI
         {
             using (var r = new StreamReader(source))
             {
-                return JsonConvert.DeserializeObject<RsaPrivateKey>(r.ReadToEnd());
+                return JsonConvert.DeserializeObject<RSA.RsaPrivateKey>(r.ReadToEnd());
             }
         }
 

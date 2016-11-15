@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -50,6 +51,8 @@
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
     <Compile Include="OpenSslLibProvider.cs" />
+    <Compile Include="OSSLLibPkiTool.cs" />
+    <Compile Include="OSSLCliPkiToolProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

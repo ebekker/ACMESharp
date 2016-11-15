@@ -12,6 +12,7 @@ using ACMESharp.JOSE;
 using ACMESharp.PKI;
 using ACMESharp.Providers.AWS;
 using ACMESharp.WebServer;
+using ACMESharp.PKI.RSA;
 
 namespace ACMESharp
 {

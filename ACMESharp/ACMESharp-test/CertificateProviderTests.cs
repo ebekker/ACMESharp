@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using ACMESharp.PKI;
+using ACMESharp.PKI.RSA;
 
 namespace ACMESharp
 {

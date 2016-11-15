@@ -9,6 +9,7 @@ using ACMESharp.JOSE;
 using ACMESharp.PKI;
 using ACMESharp.Util;
 using System.Collections;
+using ACMESharp.PKI.RSA;
 
 namespace ACMESharp.POSH
 {

@@ -1,4 +1,7 @@
-﻿using OpenSSL.Core;
+﻿using ACMESharp.PKI.EC;
+using ACMESharp.PKI.RSA;
+using OpenSSL.Core;
+using OSSL_RSA = OpenSSL.Crypto.RSA;
 using OpenSSL.Crypto;
 using OpenSSL.X509;
 using System;
@@ -66,7 +69,7 @@ namespace ACMESharp.PKI.Providers
                 else
                     e = BigNumber.FromDecimalString(rsaPkParams.PubExp);
 
-                using (var rsa = new RSA())
+                using (var rsa = new OSSL_RSA())
                 {
                     BigNumber.GeneratorHandler cbWrapper = null;
                     if (rsaPkParams.Callback != null)

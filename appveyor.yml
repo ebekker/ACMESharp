@@ -11,6 +11,10 @@ environment:
     secure: SUYnj+1syy4bFbcQnP7a9f0jdPoxhbW6yV8FOdNcxTxWQMmnxJ4NqaHnMLlUS2hG
   STAGING_MYGET_APIKEY:
     secure: YgniOlPvY8QhpvATtvXiPP9zM65vI/zvanIzIFZ2YJvK+xxfzgwEKpj8CcZjHf1k
+  COVERITY_PROJECT_TOKEN:
+    secure: L57O1BtGTk/n6pjNDXgF2U2zoGhDvi+a+oYoCYQATCs=
+  COVERITY_NOTIFICATION_EMAIL:
+    secure: tqVJuj5P8gr5lS1gMbTV5pEq7VC8lGU4r4to1RDzDcQ=
 configuration:
   - Debug
 # - Release

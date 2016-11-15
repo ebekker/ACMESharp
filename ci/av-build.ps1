@@ -19,11 +19,26 @@ $doCoverity = $false
 try { $doCoverity = ((wget http://acmesharp.zyborg.io/appveyor-coverity.txt).Content -eq 1) }
 catch { }
 if ($doCoverity) {
-    Write-Warning "Detected build with Coverity Scan request"
+	## References:
+	##    https://scan.coverity.com/download?tab=csharp
+	##    https://github.com/appveyor/ci/issues/144
+	##    https://github.com/OpenRA/OpenRA/pull/8313/files
+
+	Write-Warning "Detected build with Coverity Scan request"
 	& cov-build.exe --dir cov-int $msb_prog $msb_args
+	& nuget.exe install PublishCoverity -ExcludeVersion
+	& PublishCoverity\PublishCoverity.exe compress -o coverity.zip -i cov-int
+	$version = Get-Date -format s
+	PublishCoverity\PublishCoverity.exe publish `
+			-t "$env:COVERITY_PROJECT_TOKEN" `
+			-e "$env:COVERITY_NOTIFICATION_EMAIL" `
+			-r "$env:APPVEYOR_REPO_NAME" `
+			-z coverity.zip `
+			-d "AppVeyor Coverity build ($env:APPVEYOR_BUILD_VERSION)." `
+			--codeVersion "$version"
 }
 else {
-    Write-Output "Running *normal* build"
+    Write-Output "Running *normal* build (i.e. no Coverity)"
     & $msb_prog $msb_args
 
     Write-Output "Building nuget packages"

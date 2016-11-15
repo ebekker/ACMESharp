@@ -39,8 +39,8 @@ namespace ACMESharp.PKI
         protected CertificateProvider(IReadOnlyDictionary<string, string> newParams)
         { }
 
-        public virtual void Dispose()
-        { }
+        public virtual bool IsDisposed
+        { get; private set; }
 
         public abstract PrivateKey GeneratePrivateKey(PrivateKeyParams pkp);
 
@@ -118,6 +118,41 @@ namespace ACMESharp.PKI
         public abstract void ExportCertificate(Crt cert, EncodingFormat fmt, Stream target);
 
         public abstract void ExportArchive(PrivateKey pk, IEnumerable<Crt> certs, ArchiveFormat fmt, Stream target, string password = "");
+
+        #region -- IDisposable Support --
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                IsDisposed = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~CertificateProvider() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+
+        #endregion -- IDisposable Support --
 
         public static void RegisterProvider<CP>(string name = DEFAULT_PROVIDER_NAME) where CP : CertificateProvider
         {

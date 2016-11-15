@@ -25,10 +25,10 @@ namespace ACMESharp.PKI
         private static readonly List<Tuple<string, string>> _providerTypes =
                 new List<Tuple<string, string>>
         {
-            Tuple.Create(Providers.OpenSslLibProvider.PROVIDER_NAME,
-                    typeof(Providers.OpenSslLibProvider).FullName),
             Tuple.Create("BouncyCastle",
                     "ACMESharp.PKI.Providers.BouncyCastleProvider, ACMESharp.PKI.Providers.BouncyCastle"),
+            Tuple.Create("OpenSSL-LIB",
+                    "ACMESharp.PKI.Providers.OpenSslLibProvider, ACMESharp.PKI.Providers.OpenSslLib"),
             Tuple.Create("OpenSSL-CLI",
                     "ACMESharp.PKI.Providers.OpenSslCliProvider, ACMESharp.PKI.Providers.OpenSslCli"),
         };

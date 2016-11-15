@@ -75,6 +75,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget-staging", "nuget-stag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.Windows", "ACMESharp.Providers.Windows\ACMESharp.Providers.Windows.csproj", "{F085D9BB-0DF5-442B-8340-6250792A8D7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.OpenSslLib", "ACMESharp.PKI.Providers.OpenSslLib\ACMESharp.PKI.Providers.OpenSslLib.csproj", "{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,10 @@ Global
 		{F085D9BB-0DF5-442B-8340-6250792A8D7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F085D9BB-0DF5-442B-8340-6250792A8D7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F085D9BB-0DF5-442B-8340-6250792A8D7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

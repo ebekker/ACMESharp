@@ -28,14 +28,14 @@ if ($doCoverity) {
 	& cov-build.exe --dir cov-int $msb_prog $msb_args
 	& nuget.exe install PublishCoverity -ExcludeVersion
 	& PublishCoverity\tools\PublishCoverity.exe compress -o coverity.zip -i cov-int
-	$version = Get-Date -format s
+	$covDateTime = Get-Date -format s
 	& PublishCoverity\tools\PublishCoverity.exe publish `
 			-t "$env:COVERITY_PROJECT_TOKEN" `
 			-e "$env:COVERITY_NOTIFICATION_EMAIL" `
 			-r "$env:APPVEYOR_REPO_NAME" `
 			-z coverity.zip `
-			-d "AppVeyor Coverity build ($env:APPVEYOR_BUILD_VERSION)." `
-			--codeVersion "$version"
+			-d "AppVeyor Coverity build ($env:APPVEYOR_BUILD_VERSION @ $covDateTime)." `
+			--codeVersion $env:APPVEYOR_BUILD_VERSION
 }
 else {
     Write-Output "Running *normal* build (i.e. no Coverity)"

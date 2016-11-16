@@ -27,9 +27,9 @@ if ($doCoverity) {
 	Write-Warning "Detected build with Coverity Scan request"
 	& cov-build.exe --dir cov-int $msb_prog $msb_args
 	& nuget.exe install PublishCoverity -ExcludeVersion
-	& PublishCoverity\PublishCoverity.exe compress -o coverity.zip -i cov-int
+	& PublishCoverity\tools\PublishCoverity.exe compress -o coverity.zip -i cov-int
 	$version = Get-Date -format s
-	PublishCoverity\PublishCoverity.exe publish `
+	& PublishCoverity\tools\PublishCoverity.exe publish `
 			-t "$env:COVERITY_PROJECT_TOKEN" `
 			-e "$env:COVERITY_NOTIFICATION_EMAIL" `
 			-r "$env:APPVEYOR_REPO_NAME" `

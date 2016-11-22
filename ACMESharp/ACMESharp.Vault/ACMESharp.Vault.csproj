@@ -61,6 +61,9 @@
     <Compile Include="Profile\InstallerProfile.cs" />
     <Compile Include="Profile\ProviderProfile.cs" />
     <Compile Include="Profile\VaultProfileManager.cs" />
+    <Compile Include="Providers\EntityMeta.cs" />
+    <Compile Include="Providers\FileVaultAsset.cs" />
+    <Compile Include="Providers\LocalDiskVault.cs" />
     <Compile Include="Providers\LocalDiskVaultProvider.cs" />
     <Compile Include="Util\EntityDictionary.cs" />
     <Compile Include="Util\EntityHelper.cs" />

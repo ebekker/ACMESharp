@@ -70,7 +70,7 @@ This ACME client is being developed against the [Boulder CA](https://github.com/
 
 ## Current State
 
-This client is now operable and can successfully interact with the Let's Encrypt  [staging CA](https://acme-staging.api.letsencrypt.org/) to initialize new Registrations, authorize DNS Identifiers and issue Certificates.  Further, it can succussfully install and configure the certificate and related SSL/TLS settings for a local or remote IIS 7.0+ server or an AWS environment.
+This client is now operable and can successfully interact with the Let's Encrypt  [staging CA](https://acme-staging.api.letsencrypt.org/) to initialize new Registrations, authorize DNS Identifiers and issue Certificates.  Further, it can successfully install and configure the certificate and related SSL/TLS settings for a local or remote IIS 7.0+ server or an AWS environment.
 
 ## Quick Start
 

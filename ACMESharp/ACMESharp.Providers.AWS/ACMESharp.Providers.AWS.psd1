@@ -39,7 +39,7 @@
 		PSData = @{
 
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags = @('pki','ssl','tls','security','certificates','letsencrypt','acme','powershell','acmesharp','aws','route53','s3','cloudfront')
+			Tags = @('pki','ssl','tls','security','certificates','letsencrypt','acme','powershell','acmesharp','aws','route53','s3','cloudfront','acmesharp_ext')
 
 			# A URL to the license for this module.
 			LicenseUri = 'https://raw.githubusercontent.com/ebekker/ACMESharp/master/LICENSE'

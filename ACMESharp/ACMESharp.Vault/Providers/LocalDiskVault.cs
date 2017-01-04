@@ -237,9 +237,12 @@ namespace ACMESharp.Vault.Providers
                 // Make sure the asset root dir is there
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
+                var fileOpts = FileOptions.None;
+                if (isSensitive && !BypassEFS)
+                    fileOpts = FileOptions.Encrypted;
+
                 // Create a placeholder file to reserve and represent the created file
-                using (var fs = File.Create(path, 100,
-                        isSensitive ? FileOptions.Encrypted : FileOptions.None))
+                using (var fs = File.Create(path, 100, fileOpts))
                 { }
             }
             else if (!getOrCreate)

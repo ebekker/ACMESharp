@@ -38,17 +38,18 @@ namespace ACMESharp.WebServer
             if (filePath.StartsWith("/"))
                 filePath = filePath.Substring(1);
 
-            var s3 = new Amazon.S3.AmazonS3Client(
-                    AccessKeyId, SecretAccessKey, RegionEndpoint);
-
-            var s3Requ = new Amazon.S3.Model.PutObjectRequest
+            using (var s3 = new Amazon.S3.AmazonS3Client(
+                    AccessKeyId, SecretAccessKey, RegionEndpoint))
             {
-                BucketName = BucketName,
-                Key = filePath,
-                InputStream = s,
-                AutoCloseStream = false,
-            };
-            var s3Resp = s3.PutObject(s3Requ);
+                var s3Requ = new Amazon.S3.Model.PutObjectRequest
+                {
+                    BucketName = BucketName,
+                    Key = filePath,
+                    InputStream = s,
+                    AutoCloseStream = false,
+                };
+                var s3Resp = s3.PutObject(s3Requ);
+            }
 
             if (DnsProvider != null)
             {

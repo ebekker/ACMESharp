@@ -18,20 +18,22 @@ namespace ACMESharp.Vault.Providers
         public const string TAG_VERS = "1.0";
         public const string TAG_FILE = ".acme.vault";
 
-        public const string VAULT  /**/ = "00-VAULT";
-        public const string PRVDR  /**/ = "10-PRVDR";
-        public const string INSTP  /**/ = "18-INSTP";
-        public const string CSRDT  /**/ = "30-CSRDT";
-        public const string KEYGN  /**/ = "40-KEYGN";
-        public const string KEYPM  /**/ = "45-KEYPM";
-        public const string CSRGN  /**/ = "50-CSRGN";
-        public const string CSRPM  /**/ = "55-CSRPM";
-        public const string CSRDR  /**/ = "56-CSRDR";
-        public const string CRTPM  /**/ = "65-CRTPM";
-        public const string CRTDR  /**/ = "66-CRTDR";
-        public const string ISUPM  /**/ = "75-ISUPM";
-        public const string ISUDR  /**/ = "76-ISUDR";
-        public const string ASSET  /**/ = "99-ASSET";
+        public const string VAULT  /**/ = "00-VAULT"; // Vault Info
+        public const string MTADT  /**/ = "01-MTADT"; // Asset Meta Data
+
+        public const string PRVDR  /**/ = "10-PRVDR"; // Challenge Handler Provider Profile
+        public const string INSTP  /**/ = "18-INSTP"; // Installer Provider Profile
+        public const string CSRDT  /**/ = "30-CSRDT"; // CSR Generation Details
+        public const string KEYGN  /**/ = "40-KEYGN"; // Private Key Generation Details
+        public const string KEYPM  /**/ = "45-KEYPM"; // Private Key PEM Export
+        public const string CSRGN  /**/ = "50-CSRGN"; // CSR Export
+        public const string CSRPM  /**/ = "55-CSRPM"; // CSR PEM Export
+        public const string CSRDR  /**/ = "56-CSRDR"; // CSR DER Export
+        public const string CRTPM  /**/ = "65-CRTPM"; // Certificate PEM Export
+        public const string CRTDR  /**/ = "66-CRTDR"; // Certificate DER Export
+        public const string ISUPM  /**/ = "75-ISUPM"; // Issuer Certificate PEM Export
+        public const string ISUDR  /**/ = "76-ISUDR"; // Issuer Certificate DER Export
+        public const string ASSET  /**/ = "99-ASSET"; // Generic Asset
 
         public static readonly IReadOnlyDictionary<VaultAssetType, string> TYPE_PATHS =
                 new ReadOnlyDictionary<VaultAssetType, string>(
@@ -68,6 +70,9 @@ namespace ACMESharp.Vault.Providers
         { get; set; }
 
         public bool CreatePath
+        { get; set; }
+
+        public bool BypassEFS
         { get; set; }
 
         public bool IsDisposed

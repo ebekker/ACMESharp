@@ -7,7 +7,7 @@ namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsData.Update, "Registration", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(AcmeRegistration))]
-    public class UpdateRegistration : BaseCmdlet
+    public class UpdateRegistration : Cmdlet
     {
         public const string PSET_DEFAULT = "Default";
         public const string PSET_LOCAL_ONLY = "LocalOnly";

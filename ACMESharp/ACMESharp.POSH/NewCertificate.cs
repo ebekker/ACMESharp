@@ -29,7 +29,7 @@ namespace ACMESharp.POSH
     /// </summary>
     [Cmdlet(VerbsCommon.New, "Certificate", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(CertificateInfo))]
-    public class NewCertificate : BaseCmdlet
+    public class NewCertificate : Cmdlet
     {
         public const string PSET_DEFAULT = "Default";
         public const string PSET_GENERATE = "Generate";

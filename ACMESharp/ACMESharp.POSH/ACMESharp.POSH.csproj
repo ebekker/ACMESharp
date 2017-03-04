@@ -59,7 +59,6 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
-    <Compile Include="BaseCmdlet.cs" />
     <Compile Include="GetCertificate.cs" />
     <Compile Include="GetChallengeHandlerProfile.cs" />
     <Compile Include="GetIdentifier.cs" />

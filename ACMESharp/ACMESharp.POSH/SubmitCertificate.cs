@@ -15,7 +15,7 @@ namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsLifecycle.Submit, "Certificate")]
     [OutputType(typeof(CertificateInfo))]
-    public class SubmitCertificate : BaseCmdlet
+    public class SubmitCertificate : Cmdlet
     {
         /// <summary>
         /// <para type="description">

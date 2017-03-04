@@ -25,7 +25,7 @@ namespace ACMESharp.POSH
     /// </summary>
     [Cmdlet(VerbsCommon.Get, "Certificate", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(CertificateInfo))]
-    public class GetCertificate : BaseCmdlet
+    public class GetCertificate : Cmdlet
     {
         public const string PSET_LIST = "List";
         public const string PSET_GET = "Get";
@@ -261,6 +261,7 @@ namespace ACMESharp.POSH
                         using (var cp = Util.PkiHelper.GetPkiTool(
                             StringHelper.IfNullOrEmpty(PkiTool, v.PkiTool)))
                         {
+
                             using (Stream keyStream = vlt.LoadAsset(keyPemAsset),
                                 crtStream = vlt.LoadAsset(crtPemAsset),
                                 isuStream = vlt.LoadAsset(isuPemAsset),

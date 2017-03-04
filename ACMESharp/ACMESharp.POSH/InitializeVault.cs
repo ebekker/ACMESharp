@@ -11,7 +11,7 @@ using System;
 namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsData.Initialize, "Vault", DefaultParameterSetName = PSET_BASE_SERVICE)]
-    public class InitializeVault : Cmdlet
+    public class InitializeVault : BaseCmdlet
     {
         public const string PSET_BASE_SERVICE = "BaseService";
         public const string PSET_BASE_URI = "BaseUri";

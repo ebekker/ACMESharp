@@ -7,7 +7,7 @@ using System.Management.Automation;
 namespace ACMESharp.POSH
 {
     [Cmdlet(VerbsCommon.New, "Registration")]
-    public class NewRegistration : Cmdlet
+    public class NewRegistration : BaseCmdlet
     {
         [Parameter(Mandatory = true)]
         [ValidateCount(1, 100)]

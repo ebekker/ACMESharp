@@ -20,7 +20,7 @@ namespace ACMESharp.POSH
     /// </summary>
     [Cmdlet(VerbsCommon.New, "Identifier")]
     [OutputType(typeof(AuthorizationState))]
-    public class NewIdentifier : Cmdlet
+    public class NewIdentifier : BaseCmdlet
     {
         /// <summary>
         /// <para type="description">

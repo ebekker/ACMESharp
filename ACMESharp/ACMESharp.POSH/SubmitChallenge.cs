@@ -20,7 +20,7 @@ namespace ACMESharp.POSH
     /// <para type="link">Complete-Challenge</para>
     /// </summary>
     [Cmdlet(VerbsLifecycle.Submit, "Challenge")]
-    public class SubmitChallenge : Cmdlet
+    public class SubmitChallenge : BaseCmdlet
     {
         /// <summary>
         /// <para type="description">

@@ -33,7 +33,7 @@ namespace ACMESharp.POSH
     /// </summary>
     [Cmdlet(VerbsData.Update, "Certificate", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(CertificateInfo))]
-    public class UpdateCertificate : Cmdlet
+    public class UpdateCertificate : BaseCmdlet
     {
         public const string PSET_DEFAULT = "Default";
         public const string PSET_LOCAL_ONLY = "LocalOnly";

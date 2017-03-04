@@ -23,7 +23,7 @@ namespace ACMESharp.POSH
     /// <para type="link">Submit-Challenge</para>
     /// </summary>
     [Cmdlet(VerbsData.Update, "Identifier", DefaultParameterSetName = PSET_DEFAULT)]
-    public class UpdateIdentifier : Cmdlet
+    public class UpdateIdentifier : BaseCmdlet
     {
         public const string PSET_DEFAULT = "Default";
         public const string PSET_CHALLENGE = "Challenge";

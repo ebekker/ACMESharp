@@ -26,7 +26,7 @@ namespace ACMESharp.POSH
     /// <para type="link">Set-ChallengeHandlerProfile</para>
     /// </summary>
     [Cmdlet(VerbsLifecycle.Complete, "Challenge")]
-    public class CompleteChallenge : Cmdlet
+    public class CompleteChallenge : BaseCmdlet
     {
         public const string PSET_CHALLENGE_HANDLER_INLINE = "ChallengeHandlerInline";
         public const string PSET_CHALLENGE_HANDLER_PROFILE = "ChallengeHandlerProfile";

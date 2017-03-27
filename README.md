@@ -29,8 +29,8 @@ For announcements and discussions please see go to the **[Community Forums](http
 
 ## Related
 
-Check out these other related projects:
-
+Check out these other related projects and resources:
+* For a great intro and overview of Let's Encrypt, ACME and related tech, check out this [Changelog podcast](https://changelog.com/podcast/243) with [Jacob Hoffman-Andrews](https://github.com/jsha), the lead developer of LE
 * An [alternative simple ACME client for Windows](https://github.com/Lone-Coder/letsencrypt-win-simple) which features:
   * simple usage for common scenarios
   * IIS support

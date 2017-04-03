@@ -10,12 +10,17 @@ else {
   Write-Output "No RDP access requested"
 }
 
+Write-Output "RESTORING for solution file"
 nuget restore ACMESharp\ACMESharp.sln
+Write-Output "Installing 'secure-file' NuGet package"
 nuget install secure-file -ExcludeVersion
+
+Write-Output "Unlocking params for general unit tests"
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\dnsInfo.json.enc
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\webServerInfo.json.enc
 secure-file\tools\secure-file -secret $env:secureInfoPassword -decrypt ACMESharp\ACMESharp-test\config\testProxyConfig.json.enc
 
+Write-Output "Unlocking params for Providers unit tests"
 & .\ACMESharp\ACMESharp.Providers-test\Config\secure-AllParamsJson.ps1 -Decrypt -Secret $env:secureInfoPassword
 
 ## Enable this to debug what's on the build host

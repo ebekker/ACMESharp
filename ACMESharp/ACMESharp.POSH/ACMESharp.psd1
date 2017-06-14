@@ -19,7 +19,7 @@
 
 	Copyright = '(c) 2016 Eugene Bekker. All rights reserved.'	
 
-	Description = "Client library for the ACME protocol, which is used to interopertate with the Let's Encrypt project's CA server and any other ACME-compliant server."
+	Description = "Client library for the ACME protocol, which is used to interoperate with the Let's Encrypt project's CA server and any other ACME-compliant server."
 
 	# Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 	DefaultCommandPrefix = 'ACME'

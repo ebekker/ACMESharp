@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp", "ACMESharp\ACMESharp.csproj", "{D551234B-0A8D-4DEE-8178-A81998DF0EDB}"
 EndProject
@@ -74,6 +74,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.Windows", "ACMESharp.Providers.Windows\ACMESharp.Providers.Windows.csproj", "{F085D9BB-0DF5-442B-8340-6250792A8D7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.OpenSslLib", "ACMESharp.PKI.Providers.OpenSslLib\ACMESharp.PKI.Providers.OpenSslLib.csproj", "{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.ClouDNS", "ACMESharp.Providers.ClouDNS\ACMESharp.Providers.ClouDNS.csproj", "{529518FE-9546-4EC1-8E1F-9BC9239F0C7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +151,10 @@ Global
 		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{529518FE-9546-4EC1-8E1F-9BC9239F0C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{529518FE-9546-4EC1-8E1F-9BC9239F0C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{529518FE-9546-4EC1-8E1F-9BC9239F0C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{529518FE-9546-4EC1-8E1F-9BC9239F0C7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

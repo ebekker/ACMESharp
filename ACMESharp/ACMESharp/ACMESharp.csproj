@@ -133,6 +133,7 @@
     <Compile Include="Messages\NewCertRequest.cs" />
     <Compile Include="Messages\ProblemDetailResponse.cs" />
     <Compile Include="Messages\RegResponse.cs" />
+    <Compile Include="Messages\RevokeCertRequest.cs" />
     <Compile Include="Messages\UpdateRegRequest.cs" />
     <Compile Include="Messages\AnswerHttpChallengeRequest.cs" />
     <Compile Include="PKI\Crt.cs" />

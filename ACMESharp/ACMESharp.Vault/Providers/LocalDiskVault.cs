@@ -267,6 +267,19 @@ namespace ACMESharp.Vault.Providers
                     File.GetAttributes(path).HasFlag(FileAttributes.Encrypted));
         }
 
+        public void RemoveAsset(VaultAssetType type, string name)
+        {
+            if (!string.IsNullOrEmpty(name))
+            {
+                var path = Path.Combine(RootPath, TYPE_PATHS[type], name);
+
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+        }
+
         public Stream SaveAsset(VaultAsset asset)
         {
             var va = (FileVaultAsset)asset;

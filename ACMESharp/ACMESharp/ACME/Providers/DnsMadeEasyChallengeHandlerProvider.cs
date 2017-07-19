@@ -31,7 +31,7 @@ namespace ACMESharp.ACME.Providers
                 desc: "The API Key for your DNS Made Easy account");
 
         public static readonly ParameterDetail SECRET_KEY = new ParameterDetail(
-                nameof(DnsMadeEasyChallengeHandler.ApiKey),
+                nameof(DnsMadeEasyChallengeHandler.SecretKey),
                 ParameterType.TEXT, isRequired: true, label: "Secret Key",
                 desc: "The Secret Key for your DNS Made Easy account");
 

@@ -25,15 +25,15 @@ namespace ACMESharp.ACME.Providers
         public void CleanUp(Challenge c)
         {
             var dnsChallenge = (DnsChallenge)c;
-            var domainId = getDomainId(dnsChallenge);
+            var domainDetails = getDomainId(dnsChallenge);
 
-            var records = managedPath + domainId + "/records";
-            CleanUp(dnsChallenge, records);
+            var records = managedPath + domainDetails.DomainId + "/records";
+            CleanUp(dnsChallenge, domainDetails, records);
         }
 
-        private void CleanUp(DnsChallenge dnsChallenge, string records)
+        private void CleanUp(DnsChallenge dnsChallenge, DomainDetails domainDetails, string records)
         {
-            string recordId = getRecordId(dnsChallenge, records);
+            string recordId = getRecordId(dnsChallenge, domainDetails, records);
 
             if (!string.IsNullOrEmpty(recordId))
             {
@@ -45,10 +45,12 @@ namespace ACMESharp.ACME.Providers
             }
         }
 
-        private string getRecordId(DnsChallenge dnsChallenge, string records)
+        private string getRecordId(DnsChallenge dnsChallenge, DomainDetails domainDetails, string records)
         {
             var wr = createRequest(records);
             wr.Method = "GET";
+
+            var recordNameToFind = dnsChallenge.RecordName.Replace("." + domainDetails.DomainName, string.Empty);
 
             using (var response = wr.GetResponse())
             using (var content = new StreamReader(response.GetResponseStream()))
@@ -56,7 +58,7 @@ namespace ACMESharp.ACME.Providers
                 var resp = content.ReadToEnd();
                 var respObject = JsonConvert.DeserializeObject<DomainResponseCollection>(resp).data;
 
-                var record = respObject.FirstOrDefault(a => a.name == dnsChallenge.RecordName.Substring(0, dnsChallenge.RecordName.IndexOf('.')));
+                var record = respObject.FirstOrDefault(a => a.name == recordNameToFind);
                 if (record != null)
                     return record.id;
             }
@@ -75,11 +77,13 @@ namespace ACMESharp.ACME.Providers
         public void Handle(Challenge c)
         {
             var dnsChallenge = (DnsChallenge)c;
-            var domainId = getDomainId(dnsChallenge);
+            var domainDetails = getDomainId(dnsChallenge);
 
-            var records = managedPath + domainId + "/records";
+            var records = managedPath + domainDetails.DomainId + "/records";
 
-            CleanUp(dnsChallenge, records);
+            CleanUp(dnsChallenge, domainDetails, records);
+
+            var recordNameToAdd = dnsChallenge.RecordName.Replace("." + domainDetails.DomainName, string.Empty);
 
             var wr = createRequest(records);
             wr.Method = "POST";
@@ -88,7 +92,7 @@ namespace ACMESharp.ACME.Providers
             {
                 var requestObject = new DomainRequest()
                 {
-                    name = dnsChallenge.RecordName.Substring(0, dnsChallenge.RecordName.IndexOf('.')),
+                    name = recordNameToAdd,
                     value = dnsChallenge.RecordValue,
                     ttl = 600,
                     type = "TXT"
@@ -111,18 +115,40 @@ namespace ACMESharp.ACME.Providers
             }
         }
 
-        string getDomainId(DnsChallenge dnsChallenge)
+        DomainDetails getDomainId(DnsChallenge dnsChallenge)
         {
-            var domainName = dnsChallenge.RecordName.Substring(dnsChallenge.RecordName.IndexOf(".") + 1);
-            var wr = createRequest(managedPath + nameQuery + domainName);
-            using (var response = wr.GetResponse())
+            var startIndex = dnsChallenge.RecordName.IndexOf(".") + 1;
+
+            return getDomainId(dnsChallenge, startIndex);
+        }
+
+        DomainDetails getDomainId(DnsChallenge dnsChallenge, int startIndex)
+        {
+            try
             {
-                using (var content = new StreamReader(response.GetResponseStream()))
+                var domainName = dnsChallenge.RecordName.Substring(startIndex);
+
+                var wr = createRequest(managedPath + nameQuery + domainName);
+                using (var response = wr.GetResponse())
                 {
-                    var dr = JsonConvert.DeserializeObject<DomainResponse>(content.ReadToEnd());
-                    return dr.id;
+                    using (var content = new StreamReader(response.GetResponseStream()))
+                    {
+                        var dr = JsonConvert.DeserializeObject<DomainResponse>(content.ReadToEnd());
+                        return new DomainDetails() { DomainId = dr.id, DomainName = domainName };
+                    }
                 }
             }
+            catch (WebException wex)
+            {
+                startIndex = dnsChallenge.RecordName.IndexOf(".", startIndex) + 1;
+                return getDomainId(dnsChallenge, startIndex);
+            }
+        }
+
+        class DomainDetails
+        {
+            public string DomainName { get; set; }
+            public string DomainId { get; set; }
         }
 
         class DomainResponseCollection
@@ -148,7 +174,7 @@ namespace ACMESharp.ACME.Providers
             if (Staging)
                 url = "https://api.sandbox.dnsmadeeasy.com/V2.0/" + url;
             else
-                url = "https://api.dnsmadeeasy.com/V2.0/";
+                url = "https://api.dnsmadeeasy.com/V2.0/" + url;
 
             var currentDate = DateTime.UtcNow.ToString("r");
             var hash = SHA1Hash(currentDate, SecretKey);

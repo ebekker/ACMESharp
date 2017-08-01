@@ -57,6 +57,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -94,6 +95,8 @@
     <Compile Include="ACME\Providers\HttpChallengeDecoderProvider.cs" />
     <Compile Include="ACME\Providers\ManualChallengeHandler.cs" />
     <Compile Include="ACME\Providers\ManualChallengeHandlerProvider.cs" />
+    <Compile Include="ACME\Providers\MSDNSChallengeHandler.cs" />
+    <Compile Include="ACME\Providers\MSDNSChallengeHandlerProvider.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
     <Compile Include="CertificateRequest.cs" />

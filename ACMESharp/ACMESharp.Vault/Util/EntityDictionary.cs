@@ -115,7 +115,9 @@ namespace ACMESharp.Vault.Util
             var x = this[id];
             if (x != null)
             {
+                if (x.Alias != null)
                 _dictByAlias.Remove(x.Alias);
+
                 _dictById.Remove(x.Id);
             }
         }

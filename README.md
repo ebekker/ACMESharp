@@ -37,10 +37,11 @@ For announcements and discussions please see one of these:
 | Early Access | (myget.org) |
 |-|-|
 | [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp) | ACMESharp base module
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.AWS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.AWS) | Provider Module - AWS
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.CloudFlare.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.CloudFlare) | Provider Module - CloudFlare
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.IIS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.IIS) | Provider Module - Microsoft IIS
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.Windows.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.Windows) | Provider Module - Microsoft Windows
+| Provider Modules:
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.AWS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.AWS) | AWS
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.CloudFlare.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.CloudFlare) | CloudFlare
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.IIS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.IIS) | Microsoft IIS
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.Windows.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.Windows) | Microsoft Windows
 
 ### .NET Packages - Client Libs for developers
 
@@ -54,7 +55,19 @@ For announcements and discussions please see one of these:
 
 | Early Access | (myget.org) |
 |-|-|
-[![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp) | Coming Soon!
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp) | ACME protocol client library for .NET
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Vault.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Vault) | Vault support for ACMESharp
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.POSH.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.POSH) | PowerShell module library for PS Module Client
+| Certificate Providers:
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.PKI.Providers.BouncyCastle.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.PKI.Providers.BouncyCastle) | BouncyCastle
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.PKI.Providers.OpenSslLib32.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.PKI.Providers.OpenSslLib32) | OpenSSL x86
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.PKI.Providers.OpenSslLib64.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.PKI.Providers.OpenSslLib64) | OpenSSL x64
+| Extension Providers:
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.AWS.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.AWS) | AWS (R53, S3, IAM)
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.CloudFlare.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.CloudFlare) | CloudFlare (DNS)
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.IIS.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.IIS) | IIS (handler/installer)
+| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.Windows.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.Windows) | Windows (installer for Cert Store)
+
 
 ## Build Status
 

@@ -23,16 +23,37 @@ For announcements and discussions please see one of these:
 
 ## Downloads
 
-| Stable Packages | |
+
+### PowerShell Modules
+
+| Stable Modules | (powershellgallery.com) |
+|-|-|
+| [![Powershellgallery Badge][psgallery-badge]][psgallery-status] | ACMESharp - complete 0.8.1 distribution
+
+[psgallery-badge]: https://img.shields.io/badge/PowerShell_Gallery-LATEST-green.svg
+[psgallery-status]: https://www.powershellgallery.com/packages/ACMESharp
+
+| Early Access | (myget.org) |
+|-|-|
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp) | ACMESharp base module
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.AWS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.AWS) | Provider Module - AWS
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.CloudFlare.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.CloudFlare) | Provider Module - CloudFlare
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.IIS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.IIS) | Provider Module - Microsoft IIS
+| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.Windows.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.Windows) | Provider Module - Microsoft Windows
+
+### .NET Packages - Client Libs for developers
+
+| Stable Packages | (nuget.org) |
 |-|-|
 | [![NuGet](https://img.shields.io/nuget/v/ACMESharp.svg)](https://www.nuget.org/packages/ACMESharp) | ACMESharp client library
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.svg)](https://www.nuget.org/packages/ACMESharp) | ACMESharp client library
+| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.Vault.svg)](https://www.nuget.org/packages/ACMESharp.Vault) | ACMESharp Vault library
+| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.POSH.svg)](https://www.nuget.org/packages/ACMESharp.POSH) | ACMESharp POSH library
+| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.PKI.Providers.OpenSslLib32.svg)](https://www.nuget.org/packages/ACMESharp.PKI.Providers.OpenSslLib32) | ACMESharp 32-bit dependency for OpenSSL Cert Provider
+| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.PKI.Providers.OpenSslLib64.svg)](https://www.nuget.org/packages/ACMESharp.PKI.Providers.OpenSslLib64) | ACMESharp 64-bit dependency for OpenSSL Cert Provider
 
-| Early Access | |
+| Early Access | (myget.org) |
 |-|-|
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.svg)](https://www.nuget.org/packages/ACMESharp) | ACMESharp client library
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.svg)](https://www.nuget.org/packages/ACMESharp) | ACMESharp client library
-
+[![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp) | Coming Soon!
 
 ## Build Status
 

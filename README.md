@@ -15,6 +15,7 @@ Jump To:
 For documentation and getting started, go to the [wiki](https://github.com/ebekker/ACMESharp/wiki) which includes the [FAQ](https://github.com/ebekker/ACMESharp/wiki/FAQ).
 
 For announcements and discussions please see one of these:
+
 | | |
 |-|-|
 | [![Join the chat at https://gitter.im/ebekker/letsencrypt-win](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ebekker/letsencrypt-win?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) | by Gitter |

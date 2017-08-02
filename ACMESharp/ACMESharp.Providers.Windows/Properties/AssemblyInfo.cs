@@ -21,29 +21,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("f085d9bb-0df5-442b-8340-6250792a8d7a")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion(ASMINFO.VERSION + ".0")]
-[assembly: AssemblyFileVersion(ASMINFO.VERSION + ".0")]
-
-// This is used for the NuSpec version tag replacement
-// and is combined with nuget-specific rev and release
-[assembly: AssemblyInformationalVersion(ASMINFO.VERSION)]
-
-// ReSharper disable once InconsistentNaming
-internal static class ASMINFO
-{
-
-    // DON'T FORGET TO UPDATE APPVEYOR.YML
-    // ReSharper disable once InconsistentNaming
-    public const string VERSION = "0.8.0";
-}

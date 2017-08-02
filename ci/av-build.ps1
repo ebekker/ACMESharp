@@ -41,22 +41,52 @@ else {
     Write-Output "Running *normal* build (i.e. no Coverity)"
     & $msb_prog $msb_args
 
-    Write-Output "Building nuget packages"
-	.\ACMESharp\nuget-build.cmd ACMESharp
-	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.BouncyCastle
-	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.OpenSslLib32
-	.\ACMESharp\nuget-build.cmd ACMESharp.PKI.Providers.OpenSslLib64
+	## MyGet - Our Own ACMESharp-POSH Staging
+	$NugetPublishUri = 'https://www.myget.org/F/acmesharp/api/v2/package'
+	$NugetSourceUri  = 'https://www.myget.org/F/acmesharp/api/v2'
+	$NugetApiKey     = $env:STAGING_MYGET_APIKEY
 
-	.\ACMESharp\nuget-build.cmd ACMESharp.Vault
-	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.IIS
-	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.Windows
-	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.AWS
-	.\ACMESharp\nuget-build.cmd ACMESharp.Providers.CloudFlare
-	.\ACMESharp\nuget-build.cmd ACMESharp.POSH -Exclude README-TESTING.txt -Exclude en-us\*
+	Write-Output "Building nuget packages"
+	$nugetLibs = [ordered]@{
+		"ACMESharp" = @{}
+		"ACMESharp.PKI.Providers.BouncyCastle" = @{}
+		"ACMESharp.PKI.Providers.OpenSslLib32" = @{}
+		"ACMESharp.PKI.Providers.OpenSslLib64" = @{}
 
-	Write-Output "Building choco packages"
-	.\ACMESharp\ACMESharp.POSH\choco\acmesharp-posh\choco-pack.cmd
-	.\ACMESharp\ACMESharp.POSH-test\choco\acmesharp-posh-all\choco-pack.cmd
+		"ACMESharp.Vault" = @{}
+		"ACMESharp.Providers.IIS" = @{}
+		"ACMESharp.Providers.Windows" = @{}
+		"ACMESharp.Providers.AWS" = @{}
+		"ACMESharp.Providers.CloudFlare" = @{}
+		"ACMESharp.POSH" = @{
+			nugetBuildArgs = @("ACMESharp.POSH", "-Exclude", "README-TESTING.txt", "-Exclude", "en-us\*")
+			nugetSkipPush = $false
+		}
+	}
+
+	foreach ($libName in $nugetLibs.Keys) {
+		$nugetBuildArgs = $nugetLibs[$libName].nugetBuildArgs
+		$nugetSkipPush = $nugetLibs[$libName].nugetSkipPush
+
+		if (-not $nugetBuildArgs) {
+			$nugetBuildArgs = @($libName)
+		}
+		Write-Output "Building NuGet for [$libName]"
+		.\ACMESharp\nuget-build.cmd @nugetBuildArgs
+
+		if ($nugetSkipPush) {
+			Write-Warning "Skipping NuGet push to repo for [$libName]"
+		}
+		else {
+			Write-Output "Pushing NuGet to repo [$libName]"
+			nuget.exe push "$($libName)\bin\nuget\*.nupkg" $NugetApiKey -source $NugetSourceUri
+		}
+	}
+
+	## We're no longer publishing to choco, just PSGallery
+	#Write-Output "Building choco packages"
+	#.\ACMESharp\ACMESharp.POSH\choco\acmesharp-posh\choco-pack.cmd
+	#.\ACMESharp\ACMESharp.POSH-test\choco\acmesharp-posh-all\choco-pack.cmd
 
     Write-Output "Publishing POSH modules to staging repo:"
     Import-Module PowerShellGet -Force
@@ -108,7 +138,7 @@ else {
 	## a staging repo since there are no guarantees they exist
 	Write-Output "Installing Fake AWSPowerShell Module to resolve dependencies"
 	try {
-		Publish-Module -Repository staging -Path .\ci\nuget-staging\AWSPowerShell `
+		Publish-Module -Repository STAGING -Path .\ci\nuget-staging\AWSPowerShell `
 				-NuGetApiKey $PSGalleryApiKey -Force
 	}
 	catch [System.InvalidOperationException] {

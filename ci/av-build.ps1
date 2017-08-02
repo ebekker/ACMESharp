@@ -130,10 +130,11 @@ else {
 	$poshModules = [ordered]@{
 		## Embedded '@' overrides the default Project Folder
 		"ACMESharp@ACMESharp.POSH"       = $env:APPVEYOR_BUILD_VERSION
-		"ACMESharp.Providers.IIS"        = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
-		"ACMESharp.Providers.AWS"        = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
-		"ACMESharp.Providers.CloudFlare" = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
-		"ACMESharp.Providers.Windows"    = "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		## After the 1.0 release, we'll sever the coupling in version numbers for these
+		"ACMESharp.Providers.IIS"        = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.AWS"        = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.CloudFlare" = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.Windows"    = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
 	}
 
 	foreach ($modName in $poshModules.Keys) {

@@ -79,7 +79,7 @@ else {
 		}
 		else {
 			Write-Output "Pushing NuGet to repo [$libName]"
-			nuget.exe push "$($libName)\bin\nuget\*.nupkg" $NugetApiKey -source $NugetSourceUri
+			nuget.exe push "ACMESharp\$($libName)\bin\nuget\*.nupkg" $NugetApiKey -source $NugetSourceUri
 		}
 	}
 

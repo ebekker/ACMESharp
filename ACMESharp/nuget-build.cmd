@@ -48,7 +48,10 @@ SET NUGET_PROPS=nugetCwd=%CD%
 SET NUGET_PROPS=%NUGET_PROPS%;nugetDate=%DATE%
 SET NUGET_PROPS=%NUGET_PROPS%;nugetTime=%Time%
 SET NUGET_PROPS=%NUGET_PROPS%;buildNum=%BUILDNO%
-SET NUGET_PROPS=%NUGET_PROPS%;versionLabel=-EA
+
+@REM We used to append the '-EA' suffix to the version which caused NuGet.org to flag it as
+@REM PRERELEASE, but now that we're stable enough, I think it's safe to remove this caution
+@REM SET NUGET_PROPS=%NUGET_PROPS%;versionLabel=-EA
 
 :Execute_NuGet
 ECHO *********************

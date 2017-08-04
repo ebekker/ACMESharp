@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ACMESharp.ACME;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Management;
 
-namespace ACMESharp.ACME.Providers
+namespace ACMESharp.Providers.Windows
 {
 	public class MSDNSChallengeHandler : IChallengeHandler
 	{

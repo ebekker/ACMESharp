@@ -1,16 +1,14 @@
 ﻿using ACMESharp.Installer;
+using ACMESharp.PKI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ACMESharp.PKI;
-using System.Security.Cryptography.X509Certificates;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ACMESharp.Providers.Windows
 {
-    public class WindowsCertificateStoreInstaller : IInstaller
+	public class WindowsCertificateStoreInstaller : IInstaller
     {
         public StoreLocation StoreLocation
         { get; set; } = StoreLocation.CurrentUser;

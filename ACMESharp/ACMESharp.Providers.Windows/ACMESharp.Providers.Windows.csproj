@@ -32,6 +32,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,6 +47,8 @@
     <Compile Include="..\shared\SharedGlobalSuppressions.cs">
       <Link>Properties\SharedGlobalSuppressions.cs</Link>
     </Compile>
+    <Compile Include="MSDNSChallengeHandler.cs" />
+    <Compile Include="MSDNSChallengeHandlerProvider.cs" />
     <Compile Include="WindowsCertificateStoreInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowsCertificateStoreInstallerProvider.cs" />

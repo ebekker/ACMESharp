@@ -202,3 +202,6 @@ ACMESharp/ACMESharp.Providers.AWS-test/config/httpConfig.json
 ACMESharp/ACMESharp.Providers-test/Config/AwsR53HandlerParams.json
 ACMESharp/ACMESharp.Providers-test/Config/AwsS3HandlerParams.json
 ACMESharp/ACMESharp.Providers-test/Config/CloudFlareHandlerParams.json
+
+## Global ignore folder
+_IGNORE

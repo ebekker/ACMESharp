@@ -134,10 +134,24 @@ Describe "AwsHandlerTests" {
             $cert1a = New-ACMECertificate -VaultProfile $profName -IdentifierRef dns1 -Generate -Alias cert1
             $cert1a | Should Not BeNullOrEmpty
 
-            $cert1b = Submit-ACMECertificate -VaultProfile $profName -CertificateRef cert1
-            $cert1b | Should Not BeNullOrEmpty
-            $cert1b.CertificateRequest | Should Not BeNullOrEmpty
-            $cert1b.CertificateRequest.CsrContent | Should Not BeNullOrEmpty
+            $cert1aGet = Get-ACMECertificate -VaultProfile $profName -CertificateRef cert1
+            $cert1aGet | Should Not BeNullOrEmpty
+
+            try {
+                $cert1b = Submit-ACMECertificate -VaultProfile $profName -CertificateRef cert1
+                $cert1b | Should Not BeNullOrEmpty
+                $cert1b.CertificateRequest | Should Not BeNullOrEmpty
+                $cert1b.CertificateRequest.CsrContent | Should Not BeNullOrEmpty
+            }
+            catch {
+                Write-Warning "FAILED to Submit-ACMECertificate"
+                Write-Warning $Error[0]
+                $errEx = $Error[0].Exception
+                while ($errEx) {
+                    Write-Warning "  Ex: $errEx : $($errEx.StackTrace)"
+                    $errEx = $errEx.InnerException
+                }
+            }
 
             $cert1c = Update-ACMECertificate -VaultProfile $profName -CertificateRef cert1
             $cert1c | Should Not BeNullOrEmpty

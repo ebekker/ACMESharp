@@ -17,7 +17,7 @@
 
 	CompanyName = 'https://github.com/ebekker/ACMESharp'
 
-	Copyright = '(c) 2016 Eugene Bekker. All rights reserved.'	
+	Copyright = '(c) 2017 Eugene Bekker. All rights reserved.'	
 
 	Description = "Client library for the ACME protocol, which is used to interopertate with the Let's Encrypt project's CA server and any other ACME-compliant server."
 

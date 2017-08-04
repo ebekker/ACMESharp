@@ -13,7 +13,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Early-access release of ACMESharp Lib package.</releaseNotes>
-    <copyright>Copyright &#169; 2016 Eugene Bekker</copyright>
+    <copyright>Copyright &#169; 2017 Eugene Bekker</copyright>
     <tags>pki ssl tls security certificates letsencrypt acme acmesharp</tags>
 
     <dependencies>

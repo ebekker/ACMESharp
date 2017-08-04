@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("github.com/ebekker/ACMESharp")]
 [assembly: AssemblyProduct("ACMESharp.POSH-test")]
-[assembly: AssemblyCopyright("Copyright © 2016 Eugene Bekker. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © Eugene Bekker. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

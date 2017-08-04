@@ -1,15 +1,12 @@
-﻿using ACMESharp.Installer;
+﻿using ACMESharp.Ext;
+using ACMESharp.Installer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ACMESharp.Ext;
 using System.Security.Cryptography.X509Certificates;
 
 namespace ACMESharp.Providers.Windows
 {
-    [InstallerProvider("win-cert",
+	[InstallerProvider("win-cert",
         Aliases = new[] { "cert-store", "certificate-store"},
         Label = "Windows Certificate Store",
         Description = "Installer supprts importing certificate to the"

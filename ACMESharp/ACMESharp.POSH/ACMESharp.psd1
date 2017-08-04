@@ -56,7 +56,7 @@
 	} # End of PrivateData hashtable
 
 	# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-	NestedModules = @( "ACMESharp-Providers\ACMESharp-Providers.psd1" )
+	NestedModules = @( "ACMESharp-Extensions\ACMESharp-Extensions.psd1" )
 
 
 	############################################################

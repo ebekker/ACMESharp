@@ -103,10 +103,10 @@
     <None Include="ACMESharp-IIS\ACMESharp-IIS.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ACMESharp-Providers\ACMESharp-Providers.psm1">
+    <None Include="ACMESharp-Extensions\ACMESharp-Extensions.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ACMESharp-Providers\ACMESharp-Providers.psd1">
+    <None Include="ACMESharp-Extensions\ACMESharp-Extensions.psd1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="ACMESharp.psd1">

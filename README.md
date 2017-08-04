@@ -1,12 +1,13 @@
 # ACMESharp
 
-An [ACME](https://github.com/letsencrypt/acme-spec) library and client for the .NET platform.
+An [ACME](https://github.com/letsencrypt/acme-spec) client library and PowerShell client for the .NET platform.
 
 ---
 
 Jump To:
 * [Overview](#overview)
 * [Quick Start](https://github.com/ebekker/ACMESharp/wiki/Quick-Start)
+* [Downloads](#downloads)
 * [Current State](#current-state)
 * [Related Links](#related-links)
 
@@ -22,52 +23,23 @@ For announcements and discussions please see one of these:
 | [![Join the forums at http://groups.google.com/group/acmesharp](https://img.shields.io/badge/forums-join_group-4FB999.svg)](http://groups.google.com/group/acmesharp) | by Google Groups |
 
 
-## Downloads
+## Overview
 
+This project implements a *client library* and *PowerShell client* for the ACME protocol.
+* ACMESharp is interoperable with the [CA server](https://github.com/letsencrypt/boulder) used by the [Let's Encrypt](https://letsencrypt.org/) project which is the reference implementation for the server-side ACME protocol.
+* ACMESharp includes features comparable to the official Let's Encrypt [client](https://github.com/letsencrypt/letsencrypt) which is the reference implementation for the client-side ACME protocol.
 
-### PowerShell Modules
+The ACMESharp client implementation is broken up into layers that build upon each other:
+* basic tools and services required for implementing the ACME protocol and its semantics (JSON Web Signature (JWS), PKI operations, client-side persistence)
+* low-level ACME protocol client library that can interoperate with a compliant ACME server
+* PowerShell module that implements a powerful client, that functions equally well as a manual tool or a component of a larger automation process, for managing ACME Registrations, Identifiers and Certificates
+* collection of *Provider* extensions that implement Challenge Handlers and Installers for various servers/services.
 
-| Stable Modules | (powershellgallery.com) |
-|-|-|
-| [![Powershellgallery Badge][psgallery-badge]][psgallery-status] | ACMESharp - complete 0.8.1 distribution
-
-[psgallery-badge]: https://img.shields.io/badge/PowerShell_Gallery-LATEST-green.svg
-[psgallery-status]: https://www.powershellgallery.com/packages/ACMESharp
-
-| Early Access | (myget.org) |
-|-|-|
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp) | ACMESharp base module
-| Provider Modules:
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.AWS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.AWS) | AWS
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.CloudFlare.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.CloudFlare) | CloudFlare
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.IIS.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.IIS) | Microsoft IIS
-| [![MyGet](https://img.shields.io/myget/acmesharp-posh-staging/v/ACMESharp.Providers.Windows.svg)](https://www.myget.org/feed/acmesharp-posh-staging/package/nuget/ACMESharp.Providers.Windows) | Microsoft Windows
-
-### .NET Packages - Client Libs for developers
-
-| Stable Packages | (nuget.org) |
-|-|-|
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.svg)](https://www.nuget.org/packages/ACMESharp) | ACMESharp client library
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.Vault.svg)](https://www.nuget.org/packages/ACMESharp.Vault) | ACMESharp Vault library
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.POSH.svg)](https://www.nuget.org/packages/ACMESharp.POSH) | ACMESharp POSH library
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.PKI.Providers.OpenSslLib32.svg)](https://www.nuget.org/packages/ACMESharp.PKI.Providers.OpenSslLib32) | ACMESharp 32-bit dependency for OpenSSL Cert Provider
-| [![NuGet](https://img.shields.io/nuget/v/ACMESharp.PKI.Providers.OpenSslLib64.svg)](https://www.nuget.org/packages/ACMESharp.PKI.Providers.OpenSslLib64) | ACMESharp 64-bit dependency for OpenSSL Cert Provider
-
-| Early Access | (myget.org) |
-|-|-|
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp) | ACME protocol client library for .NET
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Vault.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Vault) | Vault support for ACMESharp
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.POSH.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.POSH) | PowerShell module library for PS Module Client
-| Certificate Providers:
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.PKI.Providers.BouncyCastle.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.PKI.Providers.BouncyCastle) | BouncyCastle
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.PKI.Providers.OpenSslLib32.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.PKI.Providers.OpenSslLib32) | OpenSSL x86
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.PKI.Providers.OpenSslLib64.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.PKI.Providers.OpenSslLib64) | OpenSSL x64
-| Extension Providers:
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.AWS.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.AWS) | AWS (R53, S3, IAM)
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.CloudFlare.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.CloudFlare) | CloudFlare (DNS)
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.IIS.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.IIS) | IIS (handler/installer)
-| [![MyGet](https://img.shields.io/myget/acmesharp/v/ACMESharp.Providers.Windows.svg)](https://www.myget.org/feed/acmesharp/package/nuget/ACMESharp.Providers.Windows) | Windows (installer for Cert Store)
-
+Some of the Providers available for handling ACME challenges and installing certificates include:
+* Microsoft IIS 7.0+
+* Microsoft Windows (Cert Store, DNS)
+* AWS (S3, Route 53, ELB, IAM)
+* CloudFlare
 
 ## Build Status
 
@@ -79,24 +51,25 @@ For announcements and discussions please see one of these:
 |-|-|-|
 | [![PS3 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs3\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp) | [![PS4 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs4\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp) | [![PS5 Test Status](https://build.powershell.org/app/rest/builds/buildType:\(id:ACMESharp_InstallTestOnPs5\)/statusIcon.svg)](https://build.powershell.org/externalStatus.html?projectId=ACMESharp) |
 
+## Downloads
+
+### ACMESharp PowerShell Client Modules
+
+* **If you just want to use ACMESharp to request and install certificates**,
+then you want the *ACMESharp PowerShell client*.
+
+* See the
+[instructions](https://github.com/ebekker/ACMESharp/wiki/%5BWIP%5D-Installation:-ACMESharp-PowerShell-client)
+for installing the PowerShell client and the list of available
+[modules](https://github.com/ebekker/ACMESharp/wiki/%5BWIP%5D-Downloads:-PowerShell-Modules).
+
+### ACMESharp NuGet Packages
+
+* **If you are a developer** who wants to embed ACMESharp client libraries in your
+own projects or want to develop extensions for ACMESharp, see the list of available
+[NuGet Packages](https://github.com/ebekker/ACMESharp/wiki/%5BWIP%5D-Downloads:-NuGet-Packages).
+
 ---
-
-## Overview
-
-This project implements an ACME client library and PowerShell modules interoperable with the [Let's Encrypt](https://letsencrypt.org/) ACME [CA server](https://github.com/letsencrypt/boulder) reference implementation and includes features comparable to the Let's Encrypt [client](https://github.com/letsencrypt/letsencrypt) reference implementation.
-
-This ACME client implementation is broken up into layers that build upon each other:
-* Basic tools and service required for implementing ACME protocol (JSON Web Signature (JWS), persistence, PKI operations via OpenSSL) (.NET assembly)
-* A low-level ACME protocol client that can interoperate with a proper ACME server (.NET assembly)
-* A PowerShell Module that implements a "local vault" for managing ACME Registrations, Identifiers and Certificates (PS Binary Module)
-* A set of PowerShell Modules that implement installers for various servers/services (PS Script Modules)
-  * IIS Installer
-  * AWS Installer
-  * Future Installers...
-
-The PowerShell modules include installers for configuring:
-* IIS 7.0+ either locally or remotely (over PSSession)
-* AWS Server Certificates and ELB Listeners
 
 ## Current State
 

@@ -19,7 +19,7 @@
 
 	CompanyName = 'https://github.com/ebekker/ACMESharp'
 
-	Copyright = '(c) 2016 Eugene Bekker. All rights reserved.'	
+	Copyright = '(c) 2017 Eugene Bekker. All rights reserved.'	
 
 	Description = "Microsoft IIS Provider extension library for ACMESharp Client."
 

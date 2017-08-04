@@ -21,7 +21,7 @@
 
 	CompanyName = 'https://github.com/ebekker/ACMESharp'
 
-	Copyright = '(c) 2016 Eugene Bekker. All rights reserved.'	
+	Copyright = '(c) Eugene Bekker. All rights reserved.'	
 
 	Description = "Fake manifest-only PowerShell module for 'AWSPowerShell' that is used to deploy to staging Nuget repos to satisfy the dependencies of other modules."
 

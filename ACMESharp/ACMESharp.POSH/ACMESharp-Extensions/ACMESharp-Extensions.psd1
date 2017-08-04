@@ -9,7 +9,7 @@
 ##    %SystemRoot%\syswow64\WindowsPowerShell\v1.0\powershell.exe
 
 @{
-	RootModule = 'ACMESharp-Providers.psm1'
+	RootModule = 'ACMESharp-Extensions.psm1'
 	ModuleVersion = '0.9.0'
 	GUID = 'D404364B-EBEF-4FB9-BB5A-F30F912D876C'
 	

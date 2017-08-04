@@ -51,13 +51,9 @@
     <None Include="Pester\Vault.Tests.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ACMESharp.PKI.Providers.OpenSslLib32\ACMESharp.PKI.Providers.OpenSslLib32.csproj">
-      <Project>{2ce2e059-f228-4f88-8440-0413c1af2e4c}</Project>
-      <Name>ACMESharp.PKI.Providers.OpenSslLib32</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ACMESharp.PKI.Providers.OpenSslLib64\ACMESharp.PKI.Providers.OpenSslLib64.csproj">
-      <Project>{98b532b3-805b-4d81-918e-5a76cc66d40d}</Project>
-      <Name>ACMESharp.PKI.Providers.OpenSslLib64</Name>
+    <ProjectReference Include="..\ACMESharp.PKI.Providers.BouncyCastle\ACMESharp.PKI.Providers.BouncyCastle.csproj">
+      <Project>{473bff7d-c7f0-471d-b7a3-19ad9adfdba9}</Project>
+      <Name>ACMESharp.PKI.Providers.BouncyCastle</Name>
     </ProjectReference>
     <ProjectReference Include="..\ACMESharp.POSH\ACMESharp.POSH.csproj">
       <Project>{2f8d5934-b5a7-4983-8051-1f25882c7c30}</Project>

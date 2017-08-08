@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -35,6 +36,9 @@ namespace ACMESharp.ACME.Providers
 
         public bool Overwrite
         { get; private set; }
+
+		public bool OutputJson
+		{ get; set; }
 
         public bool IsDisposed
         { get; private set; }
@@ -103,31 +107,86 @@ namespace ACMESharp.ACME.Providers
 
             if (dnsChallenge != null)
             {
-                _writer.WriteLine($"== Manual Challenge Handler - DNS ==");
-                _writer.WriteLine($"  * Handle Time:      [{DateTime.Now}]");
-                _writer.WriteLine($"  * Challenge Token:  [{dnsChallenge.Token}]");
-                _writer.WriteLine($"To complete this Challenge please create a new Resource");
-                _writer.WriteLine($"Record (RR) with the following characteristics:");
-                _writer.WriteLine($"  * RR Type:  [TXT]");
-                _writer.WriteLine($"  * RR Name:  [{dnsChallenge.RecordName}]");
-                _writer.WriteLine($"  * RR Value: [{dnsChallenge.RecordValue}]");
-                _writer.WriteLine($"------------------------------------");
+				var json = new
+				{
+					Label = "Manual Challenge Handler - DNS",
+					HandleTime = DateTime.Now,
+					ChallengeToken = dnsChallenge.Token,
+					ChallengeType = "DNS",
+					Description = new[]
+					{
+						"To complete this Challenge please create a new Resource",
+						"Record (RR) with the following characteristics:",
+					},
+					DnsDetails = new
+					{
+						RRType = "TXT",
+						RRName = dnsChallenge.RecordName,
+						RRValue = dnsChallenge.RecordValue,
+					}
+				};
+
+				if (OutputJson)
+				{
+					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
+				}
+				else
+				{
+					_writer.WriteLine($@"== {json.Label} ==
+  * Handle Time:      [{json.HandleTime}]
+  * Challenge Token:  [{json.ChallengeToken}]
+
+{string.Join(Environment.NewLine, json.Description)}
+  * RR Type:  [{json.DnsDetails.RRType}]
+  * RR Name:  [{json.DnsDetails.RRName}]
+  * RR Value: [{json.DnsDetails.RRValue}]
+------------------------------------
+");
+				}
                 _writer.Flush();
             }
             else if (httpChallenge != null)
             {
-                _writer.WriteLine($"== Manual Challenge Handler - HTTP ==");
-                _writer.WriteLine($"  * Handle Time:      [{DateTime.Now}]");
-                _writer.WriteLine($"  * Challenge Token:  [{httpChallenge.Token}]");
-                _writer.WriteLine($"To complete this Challenge please create a new file");
-                _writer.WriteLine($"under the server that is responding to the hostname");
-                _writer.WriteLine($"and path given with the following characteristics:");
-                _writer.WriteLine($"  * HTTP URL:     [{httpChallenge.FileUrl}]");
-                _writer.WriteLine($"  * File Path:    [{httpChallenge.FilePath}]");
-                _writer.WriteLine($"  * File Content: [{httpChallenge.FileContent}]");
-                _writer.WriteLine($"  * MIME Type:    [text/plain]");
-                _writer.WriteLine($"------------------------------------");
-                _writer.Flush();
+				var json = new
+				{
+					Label = "Manual Challenge Handler - HTTP",
+					HandleTime = DateTime.Now,
+					ChallengeToken = httpChallenge.Token,
+					ChallengeType = "HTTP",
+					Description = new[]
+					{
+						"To complete this Challenge please create a new file",
+						"under the server that is responding to the hostname",
+						"and path given with the following characteristics:",
+					},
+					HttpDetails = new
+					{
+						HttpUrl = httpChallenge.FileUrl,
+						FilePath = httpChallenge.FilePath,
+						FileContent = httpChallenge.FileContent,
+						MimeType = "text/plain",
+					}
+				};
+
+				if (OutputJson)
+				{
+					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
+				}
+				else
+				{
+					_writer.WriteLine($@"== {json.Label} ==
+  * Handle Time:      [{json.HandleTime}]
+  * Challenge Token:  [{json.ChallengeToken}]
+
+{string.Join(Environment.NewLine, json.Description)}
+  * HTTP URL:     [{json.HttpDetails.HttpUrl}]
+  * File Path:    [{json.HttpDetails.FilePath}]
+  * File Content: [{json.HttpDetails.FileContent}]
+  * MIME Type:    [{json.HttpDetails.MimeType}]
+------------------------------------										
+");
+				}
+				_writer.Flush();
             }
             else
             {
@@ -146,30 +205,85 @@ namespace ACMESharp.ACME.Providers
 
             if (dnsChallenge != null)
             {
-                _writer.WriteLine($"== Manual Challenge Handler - DNS ==");
-                _writer.WriteLine($"  * CleanUp Time:     [{DateTime.Now}]");
-                _writer.WriteLine($"  * Challenge Token:  [{dnsChallenge.Token}]");
-                _writer.WriteLine($"The Challenge has been completed -- you can now remove the");
-                _writer.WriteLine($"Resource Record created previously with the following");
-                _writer.WriteLine($"characteristics:");
-                _writer.WriteLine($"  * RR Type:  [TXT]");
-                _writer.WriteLine($"  * RR Name:  [{dnsChallenge.RecordName}]");
-                _writer.WriteLine($"  * RR Value: [{dnsChallenge.RecordValue}]");
-                _writer.WriteLine($"------------------------------------");
+				var json = new
+				{
+					Label = "Manual Challenge Handler - DNS",
+					CleanUpTime = DateTime.Now,
+					ChallengeToken = dnsChallenge.Token,
+					ChallengeType = "DNS",
+					Description = new[]
+					{
+						"The Challenge has been completed -- you can now remove the",
+						"Resource Record created previously with the following",
+						"characteristics:",
+					},
+					DnsDetails = new
+					{
+						RRType = "TXT",
+						RRName = dnsChallenge.RecordName,
+						RRValue = dnsChallenge.RecordValue,
+					}
+				};
+
+				if (OutputJson)
+				{
+					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
+				}
+				else
+				{
+					_writer.WriteLine($@"== {json.Label} ==
+  * CleanUp Time:     [{json.CleanUpTime}]
+  * Challenge Token:  [{json.ChallengeToken}]
+
+{string.Join(Environment.NewLine, json.Description)}
+  * RR Type:  [{json.DnsDetails.RRType}]
+  * RR Name:  [{json.DnsDetails.RRName}]
+  * RR Value: [{json.DnsDetails.RRValue}]
+------------------------------------
+");
+				}
                 _writer.Flush();
             }
             else if (httpChallenge != null)
             {
-                _writer.WriteLine($"== Manual Challenge Handler - HTTP ==");
-                _writer.WriteLine($"  * CleanUp Time:     [{DateTime.Now}]");
-                _writer.WriteLine($"  * Challenge Token:  [{httpChallenge.Token}]");
-                _writer.WriteLine($"The Challenge has been completed -- you can now remove the");
-                _writer.WriteLine($"file created previously with the following characteristics:");
-                _writer.WriteLine($"  * HTTP URL:     [{httpChallenge.FileUrl}]");
-                _writer.WriteLine($"  * File Path:    [{httpChallenge.FilePath}]");
-                _writer.WriteLine($"  * File Content: [{httpChallenge.FileContent}]");
-                _writer.WriteLine($"  * MIME Type:    [text/plain]");
-                _writer.WriteLine($"------------------------------------");
+				var json = new
+				{
+					Label = "Manual Challenge Handler - HTTP",
+					CleanUpTime = DateTime.Now,
+					ChallengeToken = httpChallenge.Token,
+					ChallengeType = "HTTP",
+					Description = new[]
+					{
+						"The Challenge has been completed -- you can now remove the",
+						"file created previously with the following characteristics:",
+					},
+					HttpDetails = new
+					{
+						HttpUrl = httpChallenge.FileUrl,
+						FilePath = httpChallenge.FilePath,
+						FileContent = httpChallenge.FileContent,
+						MimeType = "text/plain",
+					}
+				};
+
+				if (OutputJson)
+				{
+					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
+				}
+				else
+				{
+					_writer.WriteLine($@"== {json.Label} ==
+  * CleanUp Time:     [{json.CleanUpTime}]
+  * Challenge Token:  [{json.ChallengeToken}]
+
+{string.Join(Environment.NewLine, json.Description)}
+  * HTTP URL:     [{httpChallenge.FileUrl}]
+  * File Path:    [{httpChallenge.FilePath}]
+  * File Content: [{httpChallenge.FileContent}]
+  * MIME Type:    [text/plain]
+------------------------------------
+");
+				}
                 _writer.Flush();
             }
             else

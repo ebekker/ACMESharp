@@ -14,7 +14,7 @@ namespace ACMESharp.ACME.Providers
     /// </remarks>
     [ChallengeHandlerProvider("manual",
         ChallengeTypeKind.DNS | ChallengeTypeKind.HTTP,
-		isCleanUpSupported: false,
+		isCleanUpSupported: true,
 		Label = "Manual Provider",
         Description = "A manual provider for handling Challenges." +
                       " This provider supports the DNS and HTTP" +
@@ -35,16 +35,22 @@ namespace ACMESharp.ACME.Providers
                 ParameterType.BOOLEAN, label: "Append",
                 desc: "When true, output to a file will be appended");
 
-        public static readonly ParameterDetail OVERWRITE = new ParameterDetail(
-                nameof(ManualChallengeHandler.Overwrite),
-                ParameterType.BOOLEAN, label: "Overwrite",
-                desc: "When true, output to a file will overwrite the file");
+		public static readonly ParameterDetail OVERWRITE = new ParameterDetail(
+				nameof(ManualChallengeHandler.Overwrite),
+				ParameterType.BOOLEAN, label: "Overwrite",
+				desc: "When true, output to a file will overwrite the file");
 
-        private static readonly ParameterDetail[] PARAMS =
+		public static readonly ParameterDetail OUTPUT_JSON = new ParameterDetail(
+				nameof(ManualChallengeHandler.OutputJson),
+				ParameterType.BOOLEAN, label: "Output JSON",
+				desc: "When true, output will be formatted as JSON suitable for machine automation");
+
+		private static readonly ParameterDetail[] PARAMS =
         {
             WRITE_OUT_PATH,
             APPEND,
             OVERWRITE,
+			OUTPUT_JSON,
         };
 
         public IEnumerable<ParameterDetail> DescribeParameters()
@@ -75,6 +81,8 @@ namespace ACMESharp.ACME.Providers
                     a = (bool) initParams[APPEND.Name];
                 if (initParams.ContainsKey(OVERWRITE.Name))
                     o = (bool) initParams[OVERWRITE.Name];
+				if (initParams.ContainsKey(OUTPUT_JSON.Name))
+					h.OutputJson = (bool)initParams[OUTPUT_JSON.Name];
 
                 // Apply any changes
                 h.SetOut(p, a, o);

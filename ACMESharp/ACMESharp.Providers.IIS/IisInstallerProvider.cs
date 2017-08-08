@@ -26,22 +26,22 @@ namespace ACMESharp.Providers.IIS
 
         public static readonly ParameterDetail BINDING_PORT = new ParameterDetail(
                 nameof(IisInstaller.BindingPort),
-                ParameterType.NUMBER, label: "Web Site Ref",
+                ParameterType.NUMBER, label: "Binding Port",
                 desc: "An optional port to bind to; defaults to HTTPS port (443)");
 
         public static readonly ParameterDetail BINDING_HOST = new ParameterDetail(
                 nameof(IisInstaller.BindingHost),
-                ParameterType.TEXT, label: "Web Site Ref",
+                ParameterType.TEXT, label: "Binding Host",
                 desc: "An optional host name to bind to using SNI (IIS8+)");
 
         public static readonly ParameterDetail BINDING_HOST_REQUIRED = new ParameterDetail(
                 nameof(IisInstaller.BindingHostRequired),
-                ParameterType.BOOLEAN, label: "Web Site Ref",
+                ParameterType.BOOLEAN, label: "Binding Host Required",
                 desc: "An optional flag to indicate SNI is required (IIS8+)");
 
         public static readonly ParameterDetail FORCE = new ParameterDetail(
                 nameof(IisInstaller.Force),
-                ParameterType.BOOLEAN, label: "Web Site Ref",
+                ParameterType.BOOLEAN, label: "Force",
                 desc: "An optional flag to overwrite an existing binding matching the target criteria");
 
         public static readonly ParameterDetail CERTIFICATE_FRIENDLY_NAME = new ParameterDetail(

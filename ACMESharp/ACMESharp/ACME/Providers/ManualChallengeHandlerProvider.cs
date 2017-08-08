@@ -14,7 +14,8 @@ namespace ACMESharp.ACME.Providers
     /// </remarks>
     [ChallengeHandlerProvider("manual",
         ChallengeTypeKind.DNS | ChallengeTypeKind.HTTP,
-        Label = "Manual Provider",
+		isCleanUpSupported: false,
+		Label = "Manual Provider",
         Description = "A manual provider for handling Challenges." +
                       " This provider supports the DNS and HTTP" +
                       " Challenge types and computes all the necessary" +

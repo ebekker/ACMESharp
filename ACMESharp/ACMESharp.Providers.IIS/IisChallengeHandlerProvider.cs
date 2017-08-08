@@ -9,6 +9,7 @@ using ACMESharp.Ext;
 namespace ACMESharp.Providers.IIS
 {
     [ChallengeHandlerProvider("iis", ChallengeTypeKind.HTTP,
+		isCleanUpSupported: true,
         Label = "Internet Information Server (IIS)",
         Description = "Provider for handling Challenges that manages" +
                       " the local IIS site configuration.")]

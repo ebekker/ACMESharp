@@ -215,3 +215,119 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 	Write-Output "Removing Extension Module installed at [$($deps.extPath)]"
 	Remove-Item -Confirm $deps.extPath
 }
+
+function Export-ExtensionAsMarkdown {
+	[CmdletBinding()]
+	param(
+		[Parameter(ParameterSetName="ChallengeHandler")]
+		[string]$ChallengeHandler,
+		[Parameter(ParameterSetName="Installer")]
+		[string]$Installer,
+		[Parameter(ParameterSetName="Vault")]
+		[string]$Vault,
+		[Parameter(ParameterSetName="ChallengeDecoder")]
+		[string]$ChallengeDecoder,
+		[Parameter(ParameterSetName="PkiTool")]
+		[string]$PkiTool
+	)
+
+	if ($ChallengeHandler) {
+		$extType = "Challenge Handler"
+		$extName = $ChallengeHandler
+		$ext = ACMESharp\Get-ChallengeHandlerProfile -GetChallengeHandler $ChallengeHandler
+		$extParams = $ext.Parameters
+		$extInst = [ACMESharp.ACME.ChallengeHandlerExtManager]::GetProvider($extName)
+	}
+	if ($Installer) {
+		$extType = "Installer"
+		$extName = $Installer
+		$ext = ACMESharp\Get-InstallerProfile -GetInstaller $Installer
+		$extParams = $ext.Parameters
+		$extInst = [ACMESharp.Installer.InstallerExtManager]::GetProvider($extName)
+	}
+	if ($Vault) {
+		$extType = "Vault Storage"
+		$extName = $Vault
+		## Forces the load of Vault-related assemblies
+        ACMESharp\Get-VaultProfile -ListProfiles | Out-Null
+		$ext = [ACMESharp.Vault.VaultExtManager]::GetProviderInfo($extName)
+		$extInst = [ACMESharp.Vault.VaultExtManager]::GetProvider($extName)
+		$extParams = $extInst.DescribeParameters()
+	}
+	if ($ChallengeDecoder) {
+		$extType = "Challenge Decoder"
+		$extName = $ChallengeDecoder
+		$ext = ACMESharp\Get-ChallengeHandlerProfile -GetChallengeType $ChallengeDecoder
+		$extParams = $ext.Parameters
+	}
+	if ($PkiTool) {
+		$extType = "PKI Tool"
+		$extName = $PkiTool
+		## Forces the load of Vault-related assemblies
+		ACMESharp\Get-ChallengeHandlerProfile -ListChallengeTypes | Out-Null
+		$ext = [ACMESharp.PKI.PkiToolExtManager]::GetProviderInfo($extName)
+		$extInst = [ACMESharp.PKI.PkiToolExtManager]::GetProvider($extName)
+		$extParams = $extInst.DescribeParameters()
+	}
+
+	if (-not $ext) {
+		Write-Error "Could not resolve $extType [$extName]"
+		return
+	}
+
+	## Get all the type-specific props excluding all the common ones
+	$props = $ext.GetType().GetMembers() |
+			Where-Object { $_.MemberType -eq "Property" } |
+			Where-Object { $_.Name -notin @('Name', 'Label', 'Description', 'Parameters') } |
+			Select-Object -ExpandProperty Name
+
+	$extName = if($ext.Name) { $ext.Name }
+	## TODO:  Aliases???
+	$extLabel = if ($ext.Label) { $ext.Label } else { $extName }
+
+	Write-Output ""
+	Write-Output "# $($extType): $($extLabel)"
+	if ($ext.Description) {
+		Write-Output ""
+		Write-Output $ext.Description
+	}
+	else {
+		Write-Output "*(no description)*"
+	}
+	Write-Output ""
+	Write-Output @"
+| | |
+|-|-|
+| **Name:** | ``$($extName)``
+"@
+	foreach ($p in $props) {
+		Write-Output "| **$($p):** | $($ext.$p)"
+	}
+	if ($extInst) {
+		$asmName = $extInst.GetType().Assembly.GetName()
+		Write-Output "| **Assembly:** | ``$($asmName.Name)``"
+		Write-Output "| **Version:** | ``$($asmName.Version)``"
+	}
+	Write-Output ""
+
+	if ($extParams) {
+		Write-Output("## Parameters")
+		foreach ($p in $extParams) {
+			$pLabel = if ($p.Label) { $p.Label } else { $p.Name }
+			Write-Output @"
+---
+### $pLabel
+
+$($p.Description)
+
+| | |
+|-|-|
+| **Name:**          | ``$($p.Name)``
+| **Type:**          | $($p.Type)
+| **IsRequired:**    | $($p.IsRequired)
+| **IsMultiValued:** | $($p.IsMultiValued)
+
+"@
+		}
+	}
+}

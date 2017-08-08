@@ -108,6 +108,7 @@ namespace ACMESharp.POSH
                             pInfo.Label,
                             pInfo.SupportedTypes,
                             pInfo.Description,
+							pInfo.IsCleanUpSupported,
                             Parameters = p.DescribeParameters().Select(_ => new {
                                     _.Name,
                                     _.Label,

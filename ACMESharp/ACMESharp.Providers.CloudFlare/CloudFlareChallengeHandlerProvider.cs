@@ -8,6 +8,7 @@ namespace ACMESharp.Providers.CloudFlare
     [ChallengeHandlerProvider(
         "CloudFlare",
         ChallengeTypeKind.DNS,
+		isCleanUpSupported: true,
         Label = "CloudFlare DNS",
         Description = "Provider for handling challenges that manages DNS entries hosted in a CloudFlare zone")]
     public class CloudFlareChallengeHandlerProvider : IChallengeHandlerProvider

@@ -8,6 +8,7 @@ using ACMESharp.Ext;
 namespace ACMESharp.Providers.AWS
 {
     [ChallengeHandlerProvider("aws-s3", ChallengeTypeKind.HTTP,
+		isCleanUpSupported: true,
         Aliases = new[] { "awsS3", "s3" },
         Label = "AWS S3",
         Description = "Provider for handling Challenges that manages" +

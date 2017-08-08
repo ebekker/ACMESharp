@@ -15,6 +15,7 @@ namespace ACMESharp.Providers.Windows
 	/// </remarks>
 	[ChallengeHandlerProvider("msdns",
 		ChallengeTypeKind.DNS,
+		isCleanUpSupported: false,
 		Label = "Microsoft DNS Provider",
 		Description = "A microsoft dns provider for handling Challenges." +
 					  " This provider supports the DNS" +

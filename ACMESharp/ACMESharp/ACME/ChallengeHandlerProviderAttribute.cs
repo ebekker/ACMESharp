@@ -12,16 +12,15 @@ namespace ACMESharp.ACME
     public class ChallengeHandlerProviderAttribute : ExportAttribute
     {
         public ChallengeHandlerProviderAttribute(string name,
-                ChallengeTypeKind supportedTypes) : base(typeof(IChallengeHandlerProvider))
+                ChallengeTypeKind supportedTypes,
+				bool isCleanUpSupported = false) : base(typeof(IChallengeHandlerProvider))
         {
             Name = name;
             SupportedTypes = supportedTypes;
+			IsCleanUpSupported = isCleanUpSupported;
         }
 
         public string Name
-        { get; private set; }
-
-        public ChallengeTypeKind SupportedTypes
         { get; private set; }
 
         public string[] Aliases
@@ -32,5 +31,11 @@ namespace ACMESharp.ACME
 
         public string Description
         { get; set; }
+
+        public ChallengeTypeKind SupportedTypes
+        { get; private set; }
+
+        public bool IsCleanUpSupported
+        { get; private set; }
     }
 }

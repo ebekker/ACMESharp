@@ -142,8 +142,8 @@ Describe "VaultTests" {
         It "gets the details of the MANUAL Challenge Handler parameters" {
             $ctp = Get-ACMEChallengeHandlerProfile -GetChallengeHandler manual -ParametersOnly
             $ctp | Should Not BeNullOrEmpty
-            $ctp.Count | Should Be 3
-            ($ctp | % { $_.Name } | ConvertTo-Json -Compress) | Should Be (@("WriteOutPath", "Append", "Overwrite") | ConvertTo-Json -Compress)
+            $ctp.Count | Should Be 4
+            ($ctp | % { $_.Name } | ConvertTo-Json -Compress) | Should Be (@("WriteOutPath", "Append", "Overwrite", "OutputJson") | ConvertTo-Json -Compress)
         }
     }
 

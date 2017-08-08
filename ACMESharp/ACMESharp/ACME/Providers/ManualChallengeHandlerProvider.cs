@@ -50,6 +50,7 @@ namespace ACMESharp.ACME.Providers
             WRITE_OUT_PATH,
             APPEND,
             OVERWRITE,
+			OUTPUT_JSON,
         };
 
         public IEnumerable<ParameterDetail> DescribeParameters()

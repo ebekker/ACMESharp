@@ -7,6 +7,7 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client library and PowerShel
 Jump To:
 * [Overview](#overview)
 * [Quick Start](https://github.com/ebekker/ACMESharp/wiki/Quick-Start)
+* [Build Status](#build-status)
 * [Downloads](#downloads)
 * [Current State](#current-state)
 * [Related Links](#related-links)

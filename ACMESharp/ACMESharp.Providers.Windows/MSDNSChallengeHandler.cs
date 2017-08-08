@@ -14,6 +14,7 @@ namespace ACMESharp.Providers.Windows
 
 		public void CleanUp(Challenge c)
 		{
+			throw new NotSupportedException("provider does not support clean up");
 		}
 
 		public void Dispose()

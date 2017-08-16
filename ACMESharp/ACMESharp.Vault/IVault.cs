@@ -39,7 +39,9 @@ namespace ACMESharp.Vault
                 bool getOrCreate = false);
     
         VaultAsset GetAsset(VaultAssetType type, string name);
-    
+
+        void RemoveAsset(VaultAssetType type, string name);
+
         Stream SaveAsset(VaultAsset asset);
     
         Stream LoadAsset(VaultAsset asset);

@@ -17,14 +17,18 @@ namespace ACMESharp.POSH
             {
                 vlt.OpenStorage();
                 var v = vlt.LoadVault();
-                
+
                 if (v.Registrations == null || v.Registrations.Count < 1)
-                    throw new InvalidOperationException("No registrations found");
+                {
+                    WriteObject(null);
+                }
+                else
+                {
+                    var ri = v.Registrations[0];
+                    var r = ri.Registration;
 
-                var ri = v.Registrations[0];
-                var r = ri.Registration;
-
-                WriteObject(r);
+                    WriteObject(r);
+                }
             }
         }
     }

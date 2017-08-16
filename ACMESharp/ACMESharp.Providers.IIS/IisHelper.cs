@@ -203,11 +203,11 @@ namespace ACMESharp.Providers.IIS
                         .With(nameof(webSiteRef), webSiteRef);
 
             // Make sure all the bindings are for the same site
-            var siteId = sitesById.First().SiteId;
-                if (sitesById.Any(_ => _.SiteId != siteId))
+            var siteId = resolvedSites.First().SiteId;
+                if (resolvedSites.Any(_ => _.SiteId != siteId))
                     throw new InvalidOperationException("duplicate sites resolved for referenced site ID")
                             .With(nameof(webSiteRef), webSiteRef)
-                            .With("count", sitesById.Length);
+                            .With("count", resolvedSites.Count());
 
             return resolvedSites;
         }

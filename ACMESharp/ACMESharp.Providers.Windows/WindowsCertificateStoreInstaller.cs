@@ -37,14 +37,14 @@ namespace ACMESharp.Providers.Windows
                     if (StoreLocation == StoreLocation.LocalMachine)
                         flag = X509KeyStorageFlags.MachineKeySet;
 
-                    var cert = new X509Certificate2(ms.ToArray(), string.Empty,
-                            X509KeyStorageFlags.PersistKeySet | flag |
-                            X509KeyStorageFlags.Exportable);
+					var cert = new X509Certificate2(ms.ToArray(), string.Empty,
+							X509KeyStorageFlags.PersistKeySet | flag |
+							X509KeyStorageFlags.Exportable);
 
-                    if (!string.IsNullOrEmpty(FriendlyName))
-                        cert.FriendlyName = FriendlyName;
+					if (!string.IsNullOrEmpty(FriendlyName))
+						cert.FriendlyName = FriendlyName;
 
-                    store.Add(cert);
+					store.Add(cert);
                 }
             }
             finally

@@ -108,6 +108,7 @@
     <Compile Include="Ext\ExtManagerAttribute.cs" />
     <Compile Include="Ext\NamedInfo.cs" />
     <Compile Include="Ext\ParameterDetail.cs" />
+    <Compile Include="Ext\ParameterExtensions.cs" />
     <Compile Include="HTTP\Link.cs" />
     <Compile Include="HTTP\LinkCollection.cs" />
     <Compile Include="Installer\IInstaller.cs" />

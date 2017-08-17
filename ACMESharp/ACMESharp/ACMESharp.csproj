@@ -94,10 +94,8 @@
     <Compile Include="ACME\Providers\HttpChallengeDecoderProvider.cs" />
     <Compile Include="ACME\Providers\ManualChallengeHandler.cs" />
     <Compile Include="ACME\Providers\ManualChallengeHandlerProvider.cs" />
-    <Compile Include="ACME\Providers\MSDNSChallengeHandler.cs" />
     <Compile Include="ACME\Providers\DnsMadeEasyChallengeHandler.cs" />
     <Compile Include="ACME\Providers\DnsMadeEasyChallengeHandlerProvider.cs" />
-    <Compile Include="ACME\Providers\MSDNSChallengeHandlerProvider.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="AuthorizationState.cs" />
     <Compile Include="CertificateRequest.cs" />

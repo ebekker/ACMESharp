@@ -8,21 +8,20 @@ using ACMESharp.Ext;
 namespace ACMESharp.ACME.Providers
 {
 	/// <summary>
-	/// Provider for a Challenge Handler that outputs the manual steps
-	/// needed to be completed by the operator.
+	/// Provider for a Challenge Handler that updates the TXT records on a
+    /// DNS Made Easy account.
 	/// </summary>
 	/// <remarks>
-	/// When the output resolves to a file and that file already exists,
-	/// unless either the Append or Overwrite parameters are specified
-	/// as true, an exception will be raised.
+	/// The staging environment is available as an option, but Let's Encrypt
+    /// won't be able to read these values, so this is for debugging only
 	/// </remarks>
 	[ChallengeHandlerProvider("dnsme",
 		ChallengeTypeKind.DNS,
 		Label = "DNSMadeEasy Provider",
-		Description = "A microsoft dns provider for handling Challenges." +
+		Description = "A DNS Made Easy provider for handling Challenges." +
 					  " This provider supports the DNS" +
 					  " Challenge type and computes all the necessary" +
-					  " response values. It will create DNS entries.")]
+					  " response values. It will create DNS entries in your account.")]
 	public class DnsMadeEasyChallengeHandlerProvider : IChallengeHandlerProvider
 	{
         public static readonly ParameterDetail API_KEY = new ParameterDetail(

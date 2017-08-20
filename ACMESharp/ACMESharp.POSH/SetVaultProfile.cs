@@ -4,16 +4,13 @@ using ACMESharp.Vault.Profile;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Set, "VaultProfile", DefaultParameterSetName = PSET_SET)]
-    public class SetVaultProfile : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.Set, "VaultProfile", DefaultParameterSetName = PSET_SET)]
+    public class SetVaultProfile : AcmeCmdlet
+	{
         public const string PSET_SET = "Set";
         public const string PSET_REMOVE = "Remove";
 

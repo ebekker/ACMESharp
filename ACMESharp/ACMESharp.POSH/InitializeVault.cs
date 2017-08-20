@@ -1,18 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using ACMESharp.POSH.Util;
-using ACMESharp.Vault;
-using System.Management.Automation;
-using ACMESharp.Vault.Model;
+﻿using ACMESharp.Vault.Model;
 using ACMESharp.Vault.Util;
-using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsData.Initialize, "Vault", DefaultParameterSetName = PSET_BASE_SERVICE)]
-    public class InitializeVault : Cmdlet
-    {
+	[Cmdlet(VerbsData.Initialize, "Vault", DefaultParameterSetName = PSET_BASE_SERVICE)]
+    public class InitializeVault : AcmeCmdlet
+	{
         public const string PSET_BASE_SERVICE = "BaseService";
         public const string PSET_BASE_URI = "BaseUri";
 

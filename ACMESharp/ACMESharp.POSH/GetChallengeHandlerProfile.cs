@@ -1,18 +1,14 @@
 ﻿using ACMESharp.ACME;
 using ACMESharp.Util;
 using ACMESharp.Vault.Profile;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Get, "ChallengeHandlerProfile", DefaultParameterSetName = PSET_GET_HANDLER_PROFILE)]
-    public class GetChallengeHandlerProfile : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.Get, "ChallengeHandlerProfile", DefaultParameterSetName = PSET_GET_HANDLER_PROFILE)]
+    public class GetChallengeHandlerProfile : AcmeCmdlet
+	{
         public const string PSET_GET_CHALLENGE_TYPE = "GetChallengeType";
         public const string PSET_GET_CHALLENGE_HANDLER = "GetChallengeHandler";
         public const string PSET_LIST_HANDLER_PROFILES = "ListHandlerProfiles";

@@ -6,22 +6,22 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    /// <summary>
-    /// <para type="synopsis">
-    ///   Creates and submits a new Identifier to be verified to the ACME CA Server.
-    /// </para>
-    /// <para type="description">
-    ///   Currently, the only Identifier type supported is the DNS type.
-    /// </para>
-    /// <para type="link">Get-Identifier</para>
-    /// <para type="link">Update-Identifier</para>
-    /// <para type="link">Complete-Challenge</para>
-    /// <para type="link">Submit-Challenge</para>
-    /// </summary>
-    [Cmdlet(VerbsCommon.New, "Identifier")]
+	/// <summary>
+	/// <para type="synopsis">
+	///   Creates and submits a new Identifier to be verified to the ACME CA Server.
+	/// </para>
+	/// <para type="description">
+	///   Currently, the only Identifier type supported is the DNS type.
+	/// </para>
+	/// <para type="link">Get-Identifier</para>
+	/// <para type="link">Update-Identifier</para>
+	/// <para type="link">Complete-Challenge</para>
+	/// <para type="link">Submit-Challenge</para>
+	/// </summary>
+	[Cmdlet(VerbsCommon.New, "Identifier")]
     [OutputType(typeof(AuthorizationState))]
-    public class NewIdentifier : Cmdlet
-    {
+    public class NewIdentifier : AcmeCmdlet
+	{
         /// <summary>
         /// <para type="description">
         ///   Specifies the DNS name to be submitted for verification.

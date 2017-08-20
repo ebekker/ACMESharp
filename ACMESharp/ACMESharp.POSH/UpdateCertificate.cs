@@ -1,40 +1,40 @@
-﻿using ACMESharp.POSH.Util;
+﻿using ACMESharp.HTTP;
+using ACMESharp.PKI;
+using ACMESharp.POSH.Util;
+using ACMESharp.Util;
 using ACMESharp.Vault;
 using ACMESharp.Vault.Model;
+using ACMESharp.Vault.Util;
 using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using ACMESharp.HTTP;
-using ACMESharp.PKI;
-using ACMESharp.Vault.Util;
-using ACMESharp.Util;
 
 namespace ACMESharp.POSH
 {
-    /// <summary>
-    /// <para type="synopsis">
-    ///   Updates the status and details of a Certificate stored in the Vault.
-    /// </para>
-    /// <para type="description">
-    ///   Use this cmdlet to update characteristics of an Identifier that are
-    ///   defined locally, such as the Alias or Label.
-    /// </para>
-    /// <para type="description">
-    ///   Also use this cmdlet to refresh the state and status of a Certificate
-    ///   including retrieving the certificate and intermediate signing certificate
-    ///   from the associated ACME CA Server.
-    /// </para>
-    /// <para type="link">New-Certificate</para>
-    /// <para type="link">Get-Certificate</para>
-    /// <para type="link">Submit-Certificate</para>
-    /// </summary>
-    [Cmdlet(VerbsData.Update, "Certificate", DefaultParameterSetName = PSET_DEFAULT)]
+	/// <summary>
+	/// <para type="synopsis">
+	///   Updates the status and details of a Certificate stored in the Vault.
+	/// </para>
+	/// <para type="description">
+	///   Use this cmdlet to update characteristics of an Identifier that are
+	///   defined locally, such as the Alias or Label.
+	/// </para>
+	/// <para type="description">
+	///   Also use this cmdlet to refresh the state and status of a Certificate
+	///   including retrieving the certificate and intermediate signing certificate
+	///   from the associated ACME CA Server.
+	/// </para>
+	/// <para type="link">New-Certificate</para>
+	/// <para type="link">Get-Certificate</para>
+	/// <para type="link">Submit-Certificate</para>
+	/// </summary>
+	[Cmdlet(VerbsData.Update, "Certificate", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(CertificateInfo))]
-    public class UpdateCertificate : Cmdlet
-    {
+    public class UpdateCertificate : AcmeCmdlet
+	{
         public const string PSET_DEFAULT = "Default";
         public const string PSET_LOCAL_ONLY = "LocalOnly";
 

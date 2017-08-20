@@ -1,12 +1,11 @@
-﻿using ACMESharp.POSH.Util;
-using ACMESharp.Util;
+﻿using ACMESharp.Util;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Set, "Vault", DefaultParameterSetName = PSET_BASE_SERVICE)]
-    public class SetVault : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.Set, "Vault", DefaultParameterSetName = PSET_BASE_SERVICE)]
+    public class SetVault : AcmeCmdlet
+	{
         public const string PSET_BASE_SERVICE = "BaseService";
         public const string PSET_BASE_URI = "BaseUri";
 

@@ -1,25 +1,24 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    /// <summary>
-    /// <para type="synopsis">Lists all, or retrieves details for, Identifiers submitted for
-    ///     verification.</para>
-    /// <para type="description">
-    ///   Use this cmdlet to list all of the Identifier that have been previously
-    ///   defined and submitted to the ACME CA Server of the current Vault.  You
-    ///   also use this cmdlet to specify specific Identifier references (ID or alias)
-    ///   to retrieve more specific details as they are captured in the Vault.
-    /// </para>
-    /// <para type="link">New-Identifier</para>
-    /// <para type="link">Update-Identifier</para>
-    /// </summary>
-    [Cmdlet(VerbsCommon.Get, "Identifier", DefaultParameterSetName = PSET_LIST)]
+	/// <summary>
+	/// <para type="synopsis">Lists all, or retrieves details for, Identifiers submitted for
+	///     verification.</para>
+	/// <para type="description">
+	///   Use this cmdlet to list all of the Identifier that have been previously
+	///   defined and submitted to the ACME CA Server of the current Vault.  You
+	///   also use this cmdlet to specify specific Identifier references (ID or alias)
+	///   to retrieve more specific details as they are captured in the Vault.
+	/// </para>
+	/// <para type="link">New-Identifier</para>
+	/// <para type="link">Update-Identifier</para>
+	/// </summary>
+	[Cmdlet(VerbsCommon.Get, "Identifier", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(AuthorizationState))]
-    public class GetIdentifier : Cmdlet
-    {
+    public class GetIdentifier : AcmeCmdlet
+	{
         public const string PSET_LIST = "List";
         public const string PSET_GET = "Get";
 

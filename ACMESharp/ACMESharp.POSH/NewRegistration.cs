@@ -1,14 +1,13 @@
 ﻿using ACMESharp.POSH.Util;
-using ACMESharp.Vault;
 using ACMESharp.Vault.Model;
 using ACMESharp.Vault.Util;
 using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.New, "Registration")]
-    public class NewRegistration : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.New, "Registration")]
+    public class NewRegistration : AcmeCmdlet
+	{
         [Parameter(Mandatory = true)]
         [ValidateCount(1, 100)]
         public string[] Contacts

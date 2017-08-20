@@ -1,18 +1,13 @@
 ﻿using ACMESharp.Vault;
 using ACMESharp.Vault.Profile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Get, "VaultProfile", DefaultParameterSetName = PSET_LIST)]
+	[Cmdlet(VerbsCommon.Get, "VaultProfile", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(VaultProfile), ParameterSetName = new string[] { PSET_GET })]
-    public class GetVaultProfile : Cmdlet
-    {
+    public class GetVaultProfile : AcmeCmdlet
+	{
         public const string PSET_LIST = "List";
         public const string PSET_GET = "Get";
         public const string PSET_RELOAD_PROVIDERS = "ReloadProviders";

@@ -1,32 +1,32 @@
-﻿using ACMESharp.Vault;
+﻿using ACMESharp.PKI;
+using ACMESharp.PKI.RSA;
+using ACMESharp.Util;
+using ACMESharp.Vault;
 using ACMESharp.Vault.Model;
 using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using ACMESharp.PKI;
-using ACMESharp.Util;
-using ACMESharp.PKI.RSA;
 
 namespace ACMESharp.POSH
 {
-    /// <summary>
-    /// <para type="synopsis">
-    ///   Gets the status and details of a Certificate stored in the Vault.
-    /// </para>
-    /// <para type="description">
-    ///   This cmdlet retrieves the details of a Certificate defined in the Vault.
-    ///   It is also used to export various artificates associated with the Certificate
-    ///   to various formats.
-    /// </para>
-    /// <para type="link">New-Certificate</para>
-    /// <para type="link">Submit-Certificate</para>
-    /// <para type="link">Update-Certificate</para>
-    /// </summary>
-    [Cmdlet(VerbsCommon.Get, "Certificate", DefaultParameterSetName = PSET_LIST)]
+	/// <summary>
+	/// <para type="synopsis">
+	///   Gets the status and details of a Certificate stored in the Vault.
+	/// </para>
+	/// <para type="description">
+	///   This cmdlet retrieves the details of a Certificate defined in the Vault.
+	///   It is also used to export various artificates associated with the Certificate
+	///   to various formats.
+	/// </para>
+	/// <para type="link">New-Certificate</para>
+	/// <para type="link">Submit-Certificate</para>
+	/// <para type="link">Update-Certificate</para>
+	/// </summary>
+	[Cmdlet(VerbsCommon.Get, "Certificate", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(CertificateInfo))]
-    public class GetCertificate : Cmdlet
-    {
+    public class GetCertificate : AcmeCmdlet
+	{
         public const string PSET_LIST = "List";
         public const string PSET_GET = "Get";
 

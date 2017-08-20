@@ -4,9 +4,9 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Get, "IssuerCertificate")]
-    public class GetIssuerCertificate : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.Get, "IssuerCertificate")]
+    public class GetIssuerCertificate : AcmeCmdlet
+	{
         [Parameter]
         public string SerialNumber
         { get; set; }

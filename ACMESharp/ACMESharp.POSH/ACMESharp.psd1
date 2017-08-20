@@ -58,6 +58,12 @@
 	# Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 	NestedModules = @( "ACMESharp-Extensions\ACMESharp-Extensions.psd1" )
 
+	# Assemblies that must be loaded prior to importing this module
+	#RequiredAssemblies = @( 'ACMESharp.dll' )
+
+	# Script files (.ps1) that are run in the caller's environment prior to importing this module.
+	#ScriptsToProcess = @( '_ModInit.ps1' )
+
 
 	############################################################
 	## Unused manifest elements reserved for possible future use
@@ -68,12 +74,6 @@
 
 	# Modules that must be imported into the global environment prior to importing this module
 	# RequiredModules = @()
-
-	# Assemblies that must be loaded prior to importing this module
-	# RequiredAssemblies = @()
-
-	# Script files (.ps1) that are run in the caller's environment prior to importing this module.
-	# ScriptsToProcess = @()
 
 	# Type files (.ps1xml) to be loaded when importing this module
 	# TypesToProcess = @()

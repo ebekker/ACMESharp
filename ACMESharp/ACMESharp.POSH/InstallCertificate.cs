@@ -9,29 +9,26 @@ using ACMESharp.Vault.Profile;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACMESharp.POSH
 {
-    /// <summary>
-    /// <para type="synopsis">Invokes an Installer to install a PKI certificate.</para>
-    /// <para type="description">
-    ///   Use this cmdlet to invoke an instance of an Installer Provider defined
-    ///   by a profile stored in an ACMESharp Vault.  The profile will specify
-    ///   the provider name as well as any parameters that will be applied during
-    ///   the instance creation and invocation.  Alternatively, you can specify
-    ///   all the details captured in a profile "inline" during this cmdlet's
-    ///   invocation.
-    /// </para>
-    /// <para type="link">Get-InstallerProfile</para>
-    /// <para type="link">Set-InstallerProfile</para>
-    /// </summary>
-    [Cmdlet(VerbsLifecycle.Install, "Certificate")]
-    public class InstallCertificate : Cmdlet
-    {
+	/// <summary>
+	/// <para type="synopsis">Invokes an Installer to install a PKI certificate.</para>
+	/// <para type="description">
+	///   Use this cmdlet to invoke an instance of an Installer Provider defined
+	///   by a profile stored in an ACMESharp Vault.  The profile will specify
+	///   the provider name as well as any parameters that will be applied during
+	///   the instance creation and invocation.  Alternatively, you can specify
+	///   all the details captured in a profile "inline" during this cmdlet's
+	///   invocation.
+	/// </para>
+	/// <para type="link">Get-InstallerProfile</para>
+	/// <para type="link">Set-InstallerProfile</para>
+	/// </summary>
+	[Cmdlet(VerbsLifecycle.Install, "Certificate")]
+    public class InstallCertificate : AcmeCmdlet
+	{
         public const string PSET_INSTALLER_INLINE = "InstallerInline";
         public const string PSET_INSTALLER_PROFILE = "InstallerProfile";
 

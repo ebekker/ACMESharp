@@ -14,7 +14,7 @@ Jump To:
 
 ---
 
-**For NEW Documentation for the v0.9.x releases, please see the [new documentation](pkisharp.github.io/ACMESharp-docs/)**
+**For NEW Documentation for the v0.9.x releases, please see the [new documentation](https://pkisharp.github.io/ACMESharp-docs/)**
 
 For OLD documentation and getting started, go to the [wiki](https://github.com/ebekker/ACMESharp/wiki).
 

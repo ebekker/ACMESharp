@@ -4,9 +4,9 @@ using System.Text;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Set, "Proxy", DefaultParameterSetName = PSET_USE_SYSTEM)]
-    public class SetProxy : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.Set, "Proxy", DefaultParameterSetName = PSET_USE_SYSTEM)]
+    public class SetProxy : AcmeCmdlet
+	{
         public const string PSET_USE_SYSTEM = "UseSystem";
         public const string PSET_USE_NOPROXY = "UseNoProxy";
         public const string PSET_USE_PROXY_NO_CRED = "UseProxyNoCred";

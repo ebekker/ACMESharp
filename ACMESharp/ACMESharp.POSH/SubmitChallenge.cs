@@ -5,23 +5,23 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    /// <summary>
-    /// <para type="synopsis">
-    ///     Submits a completed Challenge for verification by ACME CA Server.
-    /// </para>
-    /// <para type="description">
-    ///   After a Challenge has been handled and completed, it needs to be submitted to the
-    ///   ACME CA Server that issued the Challenge.  This cmdlet submits the Challenge of a
-    ///   particular type to the ACME Server to be verified.  If the ACME Server issued multiple
-    ///   Challenges and combinations that will satisfy the validation of ownership of an
-    ///   Identifier, you can use this cmdlet to submit each Challenge type completed.
-    /// </para>
-    /// <para type="link">New-Identifier</para>
-    /// <para type="link">Complete-Challenge</para>
-    /// </summary>
-    [Cmdlet(VerbsLifecycle.Submit, "Challenge")]
-    public class SubmitChallenge : Cmdlet
-    {
+	/// <summary>
+	/// <para type="synopsis">
+	///     Submits a completed Challenge for verification by ACME CA Server.
+	/// </para>
+	/// <para type="description">
+	///   After a Challenge has been handled and completed, it needs to be submitted to the
+	///   ACME CA Server that issued the Challenge.  This cmdlet submits the Challenge of a
+	///   particular type to the ACME Server to be verified.  If the ACME Server issued multiple
+	///   Challenges and combinations that will satisfy the validation of ownership of an
+	///   Identifier, you can use this cmdlet to submit each Challenge type completed.
+	/// </para>
+	/// <para type="link">New-Identifier</para>
+	/// <para type="link">Complete-Challenge</para>
+	/// </summary>
+	[Cmdlet(VerbsLifecycle.Submit, "Challenge")]
+    public class SubmitChallenge : AcmeCmdlet
+	{
         /// <summary>
         /// <para type="description">
         ///     A reference (ID or alias) to a previously defined Identifier submitted

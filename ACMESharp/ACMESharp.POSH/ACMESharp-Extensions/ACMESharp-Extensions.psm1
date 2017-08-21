@@ -12,6 +12,14 @@ are installed.
 
 The spec can be an exact version string or a `-like` pattern to be matched.
 
+.PARAMETER Scope
+Specifies the scope of extension resolution.  Extensions can be installed either
+globally, accessible to all users, or specific to the current user.  When resolving
+extensions, you can scope the resolution to one or the other, or both.
+
+By default extensions are resolved relative to both scopes, with global scope taking
+priority.   Valid values are 'Global', 'User' or 'AllScopes".  The default value is 'AllScopes'.
+
 .PARAMETER AcmeVersion
 An optional version spec, useful if multiple versions of the core ACMESharp module is installed,
 this will specify which module installation will be targeted for enabling the module.
@@ -23,6 +31,10 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 		[string]$ModuleName,
 		[Parameter(Mandatory=$false)]
 		[string]$ModuleVersion,
+
+		[Parameter(Mandatory=$false)]
+		[ValidateSet("AllScopes", "Global", "User")]
+		[string]$Scope="AllScopes",
 
 		[Parameter(Mandatory=$false)]
 		[string]$AcmeVersion
@@ -60,21 +72,41 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 		return
 	}
 
-	$extRoot = "$($acmeMod.ModuleBase)\EXT"
-	$extPath = "$($extRoot)\$($provMod.Name).extlnk"
+	#$extRoot = "$($acmeMod.ModuleBase)\EXT"
+	if ($Scope -ne "Global") {
+		$extRoot = [ACMESharp.POSH.AcmeCmdlet]::UserExtensionsRoot
+		$extPath = "$($extRoot)\$($provMod.Name).extlnk"
+		$extScope = "User"
+	}
+	
+	if ($Scope -ne "User" -and ((-not $extPath) -or (-not (Test-Path $extPath)))) {
+		$extRoot = [ACMESharp.POSH.AcmeCmdlet]::SystemExtensionsRoot
+		$extPath = "$($extRoot)\$($provMod.Name).extlnk"
+		$extScope = "Global"
+	}
 
 	[ordered]@{
 		acmeMod = $acmeMod
 		provMod = $provMod
 		extRoot = $extRoot
 		extPath = $extPath
+		extScope = $extScope
 	}		
 }
 
 function Get-ExtensionModule {
 <#
 .PARAMETER ModuleName
-Optional, the name of the PowerShell module that is an enabled ACMESharp Extension Module.  If unspecified, then all enabled Extension Modules will be returned.
+Optional, the name of the PowerShell module that is an enabled ACMESharp Extension Module.
+If unspecified, then all enabled Extension Modules will be returned.
+
+.PARAMETER Scope
+Specifies the scope of extension resolution.  Extensions can be installed either
+globally, accessible to all users, or specific to the current user.  When resolving
+extensions, you can scope the resolution to one or the other, or both.
+
+By default extensions are resolved relative to both scopes, with user scope taking
+priority.   Valid values are 'Global', 'User' or 'All".  The default value is 'AllScopes'.
 
 .PARAMETER AcmeVersion
 An optional version spec, useful if multiple versions of the core ACMESharp module is installed,
@@ -85,6 +117,10 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 	param(
 		[Parameter(Mandatory=$false)]
 		[string]$ModuleName,
+
+		[Parameter(Mandatory=$false)]
+		[ValidateSet("AllScopes", "Global", "User")]
+		[string]$Scope="AllScopes",
 
 		[Parameter(Mandatory=$false)]
 		[string]$AcmeVersion
@@ -109,21 +145,43 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 		return
 	}
 
-	$extRoot = "$($acmeMod.ModuleBase)\EXT"
-	$extPath = "$($extRoot)\*.extlnk"
+	#$extRoot = "$($acmeMod.ModuleBase)\EXT"
+	$userExtLinks = @()
+	if ($Scope -ne "Global") {
+		$extRoot = [ACMESharp.POSH.AcmeCmdlet]::UserExtensionsRoot
+		$extPath = "$($extRoot)\*.extlnk"
+		$userExtLinks = Get-ChildItem $extPath
+		$userExtLinks | Add-Member -NotePropertyName ExtScope -NotePropertyValue User
+	}
+	
+	$sysExtLinks = @()
+	if ($Scope -ne "User") {
+		$extRoot = [ACMESharp.POSH.AcmeCmdlet]::SystemExtensionsRoot
+		$extPath = "$($extRoot)\*.extlnk"
+		$sysExtLinks = Get-ChildItem $extPath
+		$sysExtLinks | Add-Member -NotePropertyName ExtScope -NotePropertyValue Global
+	}
 
-	$extLinks = Get-ChildItem $extPath
 	if ($ModuleName) {
-		$extLinks = $extLinks | Where-Object { ($_.Name -replace '\.extlnk$','') -eq $ModuleName }
+		$extLinks = $userExtLinks | Where-Object { ($_.Name -replace '\.extlnk$','') -eq $ModuleName }
+		if (-not $extLinks) {
+			$extLinks = $sysExtLinks | Where-Object { ($_.Name -replace '\.extlnk$','') -eq $ModuleName }		
+		}
+	}
+	else {
+		$extLinks = @($userExtLinks) + @($sysExtLinks)
 	}
 
 	$extLinks | Select-Object @{
 		Name = "Name"
 		Expression = { $_.Name -replace '\.extlnk$','' }
 	},@{
+		Name = "Scope"
+		Expression = { $_.ExtScope }
+	},@{
 		Name = "JSON"
 		Expression = { Get-Content $_ | ConvertFrom-Json }
-	} | Select-Object Name,@{
+	} | Select-Object Name,Scope,@{
 		Name = "Version"
 		Expression = { $_.JSON.Version }
 	},@{
@@ -143,6 +201,15 @@ are installed.
 
 The spec can be an exact version string or a `-like` pattern to be matched.
 
+.PARAMETER Scope
+Specifies the scope under which the extension will be enabled. Extensions can be enabled
+either globally, accessible to all users, or specific to the current user.  When resolving
+extensions, you can scope the resolution to one or the other, or both.
+
+By default extensions are resolved relative to both scopes, with user scope taking
+priority.   For enabling an extension, you can specify `Global` or `User` scope.
+The default value is 'Global'.
+
 .PARAMETER AcmeVersion
 An optional version spec, useful if multiple versions of the core ACMESharp module is installed,
 this will specify which module installation will be targeted for enabling the module.
@@ -156,10 +223,14 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 		[string]$ModuleVersion,
 
 		[Parameter(Mandatory=$false)]
+		[ValidateSet("Global", "User")]
+		[string]$Scope="Global",
+
+		[Parameter(Mandatory=$false)]
 		[string]$AcmeVersion
 	)
 	
-	$deps = Resolve-ExtensionModule -ModuleName $ModuleName -AcmeVersion $AcmeVersion
+	$deps = Resolve-ExtensionModule -ModuleName $ModuleName -Scope $Scope -AcmeVersion $AcmeVersion
 	if (-not $deps) {
 		return
 	}
@@ -187,6 +258,15 @@ are installed.
 
 The spec can be an exact version string or a `-like` pattern to be matched.
 
+.PARAMETER Scope
+Specifies the scope under which the extension will be disabled. Extensions can be enabled
+either globally, accessible to all users, or specific to the current user.  When resolving
+extensions, you can scope the resolution to one or the other, or both.
+
+By default extensions are resolved relative to both scopes, with user scope taking
+priority.   For disabling an extension, you can specify `Global`, `User` or `AllScopes` scope.
+The default value is 'AllScopes'.
+
 .PARAMETER AcmeVersion
 An optional version spec, useful if multiple versions of the core ACMESharp module is installed,
 this will specify which module installation will be targeted for enabling the module.
@@ -200,10 +280,14 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 		[string]$ModuleVersion,
 
 		[Parameter(Mandatory=$false)]
+		[ValidateSet("AllScopes", "Global", "User")]
+		[string]$Scope="AllScopes",
+
+		[Parameter(Mandatory=$false)]
 		[string]$AcmeVersion
 	)
 	
-	$deps = Resolve-ExtensionModule -ModuleName $ModuleName -AcmeVersion $AcmeVersion
+	$deps = Resolve-ExtensionModule -ModuleName $ModuleName -Scope $Scope -AcmeVersion $AcmeVersion
 	if (-not $deps) {
 		return
 	}

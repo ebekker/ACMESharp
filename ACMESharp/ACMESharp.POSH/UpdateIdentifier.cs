@@ -5,26 +5,26 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    /// <summary>
-    /// <para type="synopsis">
-    ///   Updates the status and details of an Identifier stored in the Vault.
-    /// </para>
-    /// <para type="description">
-    ///   Use this cmdlet to update characteristics of an Identifier that are
-    ///   defined locally, such as the Alias or Label.
-    /// </para>
-    /// <para type="description">
-    ///   Also use this cmdlet to refresh the state and status of an Identifier
-    ///   by probing the associated ACME CA Server for Identifier details.
-    /// </para>
-    /// <para type="link">New-Identifier</para>
-    /// <para type="link">Get-Identifier</para>
-    /// <para type="link">Complete-Challenge</para>
-    /// <para type="link">Submit-Challenge</para>
-    /// </summary>
-    [Cmdlet(VerbsData.Update, "Identifier", DefaultParameterSetName = PSET_DEFAULT)]
-    public class UpdateIdentifier : Cmdlet
-    {
+	/// <summary>
+	/// <para type="synopsis">
+	///   Updates the status and details of an Identifier stored in the Vault.
+	/// </para>
+	/// <para type="description">
+	///   Use this cmdlet to update characteristics of an Identifier that are
+	///   defined locally, such as the Alias or Label.
+	/// </para>
+	/// <para type="description">
+	///   Also use this cmdlet to refresh the state and status of an Identifier
+	///   by probing the associated ACME CA Server for Identifier details.
+	/// </para>
+	/// <para type="link">New-Identifier</para>
+	/// <para type="link">Get-Identifier</para>
+	/// <para type="link">Complete-Challenge</para>
+	/// <para type="link">Submit-Challenge</para>
+	/// </summary>
+	[Cmdlet(VerbsData.Update, "Identifier", DefaultParameterSetName = PSET_DEFAULT)]
+    public class UpdateIdentifier : AcmeCmdlet
+	{
         public const string PSET_DEFAULT = "Default";
         public const string PSET_CHALLENGE = "Challenge";
         public const string PSET_LOCAL_ONLY = "LocalOnly";

@@ -3,10 +3,10 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Get, "Registration")]
+	[Cmdlet(VerbsCommon.Get, "Registration")]
     [OutputType(typeof(AcmeRegistration))]
-    public class GetRegistration : Cmdlet
-    {
+    public class GetRegistration : AcmeCmdlet
+	{
         [Parameter]
         public string VaultProfile
         { get; set; }

@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Get, "Vault")]
+	[Cmdlet(VerbsCommon.Get, "Vault")]
     [OutputType(typeof(Vault.Model.VaultInfo))]
-    public class GetVault : Cmdlet
-    {
+    public class GetVault : AcmeCmdlet
+	{
         [Parameter]
         public string VaultProfile
         { get; set; }

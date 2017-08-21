@@ -5,10 +5,10 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsData.Update, "Registration", DefaultParameterSetName = PSET_DEFAULT)]
+	[Cmdlet(VerbsData.Update, "Registration", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(AcmeRegistration))]
-    public class UpdateRegistration : Cmdlet
-    {
+    public class UpdateRegistration : AcmeCmdlet
+	{
         public const string PSET_DEFAULT = "Default";
         public const string PSET_LOCAL_ONLY = "LocalOnly";
 

@@ -4,9 +4,9 @@ using System.Management.Automation;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Set, "ServerDirectory")]
-    public class SetServerDirectory : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.Set, "ServerDirectory")]
+    public class SetServerDirectory : AcmeCmdlet
+	{
         public const string PSET_DEFAULT = "Default";
         public const string PSET_SINGLE_RES_ENT = "SingleResourceEntry";
 

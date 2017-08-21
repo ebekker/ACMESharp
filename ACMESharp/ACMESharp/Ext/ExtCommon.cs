@@ -14,13 +14,18 @@ namespace ACMESharp.Ext
 {
     public static class ExtCommon
     {
-        private const string EXT_DIR = "ext";
+        private const string DEFAULT_EXT_DIR = "~/ext";
+
+		private static readonly string[] EMPTY_STRING_ARRAY = new string[0];
 
         public static string BaseDirectoryOverride
         { get; set; }
 
         public static string RelativeSearchPathOverride
         { get; set; }
+
+		public static IEnumerable<string> ExtensionPaths
+		{ get; set; } = new[] { DEFAULT_EXT_DIR };
 
         /// <summary>
         /// When true, includes the immediate children of the extension folder
@@ -32,17 +37,19 @@ namespace ACMESharp.Ext
         public static bool IncludeExtPathLinks
         { get; set; } = true;
 
-        public static string GetExtPath()
+        public static IEnumerable<string> GetExtPaths()
         {
             var thisAsm = Assembly.GetExecutingAssembly().Location;
             if (string.IsNullOrEmpty(thisAsm))
                 return null;
 
-            var thisDir = Path.GetDirectoryName(thisAsm);
+            var thisDir = Path.GetFullPath(Path.GetDirectoryName(thisAsm));
             if (string.IsNullOrEmpty(thisDir))
                 return null;
 
-            return Path.Combine(thisDir, EXT_DIR);
+			return (ExtensionPaths ?? EMPTY_STRING_ARRAY).Select(x => x.StartsWith("~/")
+					? Path.Combine(thisDir, x.Substring(2))
+					: Path.GetFullPath(x));
         }
 
         public static TExtConfig ReloadExtConfig<TExtConfig>(TExtConfig existing) where TExtConfig : new()
@@ -79,38 +86,41 @@ namespace ACMESharp.Ext
             aggCat.Catalogs.Add(new AppCatalog(BaseDirectoryOverride, RelativeSearchPathOverride));
 
             // Add the local extension folder if it exists
-            var thisExt = ExtCommon.GetExtPath();
-            if (Directory.Exists(thisExt))
-            {
-                aggCat.Catalogs.Add(new DirectoryCatalog(thisExt));
+            var thisExt = ExtCommon.GetExtPaths();
+			foreach (var extDir in thisExt)
+			{
+				if (Directory.Exists(extDir))
+				{
+					aggCat.Catalogs.Add(new DirectoryCatalog(extDir));
 
-                if (IncludeExtPathFolders)
-                {
-                    // Add each immediate child directory as well
-                    foreach (var d in Directory.GetDirectories(thisExt))
-                    {
-                        aggCat.Catalogs.Add(new DirectoryCatalog(d));
-                    }
-                }
+					if (IncludeExtPathFolders)
+					{
+						// Add each immediate child directory as well
+						foreach (var d in Directory.GetDirectories(extDir))
+						{
+							aggCat.Catalogs.Add(new DirectoryCatalog(d));
+						}
+					}
 
-                if (IncludeExtPathLinks)
-                {
-                    // Add each folder that's defined in ExtPathLink definition file
-                    foreach (var f in Directory.GetFiles(thisExt, "*.extlnk"))
-                    {
-                        try
-                        {
-                            var epl = JsonHelper.Load<ExtPathLink>(File.ReadAllText(f));
-                            aggCat.Catalogs.Add(new DirectoryCatalog(epl.Path));
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("failed to resolve extension link", ex)
-                                    .With(nameof(ExtPathLink), f);
-                        }
-                    }
-                }
-            }
+					if (IncludeExtPathLinks)
+					{
+						// Add each folder that's defined in ExtPathLink definition file
+						foreach (var f in Directory.GetFiles(extDir, "*.extlnk"))
+						{
+							try
+							{
+								var epl = JsonHelper.Load<ExtPathLink>(File.ReadAllText(f));
+								aggCat.Catalogs.Add(new DirectoryCatalog(epl.Path));
+							}
+							catch (Exception ex)
+							{
+								throw new Exception("failed to resolve extension link", ex)
+										.With(nameof(ExtPathLink), f);
+							}
+						}
+					}
+				}
+			}
 
             // Other possible folders to include:
             //    * Application CWD

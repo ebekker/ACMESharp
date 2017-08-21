@@ -1,18 +1,14 @@
 ﻿using ACMESharp.Installer;
 using ACMESharp.Util;
 using ACMESharp.Vault.Profile;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACMESharp.POSH
 {
-    [Cmdlet(VerbsCommon.Get, "InstallerProfile", DefaultParameterSetName = PSET_GET_INSTALLER_PROFILE)]
-    public class GetInstallerProfile : Cmdlet
-    {
+	[Cmdlet(VerbsCommon.Get, "InstallerProfile", DefaultParameterSetName = PSET_GET_INSTALLER_PROFILE)]
+    public class GetInstallerProfile : AcmeCmdlet
+	{
         public const string PSET_GET_INSTALLER = "GetInstaller";
         public const string PSET_LIST_INSTALLER_PROFILES = "ListInstallerProfiles";
         public const string PSET_GET_INSTALLER_PROFILE = "GetInstallerProfile";

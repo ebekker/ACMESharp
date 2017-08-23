@@ -1,13 +1,15 @@
-using System.IO;
 using ACMESharp.JOSE;
 using ACMESharp.Messages;
 using ACMESharp.Util;
-using Newtonsoft.Json;
+using NLog;
+using System.IO;
 
 namespace ACMESharp.ACME.Providers
 {
-    public class DnsChallengeDecoder : IChallengeDecoder
+	public class DnsChallengeDecoder : IChallengeDecoder
     {
+		private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         public bool IsDisposed
         { get; private set; }
 
@@ -26,6 +28,8 @@ namespace ACMESharp.ACME.Providers
 
             var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, token);
             var keyAuthzDig = JwsHelper.ComputeKeyAuthorizationDigest(signer, token);
+
+			LOG.Debug("Computed key authorization {0} and digest {1}", keyAuthz, keyAuthzDig);
 
             var ca = new DnsChallengeAnswer
             {

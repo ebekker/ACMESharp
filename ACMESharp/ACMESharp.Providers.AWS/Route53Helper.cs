@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.Route53.Model;
+using NLog;
 
 namespace ACMESharp.Providers.AWS
 {
     public class Route53Helper
     {
+		private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
         public string HostedZoneId
         { get; set; }
 
@@ -116,8 +119,18 @@ namespace ACMESharp.Providers.AWS
                         }
                     }
                 };
+
+				LOG.Debug("Submiting R53 action [{0}] to zone [{1}] for record [{2}]",
+						rrRequ.ChangeBatch.Changes[0].Action,
+						rrRequ.HostedZoneId,
+						rrRequ.ChangeBatch.Changes[0].ResourceRecordSet.Name);
+
                 var rrResp = r53.ChangeResourceRecordSets(rrRequ);
-            }
-        }
+
+				if (LOG.IsDebugEnabled)
+					LOG.Debug("R53 response: [{0}]",
+							NLog.Targets.DefaultJsonSerializer.Instance.SerializeObject(rrResp));
+			}
+		}
     }
 }

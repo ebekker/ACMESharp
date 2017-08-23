@@ -1,15 +1,14 @@
-﻿using System;
+﻿using ACMESharp.ACME;
+using ACMESharp.Util;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using ACMESharp.ACME;
-using ACMESharp.Util;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ACMESharp.Providers.AWS
 {
-    [TestClass]
+	[TestClass]
     public class AwsRoute53ProviderTests
     {
         private static Config.AwsR53HandlerParams _handlerParams;
@@ -123,7 +122,7 @@ namespace ACMESharp.Providers.AWS
                 Assert.IsNull(rrFirst);
 
                 // Create the record...
-                h.Handle(c);
+                h.Handle(new ChallengeHandlingContext(c));
 
                 // ...and assert it does exist
                 rr = r53.GetRecords(c.RecordName);
@@ -134,7 +133,7 @@ namespace ACMESharp.Providers.AWS
                 StringAssert.StartsWith(rrFirst.ToLower(), c.RecordName.ToLower());
 
                 // Clean up the record...
-                h.CleanUp(c);
+                h.CleanUp(new ChallengeHandlingContext(c));
 
                 // ...and assert it does not exist once more
                 rr = r53.GetRecords(c.RecordName);

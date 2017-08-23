@@ -1,15 +1,14 @@
-﻿using System;
+﻿using ACMESharp.ACME;
+using ACMESharp.Util;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using ACMESharp.ACME;
-using ACMESharp.Util;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ACMESharp.Providers.AWS
 {
-    [TestClass]
+	[TestClass]
     public class AwsS3ProviderTests
     {
         private static Config.AwsS3HandlerParams _handlerParams;
@@ -121,7 +120,7 @@ namespace ACMESharp.Providers.AWS
                 Assert.IsNull(s3Obj);
 
                 // Create the record...
-                h.Handle(c);
+                h.Handle(new ChallengeHandlingContext(c));
 
                 // ...and assert it does exist
                 s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,
@@ -135,7 +134,7 @@ namespace ACMESharp.Providers.AWS
                 }
 
                 // Clean up the record...
-                h.CleanUp(c);
+                h.CleanUp(new ChallengeHandlingContext(c));
 
                 // ...and assert it does not exist once more
                 s3Obj = AwsS3ChallengeHandler.GetFile(awsParams,

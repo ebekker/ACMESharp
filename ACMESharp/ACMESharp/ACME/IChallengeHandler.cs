@@ -40,9 +40,9 @@ namespace ACMESharp.ACME
 
         #region -- Methods --
 
-        void Handle(Challenge c);
+        void Handle(ChallengeHandlingContext ctx);
 
-        void CleanUp(Challenge c);
+        void CleanUp(ChallengeHandlingContext ctx);
 
         #endregion -- Methods --
     }

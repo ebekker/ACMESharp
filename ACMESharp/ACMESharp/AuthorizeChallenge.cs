@@ -43,8 +43,14 @@ namespace ACMESharp
         public DateTime? HandlerHandleDate
         { get; set; }
 
+		public string HandlerHandleMessage
+		{ get; set; }
+
         public DateTime? HandlerCleanUpDate
         { get; set; }
+
+		public string HandlerCleanUpMessage
+		{ get; set; }
 
         public DateTime? SubmitDate
         { get; set; }

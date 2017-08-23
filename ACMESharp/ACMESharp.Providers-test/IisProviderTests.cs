@@ -95,14 +95,14 @@ namespace ACMESharp.Providers.IIS
                 Assert.IsFalse(File.Exists(fullPath));
 
                 // Create the record...
-                h.Handle(c);
+                h.Handle(new ChallengeHandlingContext(c));
 
                 // ...and assert it does exist
                 Assert.IsTrue(File.Exists(fullPath));
                 Assert.AreEqual(c.FileContent, File.ReadAllText(fullPath));
 
                 // Clean up the record...
-                h.CleanUp(c);
+                h.CleanUp(new ChallengeHandlingContext(c));
 
                 // ...and assert it does not exist once more
                 Assert.IsFalse(File.Exists(fullPath));

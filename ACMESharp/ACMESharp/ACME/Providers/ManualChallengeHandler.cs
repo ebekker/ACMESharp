@@ -22,14 +22,14 @@ namespace ACMESharp.ACME.Providers
         #region -- Fields --
 
         private Stream _stream = null;
-        private TextWriter _writer = Console.Out;
+		private TextWriter _writer = null;
 
         #endregion -- Fields --
 
         #region -- Properties --
 
         public string WriteOutPath
-        { get; private set; } = STD_OUT;
+        { get; private set; }
 
         public bool Append
         { get; private set; }
@@ -52,8 +52,13 @@ namespace ACMESharp.ACME.Providers
             var priorS = _stream;
             var priorW = _writer;
 
-            switch (path)
+            switch (path ?? string.Empty)
             {
+				case "":
+					_writer = null;
+					_stream = null;
+					break;
+
                 case STD_OUT:
                     _writer = Console.Out;
                     _stream = null;
@@ -98,12 +103,12 @@ namespace ACMESharp.ACME.Providers
             }
         }
 
-        public void Handle(Challenge c)
+        public void Handle(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
 
-            var dnsChallenge = c as DnsChallenge;
-            var httpChallenge = c as HttpChallenge;
+            var dnsChallenge = ctx.Challenge as DnsChallenge;
+            var httpChallenge = ctx.Challenge as HttpChallenge;
 
             if (dnsChallenge != null)
             {
@@ -126,13 +131,10 @@ namespace ACMESharp.ACME.Providers
 					}
 				};
 
-				if (OutputJson)
-				{
-					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
-				}
-				else
-				{
-					_writer.WriteLine($@"== {json.Label} ==
+				// Compute the output message
+				var message = OutputJson
+					? JsonConvert.SerializeObject(json, Formatting.Indented)
+					: $@"== {json.Label} ==
   * Handle Time:      [{json.HandleTime}]
   * Challenge Token:  [{json.ChallengeToken}]
 
@@ -141,9 +143,11 @@ namespace ACMESharp.ACME.Providers
   * RR Name:  [{json.DnsDetails.RRName}]
   * RR Value: [{json.DnsDetails.RRValue}]
 ------------------------------------
-");
-				}
-                _writer.Flush();
+";
+
+				ctx.Out.WriteLine(message);
+				_writer?.WriteLine(message);
+                _writer?.Flush();
             }
             else if (httpChallenge != null)
             {
@@ -168,13 +172,10 @@ namespace ACMESharp.ACME.Providers
 					}
 				};
 
-				if (OutputJson)
-				{
-					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
-				}
-				else
-				{
-					_writer.WriteLine($@"== {json.Label} ==
+				// Compute the output message
+				var message = OutputJson
+					? JsonConvert.SerializeObject(json, Formatting.Indented)
+					: $@"== {json.Label} ==
   * Handle Time:      [{json.HandleTime}]
   * Challenge Token:  [{json.ChallengeToken}]
 
@@ -184,24 +185,26 @@ namespace ACMESharp.ACME.Providers
   * File Content: [{json.HttpDetails.FileContent}]
   * MIME Type:    [{json.HttpDetails.MimeType}]
 ------------------------------------										
-");
-				}
-				_writer.Flush();
+";
+
+				ctx.Out.WriteLine(message);
+				_writer?.WriteLine(message);
+				_writer?.Flush();
             }
             else
             {
                 var ex = new InvalidOperationException("unsupported Challenge type");
-                ex.Data["challengeType"] = c.GetType();
+                ex.Data["challengeType"] = ctx.GetType();
                 throw ex;
             }
         }
 
-        public void CleanUp(Challenge c)
+        public void CleanUp(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
 
-            var dnsChallenge = c as DnsChallenge;
-            var httpChallenge = c as HttpChallenge;
+            var dnsChallenge = ctx.Challenge as DnsChallenge;
+            var httpChallenge = ctx.Challenge as HttpChallenge;
 
             if (dnsChallenge != null)
             {
@@ -225,13 +228,10 @@ namespace ACMESharp.ACME.Providers
 					}
 				};
 
-				if (OutputJson)
-				{
-					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
-				}
-				else
-				{
-					_writer.WriteLine($@"== {json.Label} ==
+				// Compute the output message
+				var message = OutputJson
+					? JsonConvert.SerializeObject(json, Formatting.Indented)
+					: $@"== {json.Label} ==
   * CleanUp Time:     [{json.CleanUpTime}]
   * Challenge Token:  [{json.ChallengeToken}]
 
@@ -240,9 +240,11 @@ namespace ACMESharp.ACME.Providers
   * RR Name:  [{json.DnsDetails.RRName}]
   * RR Value: [{json.DnsDetails.RRValue}]
 ------------------------------------
-");
-				}
-                _writer.Flush();
+";
+
+				ctx.Out.WriteLine(message);
+				_writer?.WriteLine(message);
+                _writer?.Flush();
             }
             else if (httpChallenge != null)
             {
@@ -266,13 +268,10 @@ namespace ACMESharp.ACME.Providers
 					}
 				};
 
-				if (OutputJson)
-				{
-					_writer.WriteLine(JsonConvert.SerializeObject(json, Formatting.Indented));
-				}
-				else
-				{
-					_writer.WriteLine($@"== {json.Label} ==
+				// Compute the output message
+				var message = OutputJson
+					? JsonConvert.SerializeObject(json, Formatting.Indented)
+					: $@"== {json.Label} ==
   * CleanUp Time:     [{json.CleanUpTime}]
   * Challenge Token:  [{json.ChallengeToken}]
 
@@ -282,14 +281,15 @@ namespace ACMESharp.ACME.Providers
   * File Content: [{httpChallenge.FileContent}]
   * MIME Type:    [text/plain]
 ------------------------------------
-");
-				}
-                _writer.Flush();
+";
+				ctx.Out.WriteLine(message);
+				_writer?.WriteLine(message);
+				_writer?.Flush();
             }
             else
             {
                 var ex = new InvalidOperationException("unsupported Challenge type");
-                ex.Data["challengeType"] = c.GetType();
+                ex.Data["challengeType"] = ctx.GetType();
                 throw ex;
             }
         }

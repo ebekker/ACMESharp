@@ -9,20 +9,25 @@ namespace ACMESharp.Providers.CloudFlare
         public string AuthKey { get; set; }
         public string EmailAddress { get; set; }
         public string DomainName { get; set; }
-        public void Handle(Challenge c)
+
+        public void Handle(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
-            DnsChallenge challenge = (DnsChallenge)c;
+            DnsChallenge challenge = (DnsChallenge)ctx.Challenge;
             var helper = new CloudFlareHelper(AuthKey, EmailAddress, DomainName);
             helper.AddOrUpdateDnsRecord(challenge.RecordName, GetCleanedRecordValue(challenge.RecordValue));
+
+			ctx.Out.WriteLine("DNS record created of type [TXT] with name [{0}]", challenge.RecordName);
         }
 
-        public void CleanUp(Challenge c)
+        public void CleanUp(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
-            DnsChallenge challenge = (DnsChallenge)c;
+            DnsChallenge challenge = (DnsChallenge)ctx.Challenge;
             var helper = new CloudFlareHelper(AuthKey, EmailAddress, DomainName);
             helper.DeleteDnsRecord(challenge.RecordName);
+
+			ctx.Out.WriteLine("DNS record deleted of type [TXT] with name [{0}]", challenge.RecordName);
         }
 
         private string GetCleanedRecordValue(string recordValue)

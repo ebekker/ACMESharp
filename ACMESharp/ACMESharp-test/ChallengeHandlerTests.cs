@@ -91,7 +91,7 @@ namespace ACMESharp
             Assert.IsFalse(h.IsDisposed);
             h.Dispose();
             Assert.IsTrue(h.IsDisposed);
-            h.Handle(DNS_CHALLENGE);
+            h.Handle(new ChallengeHandlingContext(DNS_CHALLENGE));
         }
 
         [TestMethod]
@@ -104,7 +104,7 @@ namespace ACMESharp
                 { "WriteOutPath", "DBG" }
             });
 
-            h.Handle(DNS_CHALLENGE);
+            h.Handle(new ChallengeHandlingContext(DNS_CHALLENGE));
             h.Dispose();
         }
 
@@ -118,7 +118,7 @@ namespace ACMESharp
                 { "WriteOutPath", "DBG" }
             });
 
-            h.Handle(HTTP_CHALLENGE);
+            h.Handle(new ChallengeHandlingContext(HTTP_CHALLENGE));
             h.Dispose();
         }
 
@@ -132,7 +132,7 @@ namespace ACMESharp
                 { "WriteOutPath", "DBG" }
             });
 
-            h.CleanUp(DNS_CHALLENGE);
+            h.CleanUp(new ChallengeHandlingContext(DNS_CHALLENGE));
             h.Dispose();
         }
 
@@ -146,7 +146,7 @@ namespace ACMESharp
                 { "WriteOutPath", "DBG" }
             });
 
-            h.CleanUp(HTTP_CHALLENGE);
+            h.CleanUp(new ChallengeHandlingContext(HTTP_CHALLENGE));
             h.Dispose();
         }
     }

@@ -466,16 +466,22 @@ namespace ACMESharp
 
             authzChallenge.HandlerName = handlerName;
 
-            if (cleanUp)
-            {
-                handler.CleanUp(authzChallenge.Challenge);
-                authzChallenge.HandlerCleanUpDate = DateTime.Now;
-            }
-            else
-            {
-                handler.Handle(authzChallenge.Challenge);
-                authzChallenge.HandlerHandleDate = DateTime.Now;
-            }
+			using (var outWriter = new StringWriter())
+			{
+				var ctx = new ChallengeHandlingContext(authzChallenge.Challenge, outWriter);
+				if (cleanUp)
+				{
+					handler.CleanUp(ctx);
+					authzChallenge.HandlerCleanUpDate = DateTime.Now;
+					authzChallenge.HandlerCleanUpMessage = outWriter.ToString();
+				}
+				else
+				{
+					handler.Handle(ctx);
+					authzChallenge.HandlerHandleDate = DateTime.Now;
+					authzChallenge.HandlerHandleMessage = outWriter.ToString();
+				}
+			}
 
             handler.Dispose();
 

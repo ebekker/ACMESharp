@@ -1,31 +1,25 @@
 ﻿using ACMESharp.ACME;
 using ACMESharp.Util;
-using Microsoft.Web.Administration;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACMESharp.Providers.IIS
 {
-    /// <summary>
-    /// Implements a <see cref="IChallengeHandler">Challenge Handler</see> that handles
-    /// HTTP challenges by managing responses served up by the local IIS server.
-    /// </summary>
-    /// <remarks>
-    /// Much of the implementation of this handler was initially adapted from the
-    /// similarly-intentioned <see
-    /// cref="https://github.com/Lone-Coder/letsencrypt-win-simple/blob/master/letsencrypt-win-simple/Plugin/IISPlugin.cs"
-    /// ><code>IISPlugin</code></see> class from the <see
-    /// cref="https://github.com/Lone-Coder/letsencrypt-win-simple"
-    /// >letsencrypt-win-simple</see> project -- thank you, <see
-    /// cref="https://github.com/Lone-Coder">Bryan</see>!
-    /// </remarks>
-    public class IisChallengeHandler : IChallengeHandler
+	/// <summary>
+	/// Implements a <see cref="IChallengeHandler">Challenge Handler</see> that handles
+	/// HTTP challenges by managing responses served up by the local IIS server.
+	/// </summary>
+	/// <remarks>
+	/// Much of the implementation of this handler was initially adapted from the
+	/// similarly-intentioned <see
+	/// cref="https://github.com/Lone-Coder/letsencrypt-win-simple/blob/master/letsencrypt-win-simple/Plugin/IISPlugin.cs"
+	/// ><code>IISPlugin</code></see> class from the <see
+	/// cref="https://github.com/Lone-Coder/letsencrypt-win-simple"
+	/// >letsencrypt-win-simple</see> project -- thank you, <see
+	/// cref="https://github.com/Lone-Coder">Bryan</see>!
+	/// </remarks>
+	public class IisChallengeHandler : IChallengeHandler
     {
         #region -- Properties --
 
@@ -45,18 +39,18 @@ namespace ACMESharp.Providers.IIS
 
         #region -- Methods --
 
-        public void Handle(Challenge c)
+        public void Handle(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
-            var httpChallenge = (HttpChallenge)c;
-            EditFile(httpChallenge, false);
+            var httpChallenge = (HttpChallenge)ctx.Challenge;
+            EditFile(httpChallenge, false, ctx.Out);
         }
 
-        public void CleanUp(Challenge c)
+        public void CleanUp(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
-            var httpChallenge = (HttpChallenge)c;
-            EditFile(httpChallenge, true);
+            var httpChallenge = (HttpChallenge)ctx.Challenge;
+            EditFile(httpChallenge, true, ctx.Out);
         }
 
         public void Dispose()
@@ -70,7 +64,7 @@ namespace ACMESharp.Providers.IIS
                 throw new InvalidOperationException("IIS Challenge Handler is disposed");
         }
 
-        private void EditFile(HttpChallenge httpChallenge, bool delete)
+        private void EditFile(HttpChallenge httpChallenge, bool delete, TextWriter msg)
         {
             IisWebSiteBinding site = IisHelper.ResolveSingleSite(WebSiteRef,
                     IisHelper.ListDistinctHttpWebSites());
@@ -126,21 +120,30 @@ namespace ACMESharp.Providers.IIS
                     dirsCreated = meta.DirsCreated;
                 }
 
-                // Get rid of the Challenge answer content file
-                if (File.Exists(fullFilePath))
-                    File.Delete(fullFilePath);
+				// Get rid of the Challenge answer content file
+				if (File.Exists(fullFilePath))
+				{
+					File.Delete(fullFilePath);
+					msg.WriteLine("* Challenge response content has been removed from local file path");
+					msg.WriteLine("    at:  [{0}]", fullFilePath);
+				}
 
-                // Get rid of web.config if necessary
-                if (!skipLocalWebConfig && File.Exists(fullConfigPath))
-                    File.Delete(fullConfigPath);
+				// Get rid of web.config if necessary
+				if (!skipLocalWebConfig && File.Exists(fullConfigPath))
+				{
+					File.Delete(fullConfigPath);
+					msg.WriteLine("* Local web.config has been removed from local file path");
+					msg.WriteLine("    at:  [{0}]", fullFilePath);
+				}
 
-                // Get rid of the meta file so that we can clean up the dirs
-                if (File.Exists(fullMetaPath))
+				// Get rid of the meta file so that we can clean up the dirs
+				if (File.Exists(fullMetaPath))
                     File.Delete(fullMetaPath);
 
                 // Walk up the tree if needed
                 if (dirsCreated?.Count > 0)
                 {
+					var dirsDeleted = new List<string>();
                     dirsCreated.Reverse();
                     foreach (var dir in dirsCreated)
                     {
@@ -149,9 +152,17 @@ namespace ACMESharp.Providers.IIS
                             if (Directory.GetFileSystemEntries(dir).Length == 0)
                             {
                                 Directory.Delete(dir);
+								dirsDeleted.Add(dir);
                             }
                         }
                     }
+
+					if (dirsDeleted.Count > 0)
+					{
+						msg.WriteLine("* Removed the following directories:");
+						foreach (var dd in dirsDeleted)
+							msg.WriteLine("  - [{0}]", dd);
+					}
                 }
             }
             else
@@ -199,18 +210,32 @@ namespace ACMESharp.Providers.IIS
                 File.WriteAllText(fullFilePath, httpChallenge.FileContent);
                 File.WriteAllText(fullMetaPath, JsonHelper.Save(meta));
 
-                if (!SkipLocalWebConfig)
-                {
-                    var t = typeof(IisChallengeHandler);
-                    var r = $"{t.Namespace}.{t.Name}-WebConfig";
-                    using (Stream rs = t.Assembly.GetManifestResourceStream(r))
-                    {
-                        using (var fs = new FileStream(fullConfigPath, FileMode.Create))
-                        {
-                            rs.CopyTo(fs);
-                        }
-                    }
-                }
+				msg.WriteLine("* Challenge response content has been written to local file path");
+				msg.WriteLine("    at:  [{0}]", fullFilePath);
+				msg.WriteLine("* Challenge response should be accessible with a MIME type of [text/json]");
+				msg.WriteLine("    at:  [{0}]", httpChallenge.FileUrl);
+
+				if (!SkipLocalWebConfig)
+				{
+					var t = typeof(IisChallengeHandler);
+					var r = $"{t.Namespace}.{t.Name}-WebConfig";
+					using (Stream rs = t.Assembly.GetManifestResourceStream(r))
+					{
+						using (var fs = new FileStream(fullConfigPath, FileMode.Create))
+						{
+							rs.CopyTo(fs);
+						}
+					}
+					msg.WriteLine("* Local web.config has been created to serve response file as JSON");
+					msg.WriteLine("  however, you may need to adjust this file for your environment");
+					msg.WriteLine("    at: [{0}]", httpChallenge.FileUrl);
+				}
+				else
+				{
+					msg.WriteLine("* Local web.config file creation has been skipped!");
+					msg.WriteLine("  You may need to manually adjust your configuration to serve the");
+					msg.WriteLine("  Challenge Response file with a MIME type of [text/json]");
+				}
             }
         }
 

@@ -9,14 +9,14 @@ namespace ACMESharp.ACME
     [Flags]
     public enum ChallengeTypeKind
     {
-        UNSPECIFIED = 0x0,
+        UNSPECIFIED = 0x00,
 
         PRIOR_KEY = 0x10,
         DNS = 0x20,
         HTTP = 0x40,
         TLS_SNI = 0x80,
 
-        OTHER = 0x1,
+        OTHER = 0x01,
     }
 
     public abstract class Challenge
@@ -24,7 +24,7 @@ namespace ACMESharp.ACME
         protected Challenge(ChallengeTypeKind typeKind, string type, ChallengeAnswer answer)
         {
             if (answer == null)
-                throw new ArgumentNullException(nameof(answer), "challenge answer must is required");
+                throw new ArgumentNullException(nameof(answer), "challenge answer is required");
 
             TypeKind = typeKind;
             Type = type;
@@ -66,12 +66,27 @@ namespace ACMESharp.ACME
         public string Token
         { get; set; }
 
-        public string FileUrl
+		/// <summary>
+		/// The complete URL including host and path components at which the
+		/// Challenge Response is expected to be served from.
+		/// </summary>
+		/// <remarks>
+		/// The ACME specification specifies the requirements for this URL in
+		/// <see cref="https://ietf-wg-acme.github.io/acme/draft-ietf-acme-acme.html#rfc.section.8.3">section 8.3</see>.
+		/// </remarks>
+		public string FileUrl
         { get; set; }
 
+		/// <summary>
+		/// The file path component of the Challenge Response URL, relative to the
+		/// root of the response HTTP server.
+		/// </summary>
         public string FilePath
         { get; set; }
 
+		/// <summary>
+		/// The complete content of the file that satisfies the Challenge Response.
+		/// </summary>
         public string FileContent
         { get; set; }
     }

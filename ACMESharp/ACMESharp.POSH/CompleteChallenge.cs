@@ -109,7 +109,8 @@ namespace ACMESharp.POSH
         /// </para>
         /// </summary>
         [Parameter]
-        public SwitchParameter Regenerate
+		[Alias("Regenerate")]
+        public SwitchParameter RepeatDecoder
         { get; set; }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace ACMESharp.POSH
         /// </para>
         /// </summary>
         [Parameter]
-        public SwitchParameter Repeat
+        public SwitchParameter RepeatHandler
         { get; set; }
 
         /// <summary>
@@ -271,7 +272,7 @@ namespace ACMESharp.POSH
 
                 try
                 {
-                    if (challenge == null || Regenerate)
+                    if (challenge == null || RepeatDecoder)
                     {
                         using (var c = ClientHelper.GetClient(v, ri))
                         {
@@ -283,7 +284,7 @@ namespace ACMESharp.POSH
                         }
                     }
 
-                    if (CleanUp && (Repeat || challengeCleanedUp == null))
+                    if (CleanUp && (RepeatHandler || challengeCleanedUp == null))
                     {
                         using (var c = ClientHelper.GetClient(v, ri))
                         {
@@ -295,7 +296,7 @@ namespace ACMESharp.POSH
                             ii.ChallengeCleanedUp[challengeType] = DateTime.Now;
                         }
                     }
-                    else if (Repeat || challengeCompleted == null)
+                    else if (RepeatHandler || challengeCompleted == null)
                     {
                         using (var c = ClientHelper.GetClient(v, ri))
                         {

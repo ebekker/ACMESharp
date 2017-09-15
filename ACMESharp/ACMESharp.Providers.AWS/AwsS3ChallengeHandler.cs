@@ -3,14 +3,22 @@ using System.Net;
 using ACMESharp.ACME;
 using Amazon.S3;
 using Amazon.S3.Model;
+using System.IO;
+using NLog;
 
 namespace ACMESharp.Providers.AWS
 {
     public class AwsS3ChallengeHandler : IChallengeHandler
     {
-        #region -- Properties --
+		#region -- Fields --
 
-        public string BucketName
+		private static readonly Logger LOG = LogManager.GetCurrentClassLogger();
+
+		#endregion -- Fields --
+
+		#region -- Properties --
+
+		public string BucketName
         { get; set; }
 
         public string ContentType
@@ -38,20 +46,20 @@ namespace ACMESharp.Providers.AWS
 
         #region -- Methods --
 
-        public void Handle(Challenge c)
+        public void Handle(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
 
-            var httpChallenge = (HttpChallenge)c;
-            EditFile(httpChallenge, false);
+            var httpChallenge = (HttpChallenge)ctx.Challenge;
+            EditFile(httpChallenge, false, ctx.Out);
         }
 
-        public void CleanUp(Challenge c)
+        public void CleanUp(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
 
-            var httpChallenge = (HttpChallenge)c;
-            EditFile(httpChallenge, true);
+            var httpChallenge = (HttpChallenge)ctx.Challenge;
+            EditFile(httpChallenge, true, ctx.Out);
         }
 
         public void Dispose()
@@ -82,7 +90,6 @@ namespace ACMESharp.Providers.AWS
                 var s3Requ = new Amazon.S3.Model.GetObjectRequest
                 {
                     BucketName = bucketName,
-                    //Prefix = filePath,
                     Key = filePath,
                 };
 
@@ -101,7 +108,7 @@ namespace ACMESharp.Providers.AWS
             }
         }
 
-        private void EditFile(HttpChallenge httpChallenge, bool delete)
+        private void EditFile(HttpChallenge httpChallenge, bool delete, TextWriter msg)
         {
             var filePath = httpChallenge.FilePath;
 
@@ -116,14 +123,21 @@ namespace ACMESharp.Providers.AWS
             {
                 if (delete)
                 {
+					LOG.Debug("Deleting S3 object at Bucket [{0}] and Key [{1}]", BucketName, filePath);
                     var s3Requ = new Amazon.S3.Model.DeleteObjectRequest
                     {
                         BucketName = BucketName,
                         Key = filePath,
                     };
                     var s3Resp = s3.DeleteObject(s3Requ);
-                }
-                else
+					if (LOG.IsDebugEnabled)
+						LOG.Debug("Delete response: [{0}]",
+								NLog.Targets.DefaultJsonSerializer.Instance.SerializeObject(s3Resp));
+
+					msg.WriteLine("* Challenge Response has been deleted from S3");
+					msg.WriteLine("    at Bucket/Key: [{0}/{1}]", BucketName, filePath);
+				}
+				else
                 {
                     var s3Requ = new Amazon.S3.Model.PutObjectRequest
                     {
@@ -134,8 +148,13 @@ namespace ACMESharp.Providers.AWS
                         CannedACL = S3CannedAcl,
                     };
                     var s3Resp = s3.PutObject(s3Requ);
-                }
-            }
+
+					msg.WriteLine("* Challenge Response has been written to S3");
+					msg.WriteLine("    at Bucket/Key: [{0}/{1}]", BucketName, filePath);
+					msg.WriteLine("* Challenge Response should be accessible with a MIME type of [text/json]");
+					msg.WriteLine("    at: [{0}]", httpChallenge.FileUrl);
+				}
+			}
         }
 
         #endregion -- Methods --

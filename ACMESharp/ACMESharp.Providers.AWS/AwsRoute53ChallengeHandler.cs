@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using ACMESharp.ACME;
+using System.IO;
 
 namespace ACMESharp.Providers.AWS
 {
@@ -27,16 +28,16 @@ namespace ACMESharp.Providers.AWS
 
         #region -- Methods --
 
-        public void Handle(Challenge c)
+        public void Handle(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
-            EditDns((DnsChallenge) c, false);
+            EditDns((DnsChallenge) ctx.Challenge, false, ctx.Out);
         }
 
-        public void CleanUp(Challenge c)
+        public void CleanUp(ChallengeHandlingContext ctx)
         {
             AssertNotDisposed();
-            EditDns((DnsChallenge)c, true);
+            EditDns((DnsChallenge)ctx.Challenge, true, ctx.Out);
         }
 
         public void Dispose()
@@ -50,7 +51,7 @@ namespace ACMESharp.Providers.AWS
                 throw new InvalidOperationException("AWS Challenge Handler is disposed");
         }
 
-        private void EditDns(DnsChallenge dnsChallenge, bool delete)
+        private void EditDns(DnsChallenge dnsChallenge, bool delete, TextWriter msg)
         {
             var dnsName = dnsChallenge.RecordName;
             var dnsValue = Regex.Replace(dnsChallenge.RecordValue, "\\s", "");

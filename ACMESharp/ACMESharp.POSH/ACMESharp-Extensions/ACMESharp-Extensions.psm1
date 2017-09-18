@@ -150,16 +150,20 @@ The spec can be an exact version string or a `-like` pattern to be matched.
 	if ($Scope -ne "Global") {
 		$extRoot = [ACMESharp.POSH.AcmeCmdlet]::UserExtensionsRoot
 		$extPath = "$($extRoot)\*.extlnk"
-		$userExtLinks = Get-ChildItem $extPath
-		$userExtLinks | Add-Member -NotePropertyName ExtScope -NotePropertyValue User
+		if (Test-Path -Path $extRoot -PathType Container) {
+			$userExtLinks = Get-ChildItem $extPath
+			$userExtLinks | Add-Member -NotePropertyName ExtScope -NotePropertyValue User
+		}
 	}
 	
 	$sysExtLinks = @()
 	if ($Scope -ne "User") {
 		$extRoot = [ACMESharp.POSH.AcmeCmdlet]::SystemExtensionsRoot
 		$extPath = "$($extRoot)\*.extlnk"
-		$sysExtLinks = Get-ChildItem $extPath
-		$sysExtLinks | Add-Member -NotePropertyName ExtScope -NotePropertyValue Global
+		if (Test-Path -Path $extRoot -PathType Container) {
+			$sysExtLinks = Get-ChildItem $extPath
+			$sysExtLinks | Add-Member -NotePropertyName ExtScope -NotePropertyValue Global
+		}
 	}
 
 	if ($ModuleName) {

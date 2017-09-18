@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="AwsRoute53ProviderTests.cs" />
     <Compile Include="AwsS3ProviderTests.cs" />
+    <Compile Include="ClouDNSTests.cs" />
     <Compile Include="CloudFlareTests.cs" />
     <Compile Include="Config\BaseParams.cs" />
     <Compile Include="Config\AwsR53HandlerParams.cs" />
@@ -94,6 +95,10 @@
     <ProjectReference Include="..\ACMESharp.Providers.CloudFlare\ACMESharp.Providers.CloudFlare.csproj">
       <Project>{63ae964a-79a4-4c7d-a686-dd9b2389af3f}</Project>
       <Name>ACMESharp.Providers.CloudFlare</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ACMESharp.Providers.ClouDNS\ACMESharp.Providers.ClouDNS.csproj">
+      <Project>{529518fe-9546-4ec1-8e1f-9bc9239f0c7e}</Project>
+      <Name>ACMESharp.Providers.ClouDNS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ACMESharp.Providers.IIS\ACMESharp.Providers.IIS.csproj">
       <Project>{944ec9bd-81a1-484e-ba29-360bc155bf51}</Project>

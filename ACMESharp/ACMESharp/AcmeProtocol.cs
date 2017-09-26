@@ -37,7 +37,7 @@
         /// <summary>
         /// Identifier validation challenge type indicator for
         /// <see cref="https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.3"
-        /// >TLS SNI</see>.  Currently UNSUPPORTED.
+        /// >TLS SNI</see>.
         /// </summary>
         public const string CHALLENGE_TYPE_SNI = "tls-sni-01";
         /// <summary>

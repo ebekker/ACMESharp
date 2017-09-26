@@ -109,6 +109,7 @@ namespace ACMESharp.ACME.Providers
 
             var dnsChallenge = ctx.Challenge as DnsChallenge;
             var httpChallenge = ctx.Challenge as HttpChallenge;
+            var tlsSniChallenge = ctx.Challenge as TlsSniChallenge;
 
             if (dnsChallenge != null)
             {
@@ -191,6 +192,43 @@ namespace ACMESharp.ACME.Providers
 				_writer?.WriteLine(message);
 				_writer?.Flush();
             }
+            else if (tlsSniChallenge != null)
+            {
+                var json = new
+                {
+                    Label = "Manual Challenge Handler - TLS-SNI",
+                    HandleTime = DateTime.Now,
+                    ChallengeToken = tlsSniChallenge.Token,
+                    ChallengeType = "TLS-SNI",
+                    Description = new[]
+                    {
+                        "To complete this Challenge please configure your web server",
+                        "with TLS-SNI self-signed certificates for the following token:",
+                    },
+                    TlsSniDetails = new
+                    {
+                        Token = tlsSniChallenge.Token,
+                        IterationCount = tlsSniChallenge.IterationCount,
+                    }
+                };
+
+                // Compute the output message
+                var message = OutputJson
+                    ? JsonConvert.SerializeObject(json, Formatting.Indented)
+                    : $@"== {json.Label} ==
+  * Handle Time:      [{json.HandleTime}]
+  * Challenge Token:  [{json.ChallengeToken}]
+
+{string.Join(Environment.NewLine, json.Description)}
+  * Token:        [{json.TlsSniDetails.Token}]
+  * Iterations:   [{json.TlsSniDetails.IterationCount}]
+------------------------------------										
+";
+
+                ctx.Out.WriteLine(message);
+                _writer?.WriteLine(message);
+                _writer?.Flush();
+            }
             else
             {
                 var ex = new InvalidOperationException("unsupported Challenge type");
@@ -205,6 +243,7 @@ namespace ACMESharp.ACME.Providers
 
             var dnsChallenge = ctx.Challenge as DnsChallenge;
             var httpChallenge = ctx.Challenge as HttpChallenge;
+            var tlsSniChallenge = ctx.Challenge as TlsSniChallenge;
 
             if (dnsChallenge != null)
             {
@@ -285,6 +324,43 @@ namespace ACMESharp.ACME.Providers
 				ctx.Out.WriteLine(message);
 				_writer?.WriteLine(message);
 				_writer?.Flush();
+            }
+            else if (tlsSniChallenge != null)
+            {
+                var json = new
+                {
+                    Label = "Manual Challenge Handler - TLS-SNI",
+                    CleanUpTime = DateTime.Now,
+                    ChallengeToken = httpChallenge.Token,
+                    ChallengeType = "TLS-SNI",
+                    Description = new[]
+                    {
+                        "The Challenge has been completed -- you can now remove the",
+                        "self-signed certificates and SNI configuration on your",
+                        "web server for the following token:",
+                    },
+                    TlsSniDetails = new
+                    {
+                        Token = tlsSniChallenge.Token,
+                        IterationCount = tlsSniChallenge.IterationCount,
+                    }
+                };
+
+                // Compute the output message
+                var message = OutputJson
+                    ? JsonConvert.SerializeObject(json, Formatting.Indented)
+                    : $@"== {json.Label} ==
+  * CleanUp Time:     [{json.CleanUpTime}]
+  * Challenge Token:  [{json.ChallengeToken}]
+
+{string.Join(Environment.NewLine, json.Description)}
+  * Token:        [{json.TlsSniDetails.Token}]
+  * Iterations:   [{json.TlsSniDetails.IterationCount}]
+------------------------------------
+";
+                ctx.Out.WriteLine(message);
+                _writer?.WriteLine(message);
+                _writer?.Flush();
             }
             else
             {

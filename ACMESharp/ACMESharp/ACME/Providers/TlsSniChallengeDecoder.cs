@@ -20,11 +20,10 @@ namespace ACMESharp.ACME.Providers
                     .With("challengeType", cp.Type)
                     .With("supportedChallengeTypes", AcmeProtocol.CHALLENGE_TYPE_SNI);
 
-            //var token = (string)cp["token"];
             var token = cp.Token;
 
             // This response calculation is described in:
-            //    https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.5
+            //    https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.3
 
             var keyAuthz = JwsHelper.ComputeKeyAuthorization(signer, token);
             var keyAuthzDig = JwsHelper.ComputeKeyAuthorizationDigest(signer, token);
@@ -38,7 +37,8 @@ namespace ACMESharp.ACME.Providers
 
             var c = new TlsSniChallenge(cp.Type, ca)
             {
-                Token = token
+                Token = token,
+                IterationCount = 1 // see: https://github.com/ietf-wg-acme/acme/pull/22 for reason n=1
             };
 
             return c;

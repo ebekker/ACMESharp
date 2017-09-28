@@ -17,6 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -96,7 +97,9 @@ namespace ACMESharp.PKI.Providers
                 rkpg.Init(rsaKgp);
                 AsymmetricCipherKeyPair ackp = rkpg.GenerateKeyPair();
 
-                return new RsaPrivateKey(bits, e.ToString(16), ToPrivatePem(ackp));
+                var converted = Convert((RsaPrivateCrtKeyParameters)ackp.Private, rsaPkParams);
+
+                return new RsaPrivateKey(bits, e.ToString(16), ToPrivatePem(converted));
             }
             else if (ecPkParams != null)
             {
@@ -171,7 +174,7 @@ namespace ACMESharp.PKI.Providers
                             return new RsaPrivateKey(
                                     rsa.Modulus.BitLength,
                                     rsa.Exponent.ToString(16),
-                                    ToPrivatePem(ackp));
+                                    ToPrivatePem(Convert(rsa)));
                         }
                     }
                 }
@@ -377,52 +380,83 @@ namespace ACMESharp.PKI.Providers
                 var bcPk = FromPrivatePem(rsaPk.Pem);
 
                 var pfx = new Pkcs12Store();
-				//pfx.SetCertificateEntry(bcCerts[0].Certificate.ToString(), bcCerts[0]);
-				//pfx.SetKeyEntry(bcCerts[0].Certificate.ToString(),
-				pfx.SetCertificateEntry(string.Empty, bcCerts[0]);
-				pfx.SetKeyEntry(string.Empty,
-						new AsymmetricKeyEntry(bcPk.Private), new[] { bcCerts[0] });
+                //pfx.SetCertificateEntry(bcCerts[0].Certificate.ToString(), bcCerts[0]);
+                //pfx.SetKeyEntry(bcCerts[0].Certificate.ToString(),
+                pfx.SetCertificateEntry(string.Empty, bcCerts[0]);
+                pfx.SetKeyEntry(string.Empty,
+                        new AsymmetricKeyEntry(bcPk.Private), new[] { bcCerts[0] });
 
                 for (int i = 1; i < bcCerts.Length; ++i)
                 {
-					//pfx.SetCertificateEntry(bcCerts[i].Certificate.SubjectDN.ToString(),
-					pfx.SetCertificateEntry(i.ToString(), bcCerts[i]);
+                    //pfx.SetCertificateEntry(bcCerts[i].Certificate.SubjectDN.ToString(),
+                    pfx.SetCertificateEntry(i.ToString(), bcCerts[i]);
                 }
 
-				// It used to be pretty straight forward to export this...
-				//pfx.Save(target, password?.ToCharArray(), new SecureRandom());
+                // It used to be pretty straight forward to export this...
+                //pfx.Save(target, password?.ToCharArray(), new SecureRandom());
 
-				// ...unfortunately, BC won't let us export the Pkcs12 archive
-				// without assigning a FriendlyName, so we have to export and
-				// then re-import it, clear the FriendlyName, then return that
-				// YUCK!
-				using (var tmp = new MemoryStream())
-				{
-					pfx.Save(tmp, null, new SecureRandom());
-					var c = new System.Security.Cryptography.X509Certificates.X509Certificate2();
-					c.Import(tmp.ToArray(), string.Empty, 
-							System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet |
-							System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
+                // ...unfortunately, BC won't let us export the Pkcs12 archive
+                // without assigning a FriendlyName, so we have to export and
+                // then re-import it, clear the FriendlyName, then return that
+                // YUCK!
+                using (var tmp = new MemoryStream())
+                {
+                    pfx.Save(tmp, null, new SecureRandom());
+                    var c = new System.Security.Cryptography.X509Certificates.X509Certificate2();
+                    c.Import(tmp.ToArray(), string.Empty,
+                            System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet |
+                            System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
 
-					// Clear the FriendlyName
-					c.FriendlyName = null;
-					var bytes = c.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Pkcs12, password);
-					target.Write(bytes, 0, bytes.Length);
-				}
-			}
+                    // Clear the FriendlyName
+                    c.FriendlyName = null;
+                    var bytes = c.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Pkcs12, password);
+                    target.Write(bytes, 0, bytes.Length);
+                }
+            }
             else
             {
                 throw new NotSupportedException("unsupported archive format");
             }
         }
 
-        private static string ToPrivatePem(AsymmetricCipherKeyPair ackp)
+        private static AsymmetricAlgorithm Convert(RsaPrivateCrtKeyParameters ackp, RsaPrivateKeyParams rsaPkParams = null)
+        {
+            var cspParameters = new CspParameters
+            {
+                KeyContainerName = Guid.NewGuid().ToString(),
+                KeyNumber = 1,
+                Flags = CspProviderFlags.UseMachineKeyStore
+            };
+
+            if (rsaPkParams != null && rsaPkParams.ProviderType != null)
+            {
+                cspParameters.ProviderType = rsaPkParams.ProviderType.Value;
+                cspParameters.ProviderName = rsaPkParams.ProviderName;
+            }
+
+            RSACryptoServiceProvider rsaProvider = new RSACryptoServiceProvider(cspParameters);
+            RSAParameters parameters = new RSAParameters
+            {
+                Modulus = ackp.Modulus.ToByteArrayUnsigned(),
+                P = ackp.P.ToByteArrayUnsigned(),
+                Q = ackp.Q.ToByteArrayUnsigned(),
+                DP = ackp.DP.ToByteArrayUnsigned(),
+                DQ = ackp.DQ.ToByteArrayUnsigned(),
+                InverseQ = ackp.QInv.ToByteArrayUnsigned(),
+                D = ackp.Exponent.ToByteArrayUnsigned(),
+                Exponent = ackp.PublicExponent.ToByteArrayUnsigned()
+            };
+            rsaProvider.ImportParameters(parameters);
+            return rsaProvider;
+        }
+
+        private static string ToPrivatePem(AsymmetricAlgorithm ackp)
         {
             string pem;
             using (var tw = new StringWriter())
             {
                 var pw = new PemWriter(tw);
-                pw.WriteObject(ackp.Private);
+                pw.WriteObject(ackp);
                 pem = tw.GetStringBuilder().ToString();
                 tw.GetStringBuilder().Clear();
             }

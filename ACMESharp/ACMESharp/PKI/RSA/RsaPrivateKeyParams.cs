@@ -32,5 +32,19 @@ namespace ACMESharp.PKI.RSA
 
         public object CallbackArg
         { get; set; }
+
+        /// <summary>
+        /// Possible values listed in
+        /// HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Defaults\Provider
+        /// </summary>
+        public int? ProviderType
+        { get; set; }
+
+        /// <summary>
+        /// Possible values listed in
+        /// HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Defaults\Provider
+        /// </summary>
+        public string ProviderName
+        { get; set; }
     }
 }

@@ -17,6 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -96,7 +97,9 @@ namespace ACMESharp.PKI.Providers
                 rkpg.Init(rsaKgp);
                 AsymmetricCipherKeyPair ackp = rkpg.GenerateKeyPair();
 
-                return new RsaPrivateKey(bits, e.ToString(16), ToPrivatePem(ackp));
+                var converted = Convert((RsaPrivateCrtKeyParameters)ackp.Private, rsaPkParams);
+
+                return new RsaPrivateKey(bits, e.ToString(16), ToPrivatePem(converted));
             }
             else if (ecPkParams != null)
             {
@@ -171,7 +174,7 @@ namespace ACMESharp.PKI.Providers
                             return new RsaPrivateKey(
                                     rsa.Modulus.BitLength,
                                     rsa.Exponent.ToString(16),
-                                    ToPrivatePem(ackp));
+                                    ToPrivatePem(Convert(rsa)));
                         }
                     }
                 }
@@ -416,13 +419,44 @@ namespace ACMESharp.PKI.Providers
             }
         }
 
-        private static string ToPrivatePem(AsymmetricCipherKeyPair ackp)
+        private static AsymmetricAlgorithm Convert(RsaPrivateCrtKeyParameters ackp, RsaPrivateKeyParams rsaPkParams = null)
+        {
+            var cspParameters = new CspParameters
+            {
+                KeyContainerName = Guid.NewGuid().ToString(),
+                KeyNumber = 1,
+                Flags = CspProviderFlags.UseMachineKeyStore
+            };
+
+            if (rsaPkParams != null && rsaPkParams.ProviderType != null)
+            {
+                cspParameters.ProviderType = rsaPkParams.ProviderType.Value;
+                cspParameters.ProviderName = rsaPkParams.ProviderName;
+            }
+
+            RSACryptoServiceProvider rsaProvider = new RSACryptoServiceProvider(cspParameters);
+            RSAParameters parameters = new RSAParameters
+            {
+                Modulus = ackp.Modulus.ToByteArrayUnsigned(),
+                P = ackp.P.ToByteArrayUnsigned(),
+                Q = ackp.Q.ToByteArrayUnsigned(),
+                DP = ackp.DP.ToByteArrayUnsigned(),
+                DQ = ackp.DQ.ToByteArrayUnsigned(),
+                InverseQ = ackp.QInv.ToByteArrayUnsigned(),
+                D = ackp.Exponent.ToByteArrayUnsigned(),
+                Exponent = ackp.PublicExponent.ToByteArrayUnsigned()
+            };
+            rsaProvider.ImportParameters(parameters);
+            return rsaProvider;
+        }
+
+        private static string ToPrivatePem(AsymmetricAlgorithm ackp)
         {
             string pem;
             using (var tw = new StringWriter())
             {
                 var pw = new PemWriter(tw);
-                pw.WriteObject(ackp.Private);
+                pw.WriteObject(ackp);
                 pem = tw.GetStringBuilder().ToString();
                 tw.GetStringBuilder().Clear();
             }

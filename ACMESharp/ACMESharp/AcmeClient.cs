@@ -52,7 +52,7 @@ namespace ACMESharp
         #region -- Properties --
 
         public string UserAgent
-        { get; private set; }
+        { get; set; }
 
         public Uri RootUrl
         { get; set; }

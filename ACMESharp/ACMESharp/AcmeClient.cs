@@ -54,6 +54,9 @@ namespace ACMESharp
         public string UserAgent
         { get; set; }
 
+        public string Language
+        { get; set; }
+
         public Uri RootUrl
         { get; set; }
 
@@ -634,7 +637,9 @@ namespace ACMESharp
             if (Proxy != null)
                 requ.Proxy = Proxy;
             requ.Method = AcmeProtocol.HTTP_METHOD_GET;
-            requ.UserAgent = this.UserAgent;
+            requ.UserAgent = UserAgent;
+            if (Language != null)
+                requ.Headers.Add(HttpRequestHeader.AcceptLanguage, Language);
 
             try
             {
@@ -692,7 +697,9 @@ namespace ACMESharp
             requ.Method = AcmeProtocol.HTTP_METHOD_POST;
             requ.ContentType = AcmeProtocol.HTTP_CONTENT_TYPE_JSON;
             requ.ContentLength = acmeBytes.Length;
-            requ.UserAgent = this.UserAgent;
+            requ.UserAgent = UserAgent;
+            if (Language != null)
+                requ.Headers.Add(HttpRequestHeader.AcceptLanguage, Language);
             try
             {
                 if (BeforeGetResponseAction != null)

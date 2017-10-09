@@ -628,6 +628,33 @@ namespace ACMESharp
             }
         }
 
+        public AcmeHttpResponse RevokeCertificate(string certificate)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var revoMsg = new RevokeCertRequest()
+            {
+                Certificate = certificate
+            };
+
+            var resp = RequestHttpPost(new Uri(RootUrl,
+                    Directory[AcmeServerDirectory.RES_REVOKE_CERT]), revoMsg);
+
+            // HttpStatusCode.Conflict (409) is returned if cert is already revoked
+            if (resp.StatusCode == HttpStatusCode.Conflict)
+                throw new AcmeProtocolException("Certificate already revoked", resp);
+
+            if (resp.IsError)
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+
+            if (resp.StatusCode != HttpStatusCode.OK)
+                throw new AcmeProtocolException("Unexpected response status code", resp);
+
+            return resp;
+        }
+
         private AcmeHttpResponse RequestHttpGet(Uri uri)
         {
             var requ = (HttpWebRequest)WebRequest.Create(uri);

@@ -44,7 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="..\shared\SharedAssemblyVersionInfo.cs">
+      <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\SharedGlobalSuppressions.cs">
+      <Link>Properties\SharedGlobalSuppressions.cs</Link>
+    </Compile>
     <Compile Include="DnsMadeEasyChallengeHandler.cs" />
     <Compile Include="DnsMadeEasyChallengeHandlerProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +61,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ACMESharp.Providers.DNSMadeEasy.psd1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

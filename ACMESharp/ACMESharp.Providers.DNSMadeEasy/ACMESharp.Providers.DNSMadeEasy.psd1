@@ -12,16 +12,16 @@
 	## This is a manifest-only module so we don't define any root
 	#RootModule = ''
 
-	ModuleVersion = '0.8.5'
-	GUID = '7F6533CB-B35A-4E08-BD31-7561D0CC2A7B'
+	ModuleVersion = '0.9.0'
+	GUID = '9ea5edb1-319e-4f9d-a538-aec3567a410d'
 	
 	Author = 'https://github.com/ebekker'
 
 	CompanyName = 'https://github.com/ebekker/ACMESharp'
 
-	Copyright = '(c) 2016 Jan-Pieter Zoutewelle. All rights reserved.'	
+	Copyright = '(c) 2017 Matthew Steeple. All rights reserved.'	
 
-	Description = "CloudFlare Provider extension library for ACMESharp Client."
+	Description = "DNS Made Easy Provider extension library for ACMESharp Client."
 
 	# Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 	DefaultCommandPrefix = 'ACME'
@@ -39,7 +39,7 @@
 		PSData = @{
 
 			# Tags applied to this module. These help with module discovery in online galleries.
-			Tags = @('pki','ssl','tls','security','certificates','letsencrypt','acme','powershell','acmesharp','cloudflare','acmesharp_ext')
+			Tags = @('pki','ssl','tls','security','certificates','letsencrypt','acme','powershell','acmesharp','dnsmadeeasy','acmesharp_ext')
 
 			# A URL to the license for this module.
 			LicenseUri = 'https://raw.githubusercontent.com/ebekker/ACMESharp/master/LICENSE'
@@ -62,7 +62,7 @@
 
 		## The minimum version of ACMESharp that supports our form of a Provider
 		## extension as a dynamically installed and *enabled* POSH Extension Module
-		, @{ModuleName="ACMESharp";ModuleVersion="0.8.2"}
+		, @{ModuleName="ACMESharp";ModuleVersion="0.9.0"}
 	)
 
 

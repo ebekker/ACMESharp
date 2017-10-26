@@ -8,7 +8,7 @@
         public const string HTTP_METHOD_GET = "GET";
         public const string HTTP_METHOD_POST = "POST";
         public const string HTTP_CONTENT_TYPE_JSON = "application/json";
-        public const string HTTP_USER_AGENT_FMT = "ACMEdotNET v{0} (ACME 1.0)";
+        public const string HTTP_USER_AGENT_FMT = "ACMEdotNET/{0} (ACME 1.0)";
 
         public const string HEADER_REPLAY_NONCE = "Replay-nonce";
         public const string HEADER_LOCATION = "Location";
@@ -37,7 +37,7 @@
         /// <summary>
         /// Identifier validation challenge type indicator for
         /// <see cref="https://tools.ietf.org/html/draft-ietf-acme-acme-01#section-7.3"
-        /// >TLS SNI</see>.  Currently UNSUPPORTED.
+        /// >TLS SNI</see>.
         /// </summary>
         public const string CHALLENGE_TYPE_SNI = "tls-sni-01";
         /// <summary>

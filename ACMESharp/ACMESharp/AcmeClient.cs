@@ -52,7 +52,10 @@ namespace ACMESharp
         #region -- Properties --
 
         public string UserAgent
-        { get; private set; }
+        { get; set; }
+
+        public string Language
+        { get; set; }
 
         public Uri RootUrl
         { get; set; }
@@ -628,13 +631,42 @@ namespace ACMESharp
             }
         }
 
+        public AcmeHttpResponse RevokeCertificate(string certificate)
+        {
+            AssertInit();
+            AssertRegistration();
+
+            var revoMsg = new RevokeCertRequest()
+            {
+                Certificate = certificate
+            };
+
+            var resp = RequestHttpPost(new Uri(RootUrl,
+                    Directory[AcmeServerDirectory.RES_REVOKE_CERT]), revoMsg);
+
+            // HttpStatusCode.Conflict (409) is returned if cert is already revoked
+            if (resp.StatusCode == HttpStatusCode.Conflict)
+                throw new AcmeProtocolException("Certificate already revoked", resp);
+
+            if (resp.IsError)
+                throw new AcmeWebException(resp.Error as WebException,
+                        "Unexpected error", resp);
+
+            if (resp.StatusCode != HttpStatusCode.OK)
+                throw new AcmeProtocolException("Unexpected response status code", resp);
+
+            return resp;
+        }
+
         private AcmeHttpResponse RequestHttpGet(Uri uri)
         {
             var requ = (HttpWebRequest)WebRequest.Create(uri);
             if (Proxy != null)
                 requ.Proxy = Proxy;
             requ.Method = AcmeProtocol.HTTP_METHOD_GET;
-            requ.UserAgent = this.UserAgent;
+            requ.UserAgent = UserAgent;
+            if (Language != null)
+                requ.Headers.Add(HttpRequestHeader.AcceptLanguage, Language);
 
             try
             {
@@ -692,7 +724,9 @@ namespace ACMESharp
             requ.Method = AcmeProtocol.HTTP_METHOD_POST;
             requ.ContentType = AcmeProtocol.HTTP_CONTENT_TYPE_JSON;
             requ.ContentLength = acmeBytes.Length;
-            requ.UserAgent = this.UserAgent;
+            requ.UserAgent = UserAgent;
+            if (Language != null)
+                requ.Headers.Add(HttpRequestHeader.AcceptLanguage, Language);
             try
             {
                 if (BeforeGetResponseAction != null)

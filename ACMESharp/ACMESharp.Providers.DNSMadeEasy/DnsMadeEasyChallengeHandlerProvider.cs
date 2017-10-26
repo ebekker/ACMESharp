@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ACMESharp.ACME;
 using ACMESharp.Ext;
+using System.Collections.Generic;
 
-namespace ACMESharp.ACME.Providers
+namespace ACMESharp.Providers.DNSMadeEasy
 {
 	/// <summary>
 	/// Provider for a Challenge Handler that updates the TXT records on a
-    /// DNS Made Easy account.
+	/// DNS Made Easy account.
 	/// </summary>
 	/// <remarks>
 	/// The staging environment is available as an option, but Let's Encrypt
-    /// won't be able to read these values, so this is for debugging only
+	/// won't be able to read these values, so this is for debugging only
 	/// </remarks>
 	[ChallengeHandlerProvider("dnsme",
 		ChallengeTypeKind.DNS,

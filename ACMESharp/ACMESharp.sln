@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp", "ACMESharp\ACMESharp.csproj", "{D551234B-0A8D-4DEE-8178-A81998DF0EDB}"
 EndProject
@@ -74,6 +74,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.Windows", "ACMESharp.Providers.Windows\ACMESharp.Providers.Windows.csproj", "{F085D9BB-0DF5-442B-8340-6250792A8D7A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.OpenSslLib", "ACMESharp.PKI.Providers.OpenSslLib\ACMESharp.PKI.Providers.OpenSslLib.csproj", "{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.DNSMadeEasy", "ACMESharp.Providers.DNSMadeEasy\ACMESharp.Providers.DNSMadeEasy.csproj", "{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +151,10 @@ Global
 		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86961A92-474A-4C0C-9A7D-F6EDD57EFD56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,5 +163,8 @@ Global
 		{A6084888-8C82-4999-880F-2721BF1AA639} = {551C2059-1DE9-484C-8329-7894DDF57771}
 		{4F61BC69-0B98-45E1-87C1-D2BCF0352E06} = {A6084888-8C82-4999-880F-2721BF1AA639}
 		{34013351-8A64-4272-AFF0-2ADE706E5019} = {A6084888-8C82-4999-880F-2721BF1AA639}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2956BBB7-4342-48B8-9005-03A31A313B8D}
 	EndGlobalSection
 EndGlobal

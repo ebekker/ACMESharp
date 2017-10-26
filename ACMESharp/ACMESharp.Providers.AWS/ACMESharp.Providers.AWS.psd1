@@ -62,7 +62,7 @@
 
 		## The minimum version of ACMESharp that supports our form of a Provider
 		## extension as a dynamically installed and *enabled* POSH Extension Module
-		, @{ModuleName="ACMESharp";ModuleVersion="0.8.2"}
+		, @{ModuleName="ACMESharp";ModuleVersion="0.9.0"}
 
 		## We specify abolute min version, effectively *any* version
 		, @{ModuleName="AWSPowerShell";ModuleVersion="0.0.1"}

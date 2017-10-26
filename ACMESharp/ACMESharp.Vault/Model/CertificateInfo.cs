@@ -57,5 +57,8 @@ namespace ACMESharp.Vault.Model
 
         public string SignatureAlgorithm
         { get; set; }
+
+        public DateTime? RevokedAt
+        { get; set; }
     }
 }

@@ -12,12 +12,12 @@
     <iconUrl>https://cdn.rawgit.com/ebekker/ACMESharp/49bf6524da8239ecf258ab3857dfbbf40366ecfd/artwork/ACMESharp-logo-square64.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Early-access release of ACMESharp Provider Lib for CloudFlare.</releaseNotes>
+    <releaseNotes>Early-access release of ACMESharp Provider Lib for DNS Made Easy.</releaseNotes>
     <copyright>Copyright &#169; 2017 Eugene Bekker</copyright>
-    <tags>pki ssl tls security certificates letsencrypt acme acmesharp</tags>
+    <tags>pki ssl tls security certificates letsencrypt acme acmesharp dnsmadeeasy</tags>
 
     <dependencies>
-      <dependency id="ACMESharp" version="0.8.2.0" />
+      <dependency id="ACMESharp" version="0.9.0.0" />
     </dependencies>
    </metadata>
 </package>

@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Management;
-using System.Security.Cryptography;
-using System.Net;
-using System.IO;
+﻿using ACMESharp.ACME;
 using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
-namespace ACMESharp.ACME.Providers
+namespace ACMESharp.Providers.DNSMadeEasy
 {
-    public class DnsMadeEasyChallengeHandler : IChallengeHandler
+	public class DnsMadeEasyChallengeHandler : IChallengeHandler
     {
         public string ApiKey { get; set; }
         public string SecretKey { get; set; }
@@ -22,9 +20,9 @@ namespace ACMESharp.ACME.Providers
             get; private set;
         }
 
-        public void CleanUp(Challenge c)
+        public void CleanUp(ChallengeHandlingContext ctx)
         {
-            var dnsChallenge = (DnsChallenge)c;
+            var dnsChallenge = (DnsChallenge)ctx.Challenge;
             var domainDetails = GetDomainId(dnsChallenge);
 
             var records = managedPath + domainDetails.DomainId + "/records";
@@ -66,7 +64,13 @@ namespace ACMESharp.ACME.Providers
             return null;
         }
 
-        public void Dispose()
+		private void AssertNotDisposed()
+		{
+			if (IsDisposed)
+				throw new InvalidOperationException("handler is disposed");
+		}
+
+		public void Dispose()
         {
             IsDisposed = true;
         }
@@ -74,9 +78,10 @@ namespace ACMESharp.ACME.Providers
         private readonly string managedPath = "dns/managed/";
         private readonly string nameQuery = "name?domainname=";
 
-        public void Handle(Challenge c)
+        public void Handle(ChallengeHandlingContext ctx)
         {
-            var dnsChallenge = (DnsChallenge)c;
+			AssertNotDisposed();
+			var dnsChallenge = (DnsChallenge)ctx.Challenge;
             var domainDetails = GetDomainId(dnsChallenge);
 
             var records = managedPath + domainDetails.DomainId + "/records";

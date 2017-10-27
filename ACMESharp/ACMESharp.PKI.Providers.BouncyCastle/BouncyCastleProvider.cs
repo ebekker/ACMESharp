@@ -380,11 +380,9 @@ namespace ACMESharp.PKI.Providers
                 var bcPk = FromPrivatePem(rsaPk.Pem);
 
                 var pfx = new Pkcs12Store();
-                //pfx.SetCertificateEntry(bcCerts[0].Certificate.ToString(), bcCerts[0]);
-                //pfx.SetKeyEntry(bcCerts[0].Certificate.ToString(),
-                pfx.SetCertificateEntry(string.Empty, bcCerts[0]);
-                pfx.SetKeyEntry(string.Empty,
-                        new AsymmetricKeyEntry(bcPk.Private), new[] { bcCerts[0] });
+				pfx.SetCertificateEntry(bcCerts[0].Certificate.SubjectDN.ToString(), bcCerts[0]);
+				pfx.SetKeyEntry(bcCerts[0].Certificate.SubjectDN.ToString(),
+						new AsymmetricKeyEntry(bcPk.Private), new[] { bcCerts[0] });
 
                 for (int i = 1; i < bcCerts.Length; ++i)
                 {
@@ -392,27 +390,9 @@ namespace ACMESharp.PKI.Providers
                     pfx.SetCertificateEntry(i.ToString(), bcCerts[i]);
                 }
 
-                // It used to be pretty straight forward to export this...
-                //pfx.Save(target, password?.ToCharArray(), new SecureRandom());
-
-                // ...unfortunately, BC won't let us export the Pkcs12 archive
-                // without assigning a FriendlyName, so we have to export and
-                // then re-import it, clear the FriendlyName, then return that
-                // YUCK!
-                using (var tmp = new MemoryStream())
-                {
-                    pfx.Save(tmp, null, new SecureRandom());
-                    var c = new System.Security.Cryptography.X509Certificates.X509Certificate2();
-                    c.Import(tmp.ToArray(), string.Empty,
-                            System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet |
-                            System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable);
-
-                    // Clear the FriendlyName
-                    c.FriendlyName = null;
-                    var bytes = c.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Pkcs12, password);
-                    target.Write(bytes, 0, bytes.Length);
-                }
-            }
+				// It used to be pretty straight forward to export this...
+				pfx.Save(target, password?.ToCharArray(), new SecureRandom());
+			}
             else
             {
                 throw new NotSupportedException("unsupported archive format");

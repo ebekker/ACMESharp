@@ -58,6 +58,7 @@ else {
 		"ACMESharp.Providers.Windows" = @{}
 		"ACMESharp.Providers.AWS" = @{}
 		"ACMESharp.Providers.CloudFlare" = @{}
+		"ACMESharp.Providers.DNSMadeEasy" = @{}
 		"ACMESharp.POSH" = @{
 			nugetBuildArgs = @("ACMESharp.POSH", "-Exclude", "README-TESTING.txt", "-Exclude", "en-us\*")
 			nugetSkipPush = $false
@@ -161,10 +162,11 @@ else {
 		## Embedded '@' overrides the default Project Folder
 		"ACMESharp@ACMESharp.POSH"       = $env:APPVEYOR_BUILD_VERSION
 		## After the 1.0 release, we'll sever the coupling in version numbers for these
-		"ACMESharp.Providers.IIS"        = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
-		"ACMESharp.Providers.AWS"        = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
-		"ACMESharp.Providers.CloudFlare" = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
-		"ACMESharp.Providers.Windows"    = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.IIS"           = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.AWS"           = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.CloudFlare"    = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.DNSMadeEasy"   = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
+		"ACMESharp.Providers.Windows"       = $env:APPVEYOR_BUILD_VERSION # "0.8.0.$($env:APPVEYOR_BUILD_NUMBER)"
 	}
 
 	foreach ($modName in $poshModules.Keys) {

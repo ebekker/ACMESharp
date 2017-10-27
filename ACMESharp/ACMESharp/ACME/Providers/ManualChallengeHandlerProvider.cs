@@ -60,7 +60,7 @@ namespace ACMESharp.ACME.Providers
 
         public bool IsSupported(Challenge c)
         {
-            return c is DnsChallenge || c is HttpChallenge;
+            return c is DnsChallenge || c is HttpChallenge || c is TlsSniChallenge;
         }
 
         public IChallengeHandler GetHandler(Challenge c, IReadOnlyDictionary<string, object> initParams)

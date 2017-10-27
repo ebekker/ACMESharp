@@ -431,7 +431,6 @@ namespace ACMESharp.PKI.Providers
             if (rsaPkParams != null && rsaPkParams.ProviderType != null)
             {
                 cspParameters.ProviderType = rsaPkParams.ProviderType.Value;
-                cspParameters.ProviderName = rsaPkParams.ProviderName;
             }
 
             RSACryptoServiceProvider rsaProvider = new RSACryptoServiceProvider(cspParameters);

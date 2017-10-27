@@ -41,11 +41,11 @@ namespace ACMESharp.Ext
         {
             var thisAsm = Assembly.GetExecutingAssembly().Location;
             if (string.IsNullOrEmpty(thisAsm))
-                return null;
+                return EMPTY_STRING_ARRAY;
 
             var thisDir = Path.GetFullPath(Path.GetDirectoryName(thisAsm));
             if (string.IsNullOrEmpty(thisDir))
-                return null;
+                return EMPTY_STRING_ARRAY;
 
 			return (ExtensionPaths ?? EMPTY_STRING_ARRAY).Select(x => x.StartsWith("~/")
 					? Path.Combine(thisDir, x.Substring(2))

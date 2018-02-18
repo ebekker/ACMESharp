@@ -13,10 +13,10 @@ namespace ACMESharp.POSH
 	/// <para type="description">
 	///   Currently, the only Identifier type supported is the DNS type.
 	/// </para>
-	/// <para type="link">Get-Identifier</para>
-	/// <para type="link">Update-Identifier</para>
-	/// <para type="link">Complete-Challenge</para>
-	/// <para type="link">Submit-Challenge</para>
+	/// <para type="link">Get-ACMEIdentifier</para>
+	/// <para type="link">Update-ACMEIdentifier</para>
+	/// <para type="link">Complete-ACMEChallenge</para>
+	/// <para type="link">Submit-ACMEChallenge</para>
 	/// </summary>
 	[Cmdlet(VerbsCommon.New, "Identifier")]
     [OutputType(typeof(AuthorizationState))]

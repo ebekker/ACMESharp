@@ -19,9 +19,9 @@ namespace ACMESharp.POSH
 	///   It is also used to export various artificates associated with the Certificate
 	///   to various formats.
 	/// </para>
-	/// <para type="link">New-Certificate</para>
-	/// <para type="link">Submit-Certificate</para>
-	/// <para type="link">Update-Certificate</para>
+	/// <para type="link">New-ACMECertificate</para>
+	/// <para type="link">Submit-ACMECertificate</para>
+	/// <para type="link">Update-ACMECertificate</para>
 	/// </summary>
 	[Cmdlet(VerbsCommon.Get, "Certificate", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(CertificateInfo))]

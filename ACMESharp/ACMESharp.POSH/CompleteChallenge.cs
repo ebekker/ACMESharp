@@ -16,8 +16,8 @@ namespace ACMESharp.POSH
 	///   defined in an ACMESharp Vault that has been submitted for verification
 	///   to an ACME CA Server.
 	/// </para>
-	/// <para type="link">Get-ChallengeHandlerProfile</para>
-	/// <para type="link">Set-ChallengeHandlerProfile</para>
+	/// <para type="link">Get-ACMEChallengeHandlerProfile</para>
+	/// <para type="link">Set-ACMEChallengeHandlerProfile</para>
 	/// </summary>
 	[Cmdlet(VerbsLifecycle.Complete, "Challenge")]
     public class CompleteChallenge : AcmeCmdlet

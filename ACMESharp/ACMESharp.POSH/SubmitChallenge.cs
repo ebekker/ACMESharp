@@ -16,8 +16,8 @@ namespace ACMESharp.POSH
 	///   Challenges and combinations that will satisfy the validation of ownership of an
 	///   Identifier, you can use this cmdlet to submit each Challenge type completed.
 	/// </para>
-	/// <para type="link">New-Identifier</para>
-	/// <para type="link">Complete-Challenge</para>
+	/// <para type="link">New-ACMEIdentifier</para>
+	/// <para type="link">Complete-ACMEChallenge</para>
 	/// </summary>
 	[Cmdlet(VerbsLifecycle.Submit, "Challenge")]
     public class SubmitChallenge : AcmeCmdlet

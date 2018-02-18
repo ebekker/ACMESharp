@@ -23,8 +23,8 @@ namespace ACMESharp.POSH
 	///   to import, generate or define the certificate parameters and artifacts
 	///   needed for the request, such as the private key and CSR details.
 	/// </para>
-	/// <para type="link">New-Identifier</para>
-	/// <para type="link">Complete-Challenge</para>
+	/// <para type="link">New-ACMEIdentifier</para>
+	/// <para type="link">Complete-ACMEChallenge</para>
 	/// </summary>
 	[Cmdlet(VerbsCommon.New, "Certificate", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(CertificateInfo))]

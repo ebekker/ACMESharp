@@ -27,9 +27,9 @@ namespace ACMESharp.POSH
 	///   including retrieving the certificate and intermediate signing certificate
 	///   from the associated ACME CA Server.
 	/// </para>
-	/// <para type="link">New-Certificate</para>
-	/// <para type="link">Get-Certificate</para>
-	/// <para type="link">Submit-Certificate</para>
+	/// <para type="link">New-ACMECertificate</para>
+	/// <para type="link">Get-ACMECertificate</para>
+	/// <para type="link">Submit-ACMECertificate</para>
 	/// </summary>
 	[Cmdlet(VerbsData.Update, "Certificate", DefaultParameterSetName = PSET_DEFAULT)]
     [OutputType(typeof(CertificateInfo))]

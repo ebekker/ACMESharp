@@ -23,8 +23,8 @@ namespace ACMESharp.POSH
 	///   all the details captured in a profile "inline" during this cmdlet's
 	///   invocation.
 	/// </para>
-	/// <para type="link">Get-InstallerProfile</para>
-	/// <para type="link">Set-InstallerProfile</para>
+	/// <para type="link">Get-ACMEInstallerProfile</para>
+	/// <para type="link">Set-ACMEInstallerProfile</para>
 	/// </summary>
 	[Cmdlet(VerbsLifecycle.Install, "Certificate")]
     public class InstallCertificate : AcmeCmdlet

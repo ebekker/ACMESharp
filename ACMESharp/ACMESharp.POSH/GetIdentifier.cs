@@ -12,8 +12,8 @@ namespace ACMESharp.POSH
 	///   also use this cmdlet to specify specific Identifier references (ID or alias)
 	///   to retrieve more specific details as they are captured in the Vault.
 	/// </para>
-	/// <para type="link">New-Identifier</para>
-	/// <para type="link">Update-Identifier</para>
+	/// <para type="link">New-ACMEIdentifier</para>
+	/// <para type="link">Update-ACMEIdentifier</para>
 	/// </summary>
 	[Cmdlet(VerbsCommon.Get, "Identifier", DefaultParameterSetName = PSET_LIST)]
     [OutputType(typeof(AuthorizationState))]

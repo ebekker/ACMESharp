@@ -17,10 +17,10 @@ namespace ACMESharp.POSH
 	///   Also use this cmdlet to refresh the state and status of an Identifier
 	///   by probing the associated ACME CA Server for Identifier details.
 	/// </para>
-	/// <para type="link">New-Identifier</para>
-	/// <para type="link">Get-Identifier</para>
-	/// <para type="link">Complete-Challenge</para>
-	/// <para type="link">Submit-Challenge</para>
+	/// <para type="link">New-ACMEIdentifier</para>
+	/// <para type="link">Get-ACMEIdentifier</para>
+	/// <para type="link">Complete-ACMEChallenge</para>
+	/// <para type="link">Submit-ACMEChallenge</para>
 	/// </summary>
 	[Cmdlet(VerbsData.Update, "Identifier", DefaultParameterSetName = PSET_DEFAULT)]
     public class UpdateIdentifier : AcmeCmdlet

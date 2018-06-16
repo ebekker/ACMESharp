@@ -4,6 +4,10 @@ An [ACME](https://github.com/letsencrypt/acme-spec) client library and PowerShel
 
 ---
 
+> Interested in **ACME v2** or **.NET Standard** support?  Check out **[ACMESharp Core](https://github.com/PKISharp/ACMESharpCore)!**
+
+---
+
 Jump To:
 * [Overview](#overview)
 * [Quick Start](https://github.com/ebekker/ACMESharp/wiki/Quick-Start)

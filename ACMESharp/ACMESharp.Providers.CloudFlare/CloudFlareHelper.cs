@@ -31,6 +31,9 @@ namespace ACMESharp.Providers.CloudFlare
             _authKey = authKey;
             _emailAddress = emailAddress;
             _domainName = domainName;
+            
+            // Cloudflare requires at least TLS 1.2.
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
         }
 
         private HttpRequestMessage CreateRequest(HttpMethod method, string url)

@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
@@ -128,6 +129,14 @@ namespace ACMESharp.POSH
 
         /// <summary>
         /// <para type="description">
+        ///   Indicates if the generated certificate request should use a 4096 bits key.
+        /// </para>
+        /// </summary>
+	    [Parameter(ParameterSetName = PSET_GENERATE, Mandatory = false)]
+        public SwitchParameter NumBits4096 { get; set; }
+
+        /// <summary>
+        /// <para type="description">
         ///   An optional, unique alias to assign to the Certificate for future
         ///   reference.
         /// </para>
@@ -208,6 +217,8 @@ namespace ACMESharp.POSH
                         csrDtlValues = x => !string.IsNullOrEmpty(csrDtlValue(x))
                                 ? Regex.Split(csrDtlValue(x).Trim(), "[\\s,;]+") : null;
                     }
+
+                    if (NumBits4096) ci.NumBits = 4096;
 
                     var csrDetails = new CsrDetails
                     {

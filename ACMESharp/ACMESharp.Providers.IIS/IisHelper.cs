@@ -228,7 +228,7 @@ namespace ACMESharp.Providers.IIS
                 var matchAddress = string.IsNullOrEmpty(bindingAddress)
                         || string.Equals(_.BindingAddress, bindingAddress,
                                 StringComparison.InvariantCultureIgnoreCase);
-                var matchPort = int.Parse(_.BindingPort) == bindingPort;
+                var matchPort = _.BindingPort != null && int.Parse(_.BindingPort) == bindingPort;
                 var matchHost = string.IsNullOrEmpty(bindingHost)
                         || string.Equals(_.BindingHost, bindingHost,
                                 StringComparison.InvariantCultureIgnoreCase);

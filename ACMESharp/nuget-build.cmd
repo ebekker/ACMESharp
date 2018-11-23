@@ -27,7 +27,7 @@ IF "%BUILDNO%"=="" SET BUILDNO=0
 ECHO Building %PRJ_ARG% (build #%BUILDNO%)
 
 REM --- Try to find NuGet on the path
-FOR /F "delims=" %%i IN ('where nuget.* /F') DO set NUGET=%%i
+FOR /F "delims=" %%i IN ('where nuget.exe nuget.bat nuget.cmd nuget.ps1 /F') DO set NUGET=%%i
 
 REM --- If not found, look for NuGet at fixed location (in AppVeyor)
 ECHO NUGET=%NUGET%

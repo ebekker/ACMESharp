@@ -46,6 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ci", "ci", "{A6084888-8C82-
 		..\ci\av-build.ps1 = ..\ci\av-build.ps1
 		..\ci\av-install.ps1 = ..\ci\av-install.ps1
 		..\ci\av-onfinish.ps1 = ..\ci\av-onfinish.ps1
+		nuget-build.cmd = nuget-build.cmd
 		..\ci\version-bump.md = ..\ci\version-bump.md
 	EndProjectSection
 EndProject

@@ -12,7 +12,7 @@
 	## This is a manifest-only module so we don't define any root
 	#RootModule = ''
 
-	ModuleVersion = '0.9.0'
+	ModuleVersion = '0.9.2'
 	GUID = '9ea5edb1-319e-4f9d-a538-aec3567a410d'
 	
 	Author = 'https://github.com/ebekker'

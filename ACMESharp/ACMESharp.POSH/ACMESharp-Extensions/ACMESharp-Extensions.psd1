@@ -10,7 +10,7 @@
 
 @{
 	RootModule = 'ACMESharp-Extensions.psm1'
-	ModuleVersion = '0.9.0'
+	ModuleVersion = '0.9.2'
 	GUID = 'D404364B-EBEF-4FB9-BB5A-F30F912D876C'
 	
 	Author = 'https://github.com/ebekker'

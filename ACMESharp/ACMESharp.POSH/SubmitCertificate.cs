@@ -109,7 +109,7 @@ namespace ACMESharp.POSH
                         var csrGenAsset = vlt.CreateAsset(VaultAssetType.CsrGen, csrGenFile, getOrCreate: Force);
                         var csrPemAsset = vlt.CreateAsset(VaultAssetType.CsrPem, csrPemFile, getOrCreate: Force);
 
-                        var genKeyParams = new RsaPrivateKeyParams();
+                        var genKeyParams = new RsaPrivateKeyParams {NumBits = ci.NumBits};
 
                         var genKey = cp.GeneratePrivateKey(genKeyParams);
                         using (var s = vlt.SaveAsset(keyGenAsset))

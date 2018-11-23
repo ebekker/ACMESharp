@@ -60,5 +60,7 @@ namespace ACMESharp.Vault.Model
 
         public DateTime? RevokedAt
         { get; set; }
+
+        public int NumBits { get; set; } = 2048;
     }
 }

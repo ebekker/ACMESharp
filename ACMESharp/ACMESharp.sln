@@ -78,6 +78,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.Ope
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.DNSMadeEasy", "ACMESharp.Providers.DNSMadeEasy\ACMESharp.Providers.DNSMadeEasy.csproj", "{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.Providers.DuckDNS", "ACMESharp.Providers.DuckDNS\ACMESharp.Providers.DuckDNS.csproj", "{9B6C05E7-A570-406D-8FFD-BF8AE5337AA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,10 @@ Global
 		{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC6D303A-71FB-4CC7-8D30-3C3B09F9C92A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B6C05E7-A570-406D-8FFD-BF8AE5337AA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B6C05E7-A570-406D-8FFD-BF8AE5337AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B6C05E7-A570-406D-8FFD-BF8AE5337AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B6C05E7-A570-406D-8FFD-BF8AE5337AA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

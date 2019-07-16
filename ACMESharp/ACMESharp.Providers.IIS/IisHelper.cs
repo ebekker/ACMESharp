@@ -94,7 +94,7 @@ namespace ACMESharp.Providers.IIS
             }
         }
 
-        public static void UpdateSiteBinding(IisWebSiteBinding binding, string certStore, byte[] certHash)
+        public static void UpdateSiteBinding(IisWebSiteBinding binding, string certStore, byte[] certHash, bool keepExistingSslFlags = false)
         {
             using (var iis = new ServerManager())
             {
@@ -120,10 +120,13 @@ namespace ACMESharp.Providers.IIS
                         ++bindingCount;
                         b.CertificateStoreName = certStore;
                         b.CertificateHash = certHash;
-                        if (binding.BindingHostRequired.GetValueOrDefault() && GetIisVersion().Major >= 8)
-                            b.SetAttributeValue("sslFlags", 1);
-                        else
-                            b.SetAttributeValue("sslFlags", 3);
+                        if (!keepExistingSslFlags) 
+                        {
+                            if (binding.BindingHostRequired.GetValueOrDefault() && GetIisVersion().Major >= 8)
+                                b.SetAttributeValue("sslFlags", 1);
+                            else
+                                b.SetAttributeValue("sslFlags", 3);
+                        }
                     }
                 }
 

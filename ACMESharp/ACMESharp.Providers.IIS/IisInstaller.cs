@@ -45,6 +45,9 @@ namespace ACMESharp.Providers.IIS
         public bool Force
         { get; set; }
 
+        public bool KeepExistingSslFlags
+        { get; set; }
+
         public string CertificateFriendlyName
         { get; set; }
 
@@ -82,7 +85,7 @@ namespace ACMESharp.Providers.IIS
                 {
                     if (BindingHostRequired.HasValue)
                         oldBinding.BindingHostRequired = BindingHostRequired;
-                    IisHelper.UpdateSiteBinding(oldBinding, certStore, certHash);
+                    IisHelper.UpdateSiteBinding(oldBinding, certStore, certHash, keepExistingSslFlags: KeepExistingSslFlags);
                 }
             }
             else

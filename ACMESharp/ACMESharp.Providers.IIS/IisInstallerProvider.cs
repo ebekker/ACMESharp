@@ -45,7 +45,12 @@ namespace ACMESharp.Providers.IIS
 				ParameterType.BOOLEAN, label: "Force",
 				desc: "An optional flag to overwrite an existing binding matching the target criteria");
 
-		public static readonly ParameterDetail CERTIFICATE_FRIENDLY_NAME = new ParameterDetail(
+        public static readonly ParameterDetail KEEPEXISTINGSSLFLAGS = new ParameterDetail(
+                nameof(IisInstaller.Force),
+                ParameterType.BOOLEAN, label: "KeepExistingSslFlags",
+                desc: "An optional flag to allow an existing binding to keep its SSL Flags as per the original binding");
+
+        public static readonly ParameterDetail CERTIFICATE_FRIENDLY_NAME = new ParameterDetail(
 				nameof(IisInstaller.CertificateFriendlyName),
 				ParameterType.TEXT, label: "Certificate Friendly Name",
 				desc: "An optional user-facing label to assign the certificate"
@@ -59,7 +64,8 @@ namespace ACMESharp.Providers.IIS
 			BINDING_HOST,
 			BINDING_HOST_REQUIRED,
 			FORCE,
-			CERTIFICATE_FRIENDLY_NAME,
+            KEEPEXISTINGSSLFLAGS,
+            CERTIFICATE_FRIENDLY_NAME,
 		};
 
 		public IEnumerable<ParameterDetail> DescribeParameters()
@@ -89,7 +95,9 @@ namespace ACMESharp.Providers.IIS
 					(bool x) => inst.BindingHostRequired = x);
 			initParams.GetParameter(FORCE,
 					(bool x) => inst.Force = x);
-			initParams.GetParameter(CERTIFICATE_FRIENDLY_NAME,
+            initParams.GetParameter(KEEPEXISTINGSSLFLAGS,
+                    (bool x) => inst.KeepExistingSslFlags = x);
+            initParams.GetParameter(CERTIFICATE_FRIENDLY_NAME,
 					(string x) => inst.CertificateFriendlyName = x);
 
 			return inst;

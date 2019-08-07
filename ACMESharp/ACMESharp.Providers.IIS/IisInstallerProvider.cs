@@ -45,7 +45,7 @@ namespace ACMESharp.Providers.IIS
 				ParameterType.BOOLEAN, label: "Force",
 				desc: "An optional flag to overwrite an existing binding matching the target criteria");
 
-        public static readonly ParameterDetail KEEPEXISTINGSSLFLAGS = new ParameterDetail(
+        public static readonly ParameterDetail KEEP_EXISTING_SSL_FLAGS = new ParameterDetail(
                 nameof(IisInstaller.Force),
                 ParameterType.BOOLEAN, label: "KeepExistingSslFlags",
                 desc: "An optional flag to allow an existing binding to keep its SSL Flags as per the original binding");
@@ -64,7 +64,7 @@ namespace ACMESharp.Providers.IIS
 			BINDING_HOST,
 			BINDING_HOST_REQUIRED,
 			FORCE,
-            KEEPEXISTINGSSLFLAGS,
+            KEEP_EXISTING_SSL_FLAGS,
             CERTIFICATE_FRIENDLY_NAME,
 		};
 
@@ -95,7 +95,7 @@ namespace ACMESharp.Providers.IIS
 					(bool x) => inst.BindingHostRequired = x);
 			initParams.GetParameter(FORCE,
 					(bool x) => inst.Force = x);
-            initParams.GetParameter(KEEPEXISTINGSSLFLAGS,
+            initParams.GetParameter(KEEP_EXISTING_SSL_FLAGS,
                     (bool x) => inst.KeepExistingSslFlags = x);
             initParams.GetParameter(CERTIFICATE_FRIENDLY_NAME,
 					(string x) => inst.CertificateFriendlyName = x);

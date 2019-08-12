@@ -46,7 +46,7 @@ namespace ACMESharp.Providers.IIS
 				desc: "An optional flag to overwrite an existing binding matching the target criteria");
 
         public static readonly ParameterDetail KEEP_EXISTING_SSL_FLAGS = new ParameterDetail(
-                nameof(IisInstaller.Force),
+                nameof(IisInstaller.KeepExistingSslFlags),
                 ParameterType.BOOLEAN, label: "KeepExistingSslFlags",
                 desc: "An optional flag to allow an existing binding to keep its SSL Flags as per the original binding");
 

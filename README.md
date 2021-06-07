@@ -2,6 +2,8 @@
 
 An [ACME](https://github.com/letsencrypt/acme-spec) client library and PowerShell client for the .NET platform.
 
+:star: I appreciate your star, it helps me decide to which OSS projects I should allocate my spare time.
+
 ---
 
 > Interested in **ACME v2** or **.NET Standard** support?  Check out **[ACMESharp Core](https://github.com/PKISharp/ACMESharpCore)!**

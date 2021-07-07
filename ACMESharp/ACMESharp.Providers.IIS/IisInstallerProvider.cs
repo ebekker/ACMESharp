@@ -45,12 +45,12 @@ namespace ACMESharp.Providers.IIS
 				ParameterType.BOOLEAN, label: "Force",
 				desc: "An optional flag to overwrite an existing binding matching the target criteria");
 
-        public static readonly ParameterDetail KEEP_EXISTING_SSL_FLAGS = new ParameterDetail(
-                nameof(IisInstaller.Force),
-                ParameterType.BOOLEAN, label: "KeepExistingSslFlags",
-                desc: "An optional flag to allow an existing binding to keep its SSL Flags as per the original binding");
+		public static readonly ParameterDetail KEEP_EXISTING_SSL_FLAGS = new ParameterDetail(
+				nameof(IisInstaller.KeepExistingSslFlags),
+				ParameterType.BOOLEAN, label: "KeepExistingSslFlags",
+				desc: "An optional flag to allow an existing binding to keep its SSL Flags as per the original binding");
 
-        public static readonly ParameterDetail CERTIFICATE_FRIENDLY_NAME = new ParameterDetail(
+		public static readonly ParameterDetail CERTIFICATE_FRIENDLY_NAME = new ParameterDetail(
 				nameof(IisInstaller.CertificateFriendlyName),
 				ParameterType.TEXT, label: "Certificate Friendly Name",
 				desc: "An optional user-facing label to assign the certificate"
